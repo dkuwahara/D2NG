@@ -15,6 +15,7 @@ namespace D2NG
             _BNCS.Connect(realm);
             _BNCS.Send(0x01);
             _BNCS.Send(BNCS.AuthInfoPacket);
+            _BNCS.Listen();
         }
     }
 }
