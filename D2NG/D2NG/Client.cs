@@ -13,6 +13,8 @@ namespace D2NG
         public void ConnectToBattleNet(String realm)
         {
             _BNCS.Connect(realm);
+            _BNCS.Send(0x01);
+            _BNCS.Send(BNCS.AuthInfoPacket);
         }
     }
 }
