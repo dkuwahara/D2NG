@@ -84,55 +84,46 @@ namespace D2NG
         }
 
         public void Listen()
-        {
-            var bncsBuffer = new List<byte>();
-            var packet = new List<byte>();
-
+        {           
             while (_client != null && _client.Connected)
             {
-                if (!GetPacket(ref bncsBuffer, ref packet))
+                try
                 {
+                    var packet = GetPacket();
+                    var packetType = packet[1];
+                    Console.WriteLine("[{0}] Received packet 0x{1:X} from server", GetType(), packetType);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("[{0}] Failed to get Packet {1}", GetType(), e.StackTrace);
                     break;
                 }
-                var type = packet[1];
-                Console.WriteLine("[{0}] Received packet 0x{1:X} from server", GetType(), type);
+               
             }
             _client.Close();
             _stream.Close();
         }
 
-  
-
-        private bool GetPacket(ref List<byte> bncsBuffer, ref List<byte> data)
+        private List<byte> GetPacket()
         {
-            ReadUpTo(ref bncsBuffer, 4);
+            List<byte> buffer = new List<byte>();
 
-            byte[] bytes = bncsBuffer.ToArray();
+            // Get the first 4 bytes, packet type and length
+            ReadUpTo(ref buffer, 4);
+            short packetLength = BitConverter.ToInt16(buffer.ToArray(), 2);
 
-            short packetLength = BitConverter.ToInt16(bytes, 2);
-
-            ReadUpTo(ref bncsBuffer, packetLength);
-
-            data = new List<byte>(bncsBuffer.GetRange(0, packetLength));
-            bncsBuffer.RemoveRange(0, packetLength);
-            return true;
+            // Read the rest of the packet and return it
+            ReadUpTo(ref buffer, packetLength);
+            return buffer;
         }
 
-        private bool ReadUpTo(ref List<byte> bncsBuffer, int count)
+        private void ReadUpTo(ref List<byte> bncsBuffer, int count)
         {
             while (bncsBuffer.Count < count)
             {
-                try
-                {
-                    byte temp = (byte)_stream.ReadByte();
-                    bncsBuffer.Add(temp);
-                }
-                catch
-                {
-                    return false;
-                }
+                byte temp = (byte)_stream.ReadByte();
+                bncsBuffer.Add(temp);
             }
-            return true;
         }
     }
 }
