@@ -107,8 +107,7 @@ namespace D2NG
         {
             ReadUpTo(ref bncsBuffer, 4);
 
-            byte[] bytes = new byte[bncsBuffer.Count];
-            bncsBuffer.CopyTo(bytes);
+            byte[] bytes = bncsBuffer.ToArray();
 
             short packetLength = BitConverter.ToInt16(bytes, 2);
 
