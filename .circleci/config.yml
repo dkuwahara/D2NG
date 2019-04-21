@@ -1,0 +1,11 @@
+﻿version: 2.0
+jobs:
+  build:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+    steps:
+      - checkout
+      - run:
+        name: Build App
+        command:
+          dotnet build
