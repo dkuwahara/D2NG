@@ -41,6 +41,11 @@ namespace D2NG
 
         public void Connect(String realm)
         {
+            if(_client.Connected)
+            {
+                throw new AlreadyConnectedException("BNCS Already Connected");
+            }
+
             Console.WriteLine("[{0}] Resolving {1}", GetType(), realm);
             var server = Dns.GetHostAddresses(realm).First();
 
