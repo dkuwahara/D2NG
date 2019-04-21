@@ -41,7 +41,7 @@ namespace D2NG
 
         public void Connect(String realm)
         {
-            if(_client.Connected)
+            if(_client != null && _client.Connected)
             {
                 throw new AlreadyConnectedException("BNCS Already Connected");
             }
