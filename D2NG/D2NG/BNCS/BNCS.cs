@@ -125,7 +125,7 @@ namespace D2NG
 
             short packetLength = BitConverter.ToInt16(bytes, 2);
 
-            while (packetLength > bncsBuffer.Count)
+            while (bncsBuffer.Count < packetLength)
             {
                 try
                 {
