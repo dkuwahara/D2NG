@@ -7,4 +7,3 @@ jobs:
       - checkout
       - run: dotnet restore
       - run: dotnet build
-      - run: dotnet test --no-build Build.Tests
