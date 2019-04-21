@@ -1,4 +1,7 @@
-﻿namespace D2NG
+﻿using System;
+using System.Net;
+
+namespace D2NG
 {
     class BNCS
     {
@@ -28,19 +31,15 @@
          */
 
         public static readonly int DEFAULT_PORT = 6112;
-        /**
-         * Use this port to connect to BNCS
-         */
-        private readonly int _port;
 
-        public BNCS() 
-            : this(DEFAULT_PORT)
+        public void Connect(IPAddress ip)
         {
+            this.Connect(ip, DEFAULT_PORT);
         }
 
-        public BNCS(int port)
+        private void Connect(IPAddress ip, int port)
         {
-            _port = port;
+            throw new NotImplementedException();
         }
     }
 }
