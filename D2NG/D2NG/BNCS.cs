@@ -66,5 +66,15 @@ namespace D2NG
             }
             Console.WriteLine("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
+
+        public void Send(byte packet)
+        {
+            _stream.WriteByte(packet);
+        }
+
+        public void Send(byte[] packet)
+        {
+            _stream.Write(packet, 0, packet.Length);
+        }
     }
 }
