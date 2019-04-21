@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -37,23 +38,33 @@ namespace D2NG
 
         private NetworkStream _stream;
 
-        public void Connect(IPAddress ip)
+        public void Connect(String realm)
+        {
+            Console.WriteLine("[{0}] Resolving {1}", GetType(), realm);
+            var server = Dns.GetHostAddresses(realm).First();
+
+            Console.WriteLine("[{0}] Found server {1}", GetType(), server);
+            this.Connect(server);
+        }
+
+        private void Connect(IPAddress ip)
         {
             this.Connect(ip, DEFAULT_PORT);
         }
-
         private void Connect(IPAddress ip, int port)
         {
+            Console.WriteLine("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
             _client = new TcpClient();
             _client.Connect(ip, port);
             _stream = _client.GetStream();
             if(!_stream.CanWrite)
             {
-                Console.Write("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
+                Console.WriteLine("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
                 _stream.Close();
                 _client.Close();
                 throw new BNCSConnectException();
             }
+            Console.WriteLine("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
     }
 }
