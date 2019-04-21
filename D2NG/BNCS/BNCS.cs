@@ -39,6 +39,14 @@ namespace D2NG
 
         private NetworkStream _stream;
 
+        public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
+
+        public BNCS()
+        {
+            EventHandler<BNCSPacketReceivedEvent> onReceived = (sender, eventArgs) => Console.WriteLine("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
+            PacketReceived += onReceived;
+        }
+
         public void Connect(String realm)
         {
             if(_client != null && _client.Connected)
@@ -83,6 +91,7 @@ namespace D2NG
             _stream.Write(packet, 0, packet.Length);
         }
 
+
         public void Listen()
         {           
             while (_client != null && _client.Connected)
@@ -91,9 +100,8 @@ namespace D2NG
                 {
                     var packet = GetPacket();
                     var packetType = packet[1];
-                    Console.WriteLine("[{0}] Received packet 0x{1:X} from server", GetType(), packetType);
-
-                    var evt = new BNCSPacketReceivedEvent(packet);
+                    
+                    PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(packet));
                 }
                 catch(Exception e)
                 {

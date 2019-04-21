@@ -4,8 +4,8 @@ namespace D2NG
 {
     class BNCSPacketReceivedEvent : BNCSEvent
     {
-        private byte Type { get; set; }
-        private List<byte> Packet { get; set; }
+        public byte Type { get; set; }
+        public List<byte> Packet { get; set; }
 
         public BNCSPacketReceivedEvent(List<byte> packet)
         {
