@@ -98,7 +98,6 @@ namespace D2NG
                     Console.WriteLine("[{0}] Failed to get Packet {1}", GetType(), e.StackTrace);
                     break;
                 }
-               
             }
             _client.Close();
             _stream.Close();
