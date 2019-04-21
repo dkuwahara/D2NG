@@ -105,27 +105,23 @@ namespace D2NG
 
         private bool GetPacket(ref List<byte> bncsBuffer, ref List<byte> data)
         {
-            while (bncsBuffer.Count < 4)
-            {
-                try
-                {
-                    byte temp = 0;
-
-                    temp = (byte)_stream.ReadByte();
-                    bncsBuffer.Add(temp);
-                }
-                catch
-                {
-                    return false;
-                }
-            }
+            ReadUpTo(ref bncsBuffer, 4);
 
             byte[] bytes = new byte[bncsBuffer.Count];
             bncsBuffer.CopyTo(bytes);
 
             short packetLength = BitConverter.ToInt16(bytes, 2);
 
-            while (bncsBuffer.Count < packetLength)
+            ReadUpTo(ref bncsBuffer, packetLength);
+
+            data = new List<byte>(bncsBuffer.GetRange(0, packetLength));
+            bncsBuffer.RemoveRange(0, packetLength);
+            return true;
+        }
+
+        private bool ReadUpTo(ref List<byte> bncsBuffer, int count)
+        {
+            while (bncsBuffer.Count < count)
             {
                 try
                 {
@@ -137,8 +133,6 @@ namespace D2NG
                     return false;
                 }
             }
-            data = new List<byte>(bncsBuffer.GetRange(0, packetLength));
-            bncsBuffer.RemoveRange(0, packetLength);
             return true;
         }
     }
