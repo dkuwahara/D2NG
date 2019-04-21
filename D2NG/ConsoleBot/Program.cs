@@ -8,7 +8,7 @@ namespace ConsoleBot
         static void Main(string[] args)
         {
             Console.WriteLine("Starting bot");
-            D2NG.Client client = new Client();
+            Client client = new Client();
             Console.WriteLine("Connecting to Battle.Net");
             client.ConnectToBattleNet("useast.battle.net");
         }
