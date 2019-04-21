@@ -66,8 +66,8 @@ namespace D2NG
             if(!_stream.CanWrite)
             {
                 Console.WriteLine("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
-                _stream.Close();
                 _client.Close();
+                _stream.Close();
                 throw new BNCSConnectException();
             }
             Console.WriteLine("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
@@ -97,14 +97,12 @@ namespace D2NG
                 var type = packet[1];
                 Console.WriteLine("[{0}] Received packet 0x{1:X} from server", GetType(), type);
             }
-        }
-
-        private void Kill()
-        {
-            _stream.Close();
             _client.Close();
-
+            _stream.Close();
         }
+
+  
+
         private bool GetPacket(ref List<byte> bncsBuffer, ref List<byte> data)
         {
             while (bncsBuffer.Count < 4)
@@ -118,7 +116,6 @@ namespace D2NG
                 }
                 catch
                 {
-                    Kill();
                     return false;
                 }
             }
@@ -137,7 +134,6 @@ namespace D2NG
                 }
                 catch
                 {
-                    Kill();
                     return false;
                 }
             }
