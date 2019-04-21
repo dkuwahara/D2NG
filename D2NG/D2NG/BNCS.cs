@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -75,6 +76,69 @@ namespace D2NG
         public void Send(byte[] packet)
         {
             _stream.Write(packet, 0, packet.Length);
+        }
+
+        public void Listen()
+        {
+            var bncsBuffer = new List<byte>();
+            var packet = new List<byte>();
+
+            while (_client != null && _client.Connected)
+            {
+                if (!GetPacket(ref bncsBuffer, ref packet))
+                {
+                    break;
+                }
+                var type = packet[1];
+                Console.WriteLine("[{0}] Received packet {1:X} from server", GetType(), type);
+            }
+        }
+
+        private void Kill()
+        {
+            _stream.Close();
+            _client.Close();
+
+        }
+        private bool GetPacket(ref List<byte> bncsBuffer, ref List<byte> data)
+        {
+            while (bncsBuffer.Count < 4)
+            {
+                try
+                {
+                    byte temp = 0;
+
+                    temp = (byte)_stream.ReadByte();
+                    bncsBuffer.Add(temp);
+                }
+                catch
+                {
+                    Kill();
+                    return false;
+                }
+            }
+
+            byte[] bytes = new byte[bncsBuffer.Count];
+            bncsBuffer.CopyTo(bytes);
+
+            short packetLength = BitConverter.ToInt16(bytes, 2);
+
+            while (packetLength > bncsBuffer.Count)
+            {
+                try
+                {
+                    byte temp = (byte)_stream.ReadByte();
+                    bncsBuffer.Add(temp);
+                }
+                catch
+                {
+                    Kill();
+                    return false;
+                }
+            }
+            data = new List<byte>(bncsBuffer.GetRange(0, packetLength));
+            bncsBuffer.RemoveRange(0, packetLength);
+            return true;
         }
     }
 }
