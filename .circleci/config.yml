@@ -2,9 +2,9 @@
 jobs:
   build:
     docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview2-alpine3.8
     steps:
       - checkout
-      - run:
-        name: Build App
-        command: dotnet build
+      - run: dotnet restore
+      - run: dotnet build
+      - run: dotnet test --no-build Build.Tests
