@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace D2NG
+namespace D2NG.BNCS
 {
-    abstract class BNCSEvent
+    class BNCSPacketReceivedEvent : BNCSEvent
     {
     }
 }
