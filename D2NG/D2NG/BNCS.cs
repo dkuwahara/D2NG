@@ -90,7 +90,7 @@ namespace D2NG
                     break;
                 }
                 var type = packet[1];
-                Console.WriteLine("[{0}] Received packet {1:X} from server", GetType(), type);
+                Console.WriteLine("[{0}] Received packet 0x{1:X} from server", GetType(), type);
             }
         }
 
