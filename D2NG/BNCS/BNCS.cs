@@ -1,4 +1,5 @@
-﻿using System;
+﻿using D2NG.BNCS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -92,6 +93,8 @@ namespace D2NG
                     var packet = GetPacket();
                     var packetType = packet[1];
                     Console.WriteLine("[{0}] Received packet 0x{1:X} from server", GetType(), packetType);
+
+                    var evt = new BNCSPacketReceivedEvent(packet);
                 }
                 catch(Exception e)
                 {
