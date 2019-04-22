@@ -22,7 +22,7 @@ namespace D2NG
 
         private NetworkStream _stream;
 
-        private StateMachine<State, Trigger>.TriggerWithParameters<string> _setConnectTrigger;
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _setConnectTrigger;
 
         public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
 
