@@ -1,6 +1,6 @@
 ﻿namespace D2NG
 {
-    abstract class BNCSEvent
+    public abstract class BNCSEvent
     {
     }
 }
