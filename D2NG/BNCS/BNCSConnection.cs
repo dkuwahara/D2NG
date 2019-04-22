@@ -82,7 +82,7 @@ namespace D2NG
         public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
 
         public void Listen() => _machine.Fire(Trigger.ListenToSocket);
-        public void Send(byte packet) => Send(new byte[] { packet });
+        public void Send(byte packet) => Send(new [] { packet });
         public void Send(List<byte> packet) => Send(packet.ToArray());
         public void Send(byte[] packet) => _machine.Fire(_writeTrigger, packet);
         public void Terminate() => _machine.Fire(Trigger.KillSocket);
@@ -138,8 +138,7 @@ namespace D2NG
                 {
                     try
                     {
-                        var packet = GetPacket();
-                        PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(packet));
+                        PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(GetPacket()));
                     }
                     catch (Exception e)
                     {
