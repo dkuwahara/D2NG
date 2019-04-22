@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using Stateless;
+using Stateless.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,14 @@ namespace D2NG
 
         private NetworkStream _stream;
 
-        private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _setConnectTrigger;
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<byte[]> _writeTrigger;
 
         public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
 
         public event EventHandler<BNCSPacketSentEvent> PacketSent;
 
-        private readonly StateMachine<State, Trigger> _stateMachine = new StateMachine<State, Trigger>(State.NotConnected);
+        private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
         enum State
         {
@@ -39,48 +41,59 @@ namespace D2NG
         enum Trigger {
             ConnectSocket,
             ListenToSocket,
-            KillSocket
+            KillSocket,
+            Write
         }
 
         public BNCSConnection()
         {
-            _setConnectTrigger = _stateMachine.SetTriggerParameters<String>(Trigger.ConnectSocket);
-
-            _stateMachine.Configure(State.NotConnected)
+            _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.ConnectSocket);
+            _writeTrigger = _machine.SetTriggerParameters<byte[]>(Trigger.Write);
+            
+            _machine.Configure(State.NotConnected)
                 .OnEntryFrom(Trigger.KillSocket, t => OnTerminate())
                 .Permit(Trigger.ConnectSocket, State.Connected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.NotConnected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.NotConnected));
 
-            _stateMachine.Configure(State.Connected)
-                .OnEntryFrom<String>(_setConnectTrigger, realm => OnConnect(realm), "Realm to connect to")
+            _machine.Configure(State.Connected)
+                .OnEntryFrom<String>(_connectTrigger, realm => OnConnect(realm), "Realm to connect to")
+                .InternalTransition(_writeTrigger, (data, t) => OnWrite(data))
                 .Permit(Trigger.ListenToSocket, State.Listening)
                 .Permit(Trigger.KillSocket, State.NotConnected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Connected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Connected));
 
-            _stateMachine.Configure(State.Listening)
+            _machine.Configure(State.Listening)
                 .OnEntryFrom(Trigger.ListenToSocket, t => OnListen())
                 .SubstateOf(State.Connected)
                 .Permit(Trigger.KillSocket, State.NotConnected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Listening))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Listening));
+
+            Log.Debug("{0}", UmlDotGraph.Format(_machine.GetInfo()));
+
         }
 
-        public bool IsListening() => _stateMachine.IsInState(State.Listening);
+        public bool IsListening() => _machine.IsInState(State.Listening);
 
-        public bool IsConnected() => _stateMachine.IsInState(State.Connected);
+        public bool IsConnected() => _machine.IsInState(State.Connected);
 
-        public void Connect(String realm) => _stateMachine.Fire(_setConnectTrigger, realm);
+        public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
+
+        public void Listen() => _machine.Fire(Trigger.ListenToSocket);
+        public void Send(byte packet) => Send(new byte[] { packet });
+        public void Send(List<byte> packet) => Send(packet.ToArray());
+        public void Send(byte[] packet) => _machine.Fire(_writeTrigger, packet);
+        public void Terminate() => _machine.Fire(Trigger.KillSocket);
         private void OnConnect(String realm)
         {
             Log.Debug("[{0}] Resolving {1}", GetType(), realm);
             var server = Dns.GetHostAddresses(realm).First();
 
             Log.Debug("[{0}] Found server {1}", GetType(), server);
-            this.Connect(server);
+            this.Connect(server, DEFAULT_PORT);
         }
-        private void Connect(IPAddress ip) => this.Connect(ip, DEFAULT_PORT);
 
         private void Connect(IPAddress ip, int port)
         {
@@ -98,22 +111,18 @@ namespace D2NG
             Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
 
-        public void Send(byte packet)
+        private void OnWrite(byte[] packet)
         {
-            _stream.WriteByte(packet);
+            if (packet.Length == 1)
+            {
+                _stream.WriteByte(packet[0]);
+            }
+            else
+            { 
+                _stream.Write(packet, 0, packet.Length);
+                PacketSent?.Invoke(this, new BNCSPacketSentEvent(packet));
+            }
         }
-
-        public void Send(List<byte> packet)
-        {
-            Send(packet.ToArray());
-        }
-        public void Send(byte[] packet)
-        {
-            _stream.Write(packet, 0, packet.Length);
-            PacketSent?.Invoke(this, new BNCSPacketSentEvent(packet));
-        }
-
-        public void Terminate() => _stateMachine.Fire(Trigger.KillSocket);
 
         private void OnTerminate()
         {
@@ -121,13 +130,11 @@ namespace D2NG
             _stream.Close();
         }
 
-        public void Listen() => _stateMachine.Fire(Trigger.ListenToSocket);
-
         private void OnListen()
         {
             ThreadPool.QueueUserWorkItem((obj) =>
             {
-                while (_stateMachine.IsInState(State.Connected) && _tcpClient != null && _tcpClient.Connected)
+                while (_machine.IsInState(State.Connected))
                 {
                     try
                     {
@@ -137,10 +144,9 @@ namespace D2NG
                     catch (Exception e)
                     {
                         Log.Error(e, "[{0}] Failed to get Packet", GetType());
-                        break;
+                        Terminate();
                     }
                 }
-                Terminate();
             });
         }
 
