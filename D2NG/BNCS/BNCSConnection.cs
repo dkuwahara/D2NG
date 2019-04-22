@@ -22,6 +22,8 @@ namespace D2NG
 
         private NetworkStream _stream;
 
+        private StateMachine<State, Trigger>.TriggerWithParameters<string> _setConnectTrigger;
+
         public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
 
         public event EventHandler<BNCSPacketSentEvent> PacketSent;
@@ -35,27 +37,32 @@ namespace D2NG
             Listening
         }
         enum Trigger {
-            SocketConnected,
+            ConnectSocket,
             ListenToSocket,
-            SocketKilled
+            KillSocket
         }
 
         public BNCSConnection()
         {
+            _setConnectTrigger = _stateMachine.SetTriggerParameters<String>(Trigger.ConnectSocket);
+
             _stateMachine.Configure(State.NotConnected)
-                .Permit(Trigger.SocketConnected, State.Connected)
+                .OnEntryFrom(Trigger.KillSocket, t => OnTerminate())
+                .Permit(Trigger.ConnectSocket, State.Connected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.NotConnected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.NotConnected));
 
             _stateMachine.Configure(State.Connected)
+                .OnEntryFrom<String>(_setConnectTrigger, realm => OnConnect(realm), "Realm to connect to")
                 .Permit(Trigger.ListenToSocket, State.Listening)
-                .Permit(Trigger.SocketKilled, State.NotConnected)
+                .Permit(Trigger.KillSocket, State.NotConnected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Connected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Connected));
 
             _stateMachine.Configure(State.Listening)
+                .OnEntryFrom(Trigger.ListenToSocket, t => OnListen())
                 .SubstateOf(State.Connected)
-                .Permit(Trigger.SocketKilled, State.NotConnected)
+                .Permit(Trigger.KillSocket, State.NotConnected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Listening))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Listening));
         }
@@ -64,25 +71,16 @@ namespace D2NG
 
         public bool IsConnected() => _stateMachine.IsInState(State.Connected);
 
-        public void Connect(String realm)
+        public void Connect(String realm) => _stateMachine.Fire(_setConnectTrigger, realm);
+        private void OnConnect(String realm)
         {
-            if(_tcpClient != null && _tcpClient.Connected)
-            {
-                throw new AlreadyConnectedException("BNCS Already Connected");
-            }
-
             Log.Debug("[{0}] Resolving {1}", GetType(), realm);
             var server = Dns.GetHostAddresses(realm).First();
 
             Log.Debug("[{0}] Found server {1}", GetType(), server);
             this.Connect(server);
-            _stateMachine.Fire(Trigger.SocketConnected);
         }
-
-        private void Connect(IPAddress ip)
-        {
-            this.Connect(ip, DEFAULT_PORT);
-        }
+        private void Connect(IPAddress ip) => this.Connect(ip, DEFAULT_PORT);
 
         private void Connect(IPAddress ip, int port)
         {
@@ -113,20 +111,22 @@ namespace D2NG
         {
             _stream.Write(packet, 0, packet.Length);
             PacketSent?.Invoke(this, new BNCSPacketSentEvent(packet));
-
         }
 
-        public void Terminate()
+        public void Terminate() => _stateMachine.Fire(Trigger.KillSocket);
+
+        private void OnTerminate()
         {
             _tcpClient.Close();
             _stream.Close();
-            _stateMachine.Fire(Trigger.SocketKilled);
         }
-        public void Listen()
+
+        public void Listen() => _stateMachine.Fire(Trigger.ListenToSocket);
+
+        private void OnListen()
         {
-            ThreadPool.QueueUserWorkItem( (obj) =>
+            ThreadPool.QueueUserWorkItem((obj) =>
             {
-                _stateMachine.Fire(Trigger.ListenToSocket);
                 while (_stateMachine.IsInState(State.Connected) && _tcpClient != null && _tcpClient.Connected)
                 {
                     try
@@ -141,7 +141,7 @@ namespace D2NG
                     }
                 }
                 Terminate();
-            } );
+            });
         }
 
         private byte[] GetPacket()
