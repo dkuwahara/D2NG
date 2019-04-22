@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stateless;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,32 +50,39 @@ namespace D2NG
 
         private readonly ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>> _packetSentEventHandlers = new ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>>();
 
-        public void  SubscribeToReceivedPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)
-        {
-            if(_packetReceivedEventHandlers.ContainsKey(type))
-            {
-                _packetReceivedEventHandlers[type] += handler;
-            }
-            else
-            {
-                _packetReceivedEventHandlers.GetOrAdd(type, handler);
-            }
-        }
+        private readonly StateMachine<State, Trigger> _stateMachine = new StateMachine<State, Trigger>(State.NotConnected);
 
-        public void SubscribeToSentPacketEvent(byte type, Action<BNCSPacketSentEvent> handler)
+        enum State
         {
-            if (_packetSentEventHandlers.ContainsKey(type))
-            {
-                _packetSentEventHandlers[type] += handler;
-            }
-            else
-            {
-                _packetSentEventHandlers.GetOrAdd(type, handler);
-            }
+            NotConnected,
+            Connected,
+            Listening
+        }
+        enum Trigger {
+            SocketConnected,
+            ListenToSocket,
+            SocketKilled
         }
 
         public BNCSConnection()
         {
+            _stateMachine.Configure(State.NotConnected)
+                .Permit(Trigger.SocketConnected, State.Connected)
+                .OnEntry(() => Console.WriteLine("[{0}] Entered State: {1}", GetType(), State.NotConnected))
+                .OnExit(() => Console.WriteLine("[{0}] Exited State: {1}", GetType(), State.NotConnected));
+
+            _stateMachine.Configure(State.Connected)
+                .Permit(Trigger.ListenToSocket, State.Listening)
+                .Permit(Trigger.SocketKilled, State.NotConnected)
+                .OnEntry(() => Console.WriteLine("[{0}] Entered State: {1}", GetType(), State.Connected))
+                .OnExit(() => Console.WriteLine("[{0}] Exited State: {1}", GetType(), State.Connected));
+
+            _stateMachine.Configure(State.Listening)
+                .SubstateOf(State.Connected)
+                .Permit(Trigger.SocketKilled, State.NotConnected)
+                .OnEntry(() => Console.WriteLine("[{0}] Entered State: {1}", GetType(), State.Listening))
+                .OnExit(() => Console.WriteLine("[{0}] Exited State: {1}", GetType(), State.Listening));
+
             EventHandler<BNCSPacketReceivedEvent> onReceived = (sender, eventArgs) =>
             {
                 Console.WriteLine("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
@@ -102,6 +110,7 @@ namespace D2NG
 
             Console.WriteLine("[{0}] Found server {1}", GetType(), server);
             this.Connect(server);
+            _stateMachine.Fire(Trigger.SocketConnected);
         }
 
         private void Connect(IPAddress ip)
@@ -144,12 +153,14 @@ namespace D2NG
         {
             _tcpClient.Close();
             _stream.Close();
+            _stateMachine.Fire(Trigger.SocketKilled);
         }
         public void Listen()
-        {    
+        {
             ThreadPool.QueueUserWorkItem( (obj) =>
             {
-                while (_tcpClient != null && _tcpClient.Connected)
+                _stateMachine.Fire(Trigger.ListenToSocket);
+                while (_stateMachine.IsInState(State.Connected) && _tcpClient != null && _tcpClient.Connected)
                 {
                     try
                     {
@@ -187,6 +198,30 @@ namespace D2NG
             {
                 byte temp = (byte)_stream.ReadByte();
                 bncsBuffer.Add(temp);
+            }
+        }
+
+        public void SubscribeToReceivedPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)
+        {
+            if (_packetReceivedEventHandlers.ContainsKey(type))
+            {
+                _packetReceivedEventHandlers[type] += handler;
+            }
+            else
+            {
+                _packetReceivedEventHandlers.GetOrAdd(type, handler);
+            }
+        }
+
+        public void SubscribeToSentPacketEvent(byte type, Action<BNCSPacketSentEvent> handler)
+        {
+            if (_packetSentEventHandlers.ContainsKey(type))
+            {
+                _packetSentEventHandlers[type] += handler;
+            }
+            else
+            {
+                _packetSentEventHandlers.GetOrAdd(type, handler);
             }
         }
     }

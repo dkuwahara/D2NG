@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stateless;
+using System;
 
 namespace D2NG
 {
@@ -6,9 +7,11 @@ namespace D2NG
     {
         private readonly BNCSConnection _connection = new BNCSConnection();
 
+
         public BNCS()
         {
             _connection.SubscribeToReceivedPacketEvent(0x25, (evt) => _connection.Send(evt.Packet));
+
         }
 
         public void ConnectToBattleNet(String realm)
@@ -18,6 +21,7 @@ namespace D2NG
             _connection.Send(BNCSConnection.AuthInfoPacket);
             _connection.Listen();
         }
+
     }
 }
 
