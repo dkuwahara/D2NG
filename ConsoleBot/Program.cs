@@ -14,8 +14,8 @@ namespace ConsoleBot
                 .CreateLogger();
 
             Log.Debug("Starting bot");
-            BNCS client = new BNCS();
-            client.ConnectTo("useast.battle.net");
+            Client client = new Client();
+            client.Bncs.ConnectTo("useast.battle.net");
             Thread.Sleep(5000);
         }
     }
