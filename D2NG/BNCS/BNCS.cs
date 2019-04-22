@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -34,12 +35,12 @@ namespace D2NG
         public BNCS()
         {
             Connection.PacketReceived += (obj, eventArgs) => {
-                Console.WriteLine("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
+                Log.Debug("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
                 PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
 
             Connection.PacketSent += (obj, eventArgs) => {
-                Console.WriteLine("[{0}] Sent Packet 0x{1:X}", GetType(), eventArgs.Type);
+                Log.Debug("[{0}] Sent Packet 0x{1:X}", GetType(), eventArgs.Type);
                 PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
         }

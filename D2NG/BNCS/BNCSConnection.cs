@@ -1,4 +1,5 @@
-﻿using Stateless;
+﻿using Serilog;
+using Stateless;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,20 +44,20 @@ namespace D2NG
         {
             _stateMachine.Configure(State.NotConnected)
                 .Permit(Trigger.SocketConnected, State.Connected)
-                .OnEntry(() => Console.WriteLine("[{0}] Entered State: {1}", GetType(), State.NotConnected))
-                .OnExit(() => Console.WriteLine("[{0}] Exited State: {1}", GetType(), State.NotConnected));
+                .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.NotConnected))
+                .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.NotConnected));
 
             _stateMachine.Configure(State.Connected)
                 .Permit(Trigger.ListenToSocket, State.Listening)
                 .Permit(Trigger.SocketKilled, State.NotConnected)
-                .OnEntry(() => Console.WriteLine("[{0}] Entered State: {1}", GetType(), State.Connected))
-                .OnExit(() => Console.WriteLine("[{0}] Exited State: {1}", GetType(), State.Connected));
+                .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Connected))
+                .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Connected));
 
             _stateMachine.Configure(State.Listening)
                 .SubstateOf(State.Connected)
                 .Permit(Trigger.SocketKilled, State.NotConnected)
-                .OnEntry(() => Console.WriteLine("[{0}] Entered State: {1}", GetType(), State.Listening))
-                .OnExit(() => Console.WriteLine("[{0}] Exited State: {1}", GetType(), State.Listening));
+                .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Listening))
+                .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Listening));
         }
 
         public bool IsListening() => _stateMachine.IsInState(State.Listening);
@@ -70,10 +71,10 @@ namespace D2NG
                 throw new AlreadyConnectedException("BNCS Already Connected");
             }
 
-            Console.WriteLine("[{0}] Resolving {1}", GetType(), realm);
+            Log.Debug("[{0}] Resolving {1}", GetType(), realm);
             var server = Dns.GetHostAddresses(realm).First();
 
-            Console.WriteLine("[{0}] Found server {1}", GetType(), server);
+            Log.Debug("[{0}] Found server {1}", GetType(), server);
             this.Connect(server);
             _stateMachine.Fire(Trigger.SocketConnected);
         }
@@ -85,18 +86,18 @@ namespace D2NG
 
         private void Connect(IPAddress ip, int port)
         {
-            Console.WriteLine("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
+            Log.Debug("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
             _tcpClient = new TcpClient();
             _tcpClient.Connect(ip, port);
             _stream = _tcpClient.GetStream();
             if(!_stream.CanWrite)
             {
-                Console.WriteLine("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
+                Log.Debug("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
                 _tcpClient.Close();
                 _stream.Close();
                 throw new BNCSConnectException();
             }
-            Console.WriteLine("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
+            Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
 
         public void Send(byte packet)
@@ -135,7 +136,7 @@ namespace D2NG
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("[{0}] Failed to get Packet {1}", GetType(), e.StackTrace);
+                        Log.Error(e, "[{0}] Failed to get Packet", GetType());
                         break;
                     }
                 }
