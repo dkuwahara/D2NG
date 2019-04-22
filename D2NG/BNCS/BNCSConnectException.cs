@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace D2NG
 {
     [Serializable]
-    internal class BNCSConnectException : Exception
+    public class BNCSConnectException : Exception
     {
         public BNCSConnectException()
         {
