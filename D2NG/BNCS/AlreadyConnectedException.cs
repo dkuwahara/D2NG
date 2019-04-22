@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace D2NG
 {
     [Serializable]
-    internal class AlreadyConnectedException : Exception
+    public class AlreadyConnectedException : Exception
     {
         public AlreadyConnectedException()
         {

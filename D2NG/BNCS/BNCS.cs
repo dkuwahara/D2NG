@@ -14,7 +14,7 @@ namespace D2NG
         /**
          * Packet sent to authenticate version.
          */
-        public static readonly byte[] AUTH_INFO_PACKET =
+        private static readonly byte[] AUTH_INFO_PACKET =
         {
             0xff, 0x50, 0x3a, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x36, 0x38, 0x58, 0x49, 0x50, 0x58, 0x32, 0x44,

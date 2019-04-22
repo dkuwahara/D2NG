@@ -131,8 +131,6 @@ namespace D2NG
                     try
                     {
                         var packet = GetPacket();
-                        var packetType = packet[1];
-
                         PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(packet));
                     }
                     catch (Exception e)
