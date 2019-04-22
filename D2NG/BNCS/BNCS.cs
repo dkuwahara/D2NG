@@ -6,61 +6,74 @@ namespace D2NG
 {
     public class BNCS
     {
-        private readonly BNCSConnection _connection = new BNCSConnection();
+        /**
+         * Current version byte, update this on new patches
+         */
+        public static readonly byte VERSION = 0x0d;
 
-        protected readonly ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>> _packetReceivedEventHandlers = new ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>>();
+        /**
+         * Packet sent to authenticate version.
+         */
+        public static readonly byte[] AUTH_INFO_PACKET =
+        {
+            0xff, 0x50, 0x3a, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x36, 0x38, 0x58, 0x49, 0x50, 0x58, 0x32, 0x44,
+            VERSION, 0x00, 0x00, 0x00, 0x53, 0x55, 0x6e, 0x65,
+            0x55, 0xb4, 0x47, 0x40, 0x88, 0xff, 0xff, 0xff,
+            0x09, 0x04, 0x00, 0x00, 0x09, 0x04, 0x00, 0x00,
+            0x55, 0x53, 0x41, 0x00, 0x55, 0x6e, 0x69, 0x74,
+            0x65, 0x64, 0x20, 0x53, 0x74, 0x61, 0x74, 0x65,
+            0x73, 0x00
+        };
+        internal BNCSConnection Connection { get; } = new BNCSConnection();
 
-        protected readonly ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>> _packetSentEventHandlers = new ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>>();
+        protected ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>>();
+
+        protected ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>>();
 
         public BNCS()
         {
-            //this.SubscribeToReceivedPacketEvent(0x25, (evt) => _connection.Send(evt.Packet));
-
-            EventHandler<BNCSPacketReceivedEvent> onReceived = (sender, eventArgs) =>
-            {
+            Connection.PacketReceived += (obj, eventArgs) => {
                 Console.WriteLine("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
-                this._packetReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
+                PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
-            _connection.PacketReceived += onReceived;
 
-            EventHandler<BNCSPacketSentEvent> onSent = (sender, eventArgs) =>
-            {
+            Connection.PacketSent += (obj, eventArgs) => {
                 Console.WriteLine("[{0}] Sent Packet 0x{1:X}", GetType(), eventArgs.Type);
-                _packetSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
+                PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
-            _connection.PacketSent += onSent;
         }
 
-        public void SubscribeToReceivedPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)
+        public void OnReceivedPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)
         {
-            if (_packetReceivedEventHandlers.ContainsKey(type))
+            if (PacketReceivedEventHandlers.ContainsKey(type))
             {
-                _packetReceivedEventHandlers[type] += handler;
+                PacketReceivedEventHandlers[type] += handler;
             }
             else
             {
-                _packetReceivedEventHandlers.GetOrAdd(type, handler);
+                PacketReceivedEventHandlers.GetOrAdd(type, handler);
             }
         }
 
-        public void SubscribeToSentPacketEvent(byte type, Action<BNCSPacketSentEvent> handler)
+        public void OnSentPacketEvent(byte type, Action<BNCSPacketSentEvent> handler)
         {
-            if (_packetSentEventHandlers.ContainsKey(type))
+            if (PacketSentEventHandlers.ContainsKey(type))
             {
-                _packetSentEventHandlers[type] += handler;
+                PacketSentEventHandlers[type] += handler;
             }
             else
             {
-                _packetSentEventHandlers.GetOrAdd(type, handler);
+                PacketSentEventHandlers.GetOrAdd(type, handler);
             }
         }
 
-        public void ConnectToBattleNet(String realm)
+        public void ConnectTo(String realm)
         {
-            _connection.Connect(realm);
-            _connection.Send(0x01);
-            _connection.Send(BNCSConnection.AuthInfoPacket);
-            _connection.Listen();
+            Connection.Connect(realm);
+            Connection.Send(0x01);
+            Connection.Send(AUTH_INFO_PACKET);
+            Connection.Listen();
         }
 
     }
