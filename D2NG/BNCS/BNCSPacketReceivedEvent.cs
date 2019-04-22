@@ -2,7 +2,7 @@
 
 namespace D2NG
 {
-    class BNCSPacketReceivedEvent : BNCSEvent
+    public class BNCSPacketReceivedEvent : BNCSEvent
     {
         public byte Type { get; set; }
         public byte[] Packet { get; set; }

@@ -1,6 +1,5 @@
 ﻿using Stateless;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -42,13 +41,9 @@ namespace D2NG
 
         private NetworkStream _stream;
 
-        private event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
+        public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
 
-        private event EventHandler<BNCSPacketSentEvent> PacketSent;
-
-        private readonly ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>> _packetReceivedEventHandlers = new ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>>();
-
-        private readonly ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>> _packetSentEventHandlers = new ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>>();
+        public event EventHandler<BNCSPacketSentEvent> PacketSent;
 
         private readonly StateMachine<State, Trigger> _stateMachine = new StateMachine<State, Trigger>(State.NotConnected);
 
@@ -82,20 +77,6 @@ namespace D2NG
                 .Permit(Trigger.SocketKilled, State.NotConnected)
                 .OnEntry(() => Console.WriteLine("[{0}] Entered State: {1}", GetType(), State.Listening))
                 .OnExit(() => Console.WriteLine("[{0}] Exited State: {1}", GetType(), State.Listening));
-
-            EventHandler<BNCSPacketReceivedEvent> onReceived = (sender, eventArgs) =>
-            {
-                Console.WriteLine("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
-                _packetReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
-            };
-            PacketReceived += onReceived;
-
-            EventHandler<BNCSPacketSentEvent> onSent = (sender, eventArgs) =>
-            {
-                Console.WriteLine("[{0}] Sent Packet 0x{1:X}", GetType(), eventArgs.Type);
-                _packetSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
-            };
-            PacketSent += onSent;
         }
 
         public void Connect(String realm)
@@ -117,6 +98,7 @@ namespace D2NG
         {
             this.Connect(ip, DEFAULT_PORT);
         }
+
         private void Connect(IPAddress ip, int port)
         {
             Console.WriteLine("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
@@ -198,30 +180,6 @@ namespace D2NG
             {
                 byte temp = (byte)_stream.ReadByte();
                 bncsBuffer.Add(temp);
-            }
-        }
-
-        public void SubscribeToReceivedPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)
-        {
-            if (_packetReceivedEventHandlers.ContainsKey(type))
-            {
-                _packetReceivedEventHandlers[type] += handler;
-            }
-            else
-            {
-                _packetReceivedEventHandlers.GetOrAdd(type, handler);
-            }
-        }
-
-        public void SubscribeToSentPacketEvent(byte type, Action<BNCSPacketSentEvent> handler)
-        {
-            if (_packetSentEventHandlers.ContainsKey(type))
-            {
-                _packetSentEventHandlers[type] += handler;
-            }
-            else
-            {
-                _packetSentEventHandlers.GetOrAdd(type, handler);
             }
         }
     }

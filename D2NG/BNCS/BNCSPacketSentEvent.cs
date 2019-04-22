@@ -2,7 +2,7 @@
 
 namespace D2NG
 {
-    internal class BNCSPacketSentEvent : BNCSEvent
+    public class BNCSPacketSentEvent : BNCSEvent
     {
         private byte[] Packet { get; set; }
 
