@@ -10,6 +10,11 @@ namespace D2NG
     {
         private readonly BNCS _BNCS = new BNCS();
 
+        public Client()
+        {
+            _BNCS.SubscribeToReceivedPacketEvent(0x25, (evt) => _BNCS.Send(evt.Packet));
+        }
+
         public void ConnectToBattleNet(String realm)
         {
             _BNCS.Connect(realm);
