@@ -1,5 +1,6 @@
 ﻿using D2NG;
 using System;
+using System.Threading;
 
 namespace ConsoleBot
 {
@@ -11,6 +12,7 @@ namespace ConsoleBot
             Client client = new Client();
             Console.WriteLine("Connecting to Battle.Net");
             client.ConnectToBattleNet("useast.battle.net");
+            Thread.Sleep(5000);
         }
     }
 }
