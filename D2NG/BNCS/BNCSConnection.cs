@@ -106,6 +106,8 @@ namespace D2NG
                 Log.Debug("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
                 _tcpClient.Close();
                 _stream.Close();
+                _tcpClient = null;
+                _stream = null;
                 throw new BNCSConnectException();
             }
             Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
