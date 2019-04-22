@@ -61,7 +61,7 @@ namespace D2NG
             }
         }
 
-        public void SubscribeToSentPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)
+        public void SubscribeToSentPacketEvent(byte type, Action<BNCSPacketSentEvent> handler)
         {
             if (_packetSentEventHandlers.ContainsKey(type))
             {
