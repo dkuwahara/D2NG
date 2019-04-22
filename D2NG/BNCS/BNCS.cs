@@ -84,7 +84,7 @@ namespace D2NG
 
             EventHandler<BNCSPacketSentEvent> onSent = (sender, eventArgs) =>
             {
-                Console.WriteLine("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
+                Console.WriteLine("[{0}] Sent Packet 0x{1:X}", GetType(), eventArgs.Type);
                 _packetSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
             PacketSent += onSent;
