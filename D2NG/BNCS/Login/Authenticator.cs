@@ -73,8 +73,8 @@ namespace D2NG.BNCS.Login
                 lodHash = new List<byte>(),
                 classicPublic = new List<byte>(),
                 lodPublic = new List<byte>();
-            _classicKey.GetD2KeyHash(ref clientToken, serverToken, ref classicHash, ref classicPublic);
-            _expansionKey.GetD2KeyHash(ref clientToken, serverToken, ref lodHash, ref lodPublic);
+            ClassicKey.GetD2KeyHash(ref clientToken, serverToken, ref classicHash, ref classicPublic);
+            ExpansionKey.GetD2KeyHash(ref clientToken, serverToken, ref lodHash, ref lodPublic);
 
             _bncs.SendPacket(0x51, BitConverter.GetBytes(clientToken), BitConverter.GetBytes(0x01000001),
                 BitConverter.GetBytes(exeChecksum), BitConverter.GetBytes(0x00000002), NULL_INT_AS_BYTE_ARRAY,
