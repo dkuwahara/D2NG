@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using D2NG.BNCS;
 
 namespace D2NG
 {
-    public class BNCS
+    public class BattleNetChatServer
     {
         /**
          * Current version byte, update this on new patches
@@ -26,13 +29,14 @@ namespace D2NG
             0x65, 0x64, 0x20, 0x53, 0x74, 0x61, 0x74, 0x65,
             0x73, 0x00
         };
-        internal BNCSConnection Connection { get; } = new BNCSConnection();
+
+        private BNCSConnection Connection { get; } = new BNCSConnection();
 
         protected ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>>();
 
         protected ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>>();
 
-        public BNCS()
+        public BattleNetChatServer()
         {
             Connection.PacketReceived += (obj, eventArgs) => {
                 Log.Debug("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
@@ -43,6 +47,31 @@ namespace D2NG
                 Log.Debug("[{0}] Sent Packet 0x{1:X}", GetType(), eventArgs.Type);
                 PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
+
+            OnReceivedPacketEvent(0x25, obj => Connection.Send(obj.Packet));
+        }
+ 
+        public void SendPacket(byte command, params IEnumerable<byte>[] args)
+        {
+            byte[] packet = BuildPacket(command, args);
+            Connection.Send(packet);
+        }
+
+        private byte[] BuildPacket(byte command, IEnumerable<byte>[] args)
+        {
+            var packet = new List<byte> { 0xFF, command };
+            var packetArray = new List<byte>();
+
+            foreach (var a in args)
+            {
+                packetArray.AddRange(a);
+            }
+
+            UInt16 packetSize = (UInt16)(packetArray.Count + 4);
+            packet.AddRange(BitConverter.GetBytes(packetSize));
+            packet.AddRange(packetArray);
+
+            return packet.ToArray();
         }
 
         public void OnReceivedPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)

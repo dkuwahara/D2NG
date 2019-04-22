@@ -16,7 +16,6 @@ namespace D2NG
         /**
          * Default port used to connected to BNCS
          */
-
         public static readonly int DEFAULT_PORT = 6112;
 
         private TcpClient _tcpClient;
@@ -24,6 +23,7 @@ namespace D2NG
         private NetworkStream _stream;
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
+
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<byte[]> _writeTrigger;
 
         public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
