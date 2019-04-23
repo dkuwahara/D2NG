@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,8 +8,8 @@ namespace D2NG.BNCS.Login
 {
     class Authenticator
     {
-        private const String EXE_INFO = "Game.exe 03/09/10 04:10:51 61440";
-
+        private const String EXE_INFO = "Game.exe 05/31/16 19:02:24 3618792";
+        private const string DATA_DIRECTORY = "data";
         static public readonly byte[] NULL_INT_AS_BYTE_ARRAY = { 0x00, 0x00, 0x00, 0x00 };
         static public readonly byte[] TEN = { 0x10, 0x00, 0x00, 0x00 };
         static public readonly byte[] SIX = { 0x06, 0x00, 0x00, 0x00 };
@@ -43,11 +44,12 @@ namespace D2NG.BNCS.Login
             return output;
         }
 
+        private const String PLATFORM = "68XI", CLASSIC_ID = "VD2D", LOD_ID = "PX2D";
+
         public void AuthInfoRequest(BNCSPacketReceivedEvent obj)
         {
-            var packet = obj.Packet;
             var data = new List<byte>();
-            data.AddRange(packet);
+            data.AddRange(obj.Packet);
 
             var serverToken = BitConverter.ToUInt32(data.ToArray(), 8);
             var temp = data.GetRange(16, 8);
@@ -58,14 +60,18 @@ namespace D2NG.BNCS.Login
             var mpqFileName = ReadNullTerminatedString(Encoding.ASCII.GetString(data.ToArray()), ref offset);
             var formulaString = ReadNullTerminatedString(Encoding.ASCII.GetString(data.ToArray()), ref offset);
 
+            Log.Debug("Server Token: {0} Temp: {1}, MPQ File Time: {2}, Offset: {3}, MPQ File Name: {4}, Formula String: {5}", serverToken, temp, mpq_file_time, offset, mpqFileName, formulaString);
+
             /*
              * Download MPQ would go here.
              */
 
-            var exeChecksum = AdvancedCheckRevision.FastComputeHash(formulaString, mpqFileName,
-                Path.Combine("data", "Game.exe"),
-                Path.Combine("data", "Bnclient.dll"),
-                Path.Combine("data", "D2Client.dll"));
+            var exeChecksum = AdvancedCheckRevision.FastComputeHash(
+                formulaString,
+                mpqFileName,
+                Path.Combine(DATA_DIRECTORY, "Game.exe"),
+                Path.Combine(DATA_DIRECTORY, "Bnclient.dll"),
+                Path.Combine(DATA_DIRECTORY, "D2Client.dll"));
 
             var clientToken = (uint)Environment.TickCount;
 

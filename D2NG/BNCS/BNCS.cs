@@ -13,7 +13,7 @@ namespace D2NG
         /**
          * Current version byte, update this on new patches
          */
-        public static readonly byte VERSION = 0x0d;
+        public static readonly byte VERSION = 0x0e;
 
         /**
          * Packet sent to authenticate version.

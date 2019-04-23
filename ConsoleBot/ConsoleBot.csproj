@@ -14,5 +14,12 @@
     <EmbeddedResource Include="data\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>  
+
+  <ItemGroup>
+    <EmbeddedResource Include="config.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
+
 </Project>
