@@ -48,13 +48,13 @@ namespace D2NG
                 PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
 
-            OnReceivedPacketEvent(0x25, obj => Connection.Send(obj.Packet));
+            OnReceivedPacketEvent(0x25, obj => Connection.WritePacket(obj.Packet));
         }
  
         public void SendPacket(byte command, params IEnumerable<byte>[] args)
         {
             byte[] packet = BuildPacket(command, args);
-            Connection.Send(packet);
+            Connection.WritePacket(packet);
         }
 
         private byte[] BuildPacket(byte command, IEnumerable<byte>[] args)
@@ -101,9 +101,7 @@ namespace D2NG
         public void ConnectTo(String realm)
         {
             Connection.Connect(realm);
-            Connection.Send(0x01);
-            Connection.Send(AUTH_INFO_PACKET);
-            Connection.Listen();
+            Connection.WritePacket(AUTH_INFO_PACKET);
         }
 
     }
