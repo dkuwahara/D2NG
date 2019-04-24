@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using D2NG.BNCS;
+using System.Collections.Generic;
 
 namespace D2NG
 {
     public class BNCSPacketReceivedEvent : BNCSEvent
     {
-        public byte Type { get; set; }
-        public byte[] Packet { get; set; }
+        public BncsReceivedPacket Packet { get; }
 
-        public BNCSPacketReceivedEvent(byte[] packet)
+        public BNCSPacketReceivedEvent(BncsReceivedPacket packet)
         {
             this.Packet = packet;
-            this.Type = packet[1];
         }
+        
     }
 }

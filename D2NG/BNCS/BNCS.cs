@@ -41,8 +41,8 @@ namespace D2NG
         public BattleNetChatServer()
         {
             Connection.PacketReceived += (obj, eventArgs) => {
-                Log.Debug("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Type);
-                PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
+                Log.Debug("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Packet.Type);
+                PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Packet.Type, null)?.Invoke(eventArgs);
             };
 
             Connection.PacketSent += (obj, eventArgs) => {
@@ -50,7 +50,7 @@ namespace D2NG
                 PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
 
-            OnReceivedPacketEvent(0x25, obj => Connection.WritePacket(obj.Packet));
+            OnReceivedPacketEvent(0x25, obj => Connection.WritePacket(obj.Packet.Raw));
         }
  
         public void SendPacket(byte command, params IEnumerable<byte>[] args)
@@ -59,7 +59,7 @@ namespace D2NG
             Connection.WritePacket(packet);
         }
 
-        public byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
+        public static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {
             var packet = new List<byte> { 0xFF, command };
             var packetArray = new List<byte>();
@@ -103,9 +103,16 @@ namespace D2NG
         public void ConnectTo(String realm)
         {
             Connection.Connect(realm);
-            Connection.WritePacket(BuildAuthInfoPacket());
+            SendAuthInfoPacket();
+
+            var packet = Connection.ReadPacket();
+            Log.Debug("{0:X}", packet.Type);
         }
 
+        public void SendAuthInfoPacket()
+        {
+            Connection.WritePacket(BuildAuthInfoPacket());
+        }
         public byte[] BuildAuthInfoPacket()
         {
             return BuildPacket(

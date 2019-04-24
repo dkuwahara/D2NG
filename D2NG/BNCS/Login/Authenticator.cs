@@ -49,7 +49,7 @@ namespace D2NG.BNCS.Login
         public void AuthInfoRequest(BNCSPacketReceivedEvent obj)
         {
             var data = new List<byte>();
-            data.AddRange(obj.Packet);
+            data.AddRange(obj.Packet.Raw);
 
             var serverToken = BitConverter.ToUInt32(data.ToArray(), 8);
             var temp = data.GetRange(16, 8);

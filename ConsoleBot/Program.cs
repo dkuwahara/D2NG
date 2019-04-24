@@ -16,8 +16,6 @@ namespace ConsoleBot
             Log.Debug("Starting bot");
             Client client = new Client();
 
-            Log.Debug("{0}", BitConverter.ToString(client.Bncs.BuildAuthInfoPacket()));
-            return;
             client.Bncs.ConnectTo("useast.battle.net");
             Log.Debug("Waiting for input");
             Console.ReadKey(true);
