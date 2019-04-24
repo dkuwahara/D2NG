@@ -26,7 +26,7 @@ namespace D2NG
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<byte[]> _writeTrigger;
-        private readonly StateMachine<State, Trigger>.TriggerWithParameters<BncsReceivedPacket> _readTrigger;
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<BncsPacket> _readTrigger;
 
         public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
 
@@ -50,7 +50,7 @@ namespace D2NG
         {
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.ConnectSocket);
             _writeTrigger = _machine.SetTriggerParameters<byte[]>(Trigger.Write);
-            _readTrigger = _machine.SetTriggerParameters<BncsReceivedPacket>(Trigger.Read);
+            _readTrigger = _machine.SetTriggerParameters<BncsPacket>(Trigger.Read);
 
             _machine.Configure(State.NotConnected)
                 .OnEntryFrom(Trigger.KillSocket, t => OnTerminate())
@@ -76,6 +76,7 @@ namespace D2NG
         public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
         public void WritePacket(List<byte> packet) => WritePacket(packet.ToArray());
         public void WritePacket(byte[] packet) => _machine.Fire(_writeTrigger, packet);
+        public void WritePacket(BncsPacket packet) => WritePacket(packet.Raw);
         public void Terminate() => _machine.Fire(Trigger.KillSocket);
         private void OnConnect(String realm)
         {
@@ -117,12 +118,12 @@ namespace D2NG
             _stream.Close();
         }
 
-        private void OnGetPacket(BncsReceivedPacket packet)
+        private void OnGetPacket(BncsPacket packet)
         {
             PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(packet));
         }
 
-        public BncsReceivedPacket ReadPacket()
+        public BncsPacket ReadPacket()
         {
             List<byte> buffer = new List<byte>();
 
@@ -133,7 +134,7 @@ namespace D2NG
             // Read the rest of the packet and return it
             ReadUpTo(ref buffer, packetLength);
 
-            var packet = new BncsReceivedPacket(buffer.ToArray());
+            var packet = new BncsPacket(buffer.ToArray());
             _machine.Fire(_readTrigger, packet);
             return packet;
         }

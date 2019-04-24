@@ -5,9 +5,9 @@ namespace D2NG
 {
     public class BNCSPacketReceivedEvent : BNCSEvent
     {
-        public BncsReceivedPacket Packet { get; }
+        public BncsPacket Packet { get; }
 
-        public BNCSPacketReceivedEvent(BncsReceivedPacket packet)
+        public BNCSPacketReceivedEvent(BncsPacket packet)
         {
             this.Packet = packet;
         }

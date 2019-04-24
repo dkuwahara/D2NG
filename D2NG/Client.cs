@@ -14,8 +14,6 @@ namespace D2NG
         public Client()
         {
             Authenticator = new Authenticator(Bncs);
-
-            Bncs.OnReceivedPacketEvent(0x50, Authenticator.AuthInfoRequest);
         }
 
         public void UsingKeys(String classicKey, String expansionKey)
