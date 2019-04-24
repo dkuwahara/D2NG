@@ -2,33 +2,35 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Text;
-using D2NG.BNCS;
 
 namespace D2NG
 {
     public class BattleNetChatServer
     {
-        /**
-         * Current version byte, update this on new patches
-         */
-        public static readonly byte VERSION = 0x0e;
 
-        /**
-         * Packet sent to authenticate version.
-         */
-        private static readonly byte[] AUTH_INFO_PACKET =
-        {
-            0xff, 0x50, 0x3a, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x36, 0x38, 0x58, 0x49, 0x50, 0x58, 0x32, 0x44,
-            VERSION, 0x00, 0x00, 0x00, 0x53, 0x55, 0x6e, 0x65,
-            0x55, 0xb4, 0x47, 0x40, 0x88, 0xff, 0xff, 0xff,
-            0x09, 0x04, 0x00, 0x00, 0x09, 0x04, 0x00, 0x00,
-            0x55, 0x53, 0x41, 0x00, 0x55, 0x6e, 0x69, 0x74,
-            0x65, 0x64, 0x20, 0x53, 0x74, 0x61, 0x74, 0x65,
-            0x73, 0x00
-        };
+        private static readonly byte[] PROTOCOL_ID = BitConverter.GetBytes(0x00);
+
+        private static readonly byte[] PLATFORM_CODE = Encoding.ASCII.GetBytes("IX86");
+
+        private static readonly byte[] PRODUCT_CODE = Encoding.ASCII.GetBytes("D2XP");
+
+        private static readonly byte[] PRODUCT_VERSION = BitConverter.GetBytes(0x0e);
+
+        private static readonly byte[] LANGUAGE_CODE = Encoding.ASCII.GetBytes("enUS");
+
+        private static readonly byte[] LOCAL_IP = BitConverter.GetBytes(0x00);
+
+        private static readonly byte[] TIME_ZONE_BIAS = BitConverter.GetBytes((int)(DateTime.UtcNow.Subtract(DateTime.Now).TotalSeconds / 60));
+
+        private static readonly byte[] MPQ_LOCALE_ID  = BitConverter.GetBytes(0x00);
+
+        private static readonly byte[] USER_LANG_ID = BitConverter.GetBytes(0x00);
+
+        private static readonly byte[] COUNTRY_ABBR = Encoding.ASCII.GetBytes("USA\0");
+
+        private static readonly byte[] COUNTRY = Encoding.ASCII.GetBytes("United States\0");
 
         private BNCSConnection Connection { get; } = new BNCSConnection();
 
@@ -57,7 +59,7 @@ namespace D2NG
             Connection.WritePacket(packet);
         }
 
-        private byte[] BuildPacket(byte command, IEnumerable<byte>[] args)
+        public byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {
             var packet = new List<byte> { 0xFF, command };
             var packetArray = new List<byte>();
@@ -101,9 +103,25 @@ namespace D2NG
         public void ConnectTo(String realm)
         {
             Connection.Connect(realm);
-            Connection.WritePacket(AUTH_INFO_PACKET);
+            Connection.WritePacket(BuildAuthInfoPacket());
         }
 
+        public byte[] BuildAuthInfoPacket()
+        {
+            return BuildPacket(
+                0x50,
+                PROTOCOL_ID,
+                PLATFORM_CODE.Reverse().ToArray(),
+                PRODUCT_CODE.Reverse().ToArray(),
+                PRODUCT_VERSION,
+                LANGUAGE_CODE.Reverse().ToArray(),
+                LOCAL_IP,
+                TIME_ZONE_BIAS,
+                MPQ_LOCALE_ID,
+                USER_LANG_ID,
+                COUNTRY_ABBR,
+                COUNTRY);
+        }
     }
 }
 
