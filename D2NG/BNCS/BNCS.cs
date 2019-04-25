@@ -6,15 +6,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using D2NG.BNCS.Login;
 
 namespace D2NG
 {
     public class BattleNetChatServer
     {
-
-
-
-        private BNCSConnection Connection { get; } = new BNCSConnection();
+        private BncsConnection Connection { get; } = new BncsConnection();
 
         protected ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>>();
 
@@ -89,14 +87,17 @@ namespace D2NG
 
         public void OnVerifyClient()
         {
-            Connection.WritePacket(new BncsAuthInfoPacket());
+            Connection.WritePacket(new BncsAuthInfoRequestPacket());
             var packet = Connection.ReadPacket();
-            Log.Debug("{0:X}", packet.Type);
+            Log.Debug("{0:X}", packet[1]);
         }
 
         public void OnAuthorizeKeys()
         {
-            var packet = Connection.ReadPacket();
+            var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
+            Log.Debug("{0}", packet);
+            var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
+
         }
 
         public void SendPacket(byte command, params IEnumerable<byte>[] args)

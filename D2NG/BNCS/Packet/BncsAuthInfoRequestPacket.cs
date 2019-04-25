@@ -6,7 +6,7 @@ using System.Text;
 namespace D2NG.BNCS.Packet
 {
 
-    public class BncsAuthInfoPacket : BncsPacket
+    public class BncsAuthInfoRequestPacket : BncsPacket
     {
         private static readonly byte[] PROTOCOL_ID = BitConverter.GetBytes(0x00);
 
@@ -28,7 +28,7 @@ namespace D2NG.BNCS.Packet
 
         private const String COUNTRY = "United States\0";
 
-        public BncsAuthInfoPacket(String platformCode = PLATFORM_CODE,
+        public BncsAuthInfoRequestPacket(String platformCode = PLATFORM_CODE,
                                   String productCode = PRODUCT_CODE,
                                   int productVersion = 0x0e,
                                   String languageCode = LANGUAGE_CODE,

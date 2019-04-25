@@ -1,7 +1,5 @@
-﻿using D2NG.BNCS;
-using System.Collections.Generic;
-
-namespace D2NG
+﻿
+namespace D2NG.BNCS.Packet
 {
     public class BNCSPacketReceivedEvent : BNCSEvent
     {

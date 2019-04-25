@@ -5,14 +5,11 @@ namespace D2NG.BNCS.Login
 {
     public class CdKey
     {
-        string _cdKey;
+        public byte[] Public { get; private set; }
 
-        public CdKey(string cdKey)
-        {
-            _cdKey = cdKey;
-        }
+        private readonly String _cdKey;
 
-        static private readonly byte[] alphaMap =
+        private static readonly byte[] AlphaMap =
         {
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -48,37 +45,20 @@ namespace D2NG.BNCS.Login
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
         };
 
-        protected char ConvertToHexDigit(ulong byt)
-        {
-            byt &= 0xF;
-            if (byt < 10)
-                return (char)(byt + 0x30);
-            else
-                return (char)(byt + 0x37);
-        }
-
-        protected ulong ConvertFromHexDigit(char input)
-        {
-            if (input >= '0' && input <= '9')
-                return (ulong)(input - 0x30);
-            else
-                return (ulong)(input - 0x37);
-        }
-
-        public bool GetD2KeyHash(ref uint client_token, uint server_token, ref List<byte> output, ref List<byte> public_value)
+        public CdKey(string cdKey)
         {
             ulong checksum = 0;
             ulong n, n2, v, v2;
             char c1, c2, c;
 
-            string manipulatedKey = _cdKey;
+            string manipulatedKey = cdKey;
 
-            for (int i = 0; i < _cdKey.Length; i += 2)
+            for (int i = 0; i < cdKey.Length; i += 2)
             {
                 char[] tmpBuffer = manipulatedKey.ToCharArray();
-                c1 = (char)alphaMap[_cdKey[i]];
+                c1 = (char)AlphaMap[cdKey[i]];
                 n = (ulong)c1 * 3;
-                c2 = (char)alphaMap[_cdKey[i + 1]];
+                c2 = (char)AlphaMap[cdKey[i + 1]];
                 n = (ulong)c2 + 8 * n;
 
                 if (n >= 0x100)
@@ -107,7 +87,7 @@ namespace D2NG.BNCS.Login
 
             v &= 0xFF;
             if (v != checksum)
-                return false;
+                throw new Exception("Bad Checksum");
 
             for (int i = 15; i >= 0; i--)
             {
@@ -154,24 +134,40 @@ namespace D2NG.BNCS.Login
                 manipulatedKey = new string(tmpBuffer);
             }
 
+            _cdKey = manipulatedKey;
+
             string hexString = manipulatedKey.Substring(2, 6);
             UInt32 num = UInt32.Parse(hexString, System.Globalization.NumberStyles.HexNumber);
+            Public = BitConverter.GetBytes(num);
+        }
 
-            public_value = new List<byte>(BitConverter.GetBytes(num));
+        protected char ConvertToHexDigit(ulong byt)
+        {
+            byt &= 0xF;
+            if (byt < 10)
+                return (char)(byt + 0x30);
+            else
+                return (char)(byt + 0x37);
+        }
 
-            List<byte> hashData = new List<byte>(BitConverter.GetBytes(client_token));
-            hashData.AddRange(BitConverter.GetBytes(server_token));
+        protected ulong ConvertFromHexDigit(char input)
+        {
+            if (input >= '0' && input <= '9')
+                return (ulong)(input - 0x30);
+            else
+                return (ulong)(input - 0x37);
+        }
 
-
-            hashData.AddRange(BitConverter.GetBytes(UInt32.Parse(manipulatedKey.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)));
-
-            hashData.AddRange(BitConverter.GetBytes(num));
+        public List<byte> Hash(uint clientToken, uint serverToken)
+        { 
+            var hashData = new List<byte>(BitConverter.GetBytes(clientToken));
+            hashData.AddRange(BitConverter.GetBytes(serverToken));
+            hashData.AddRange(BitConverter.GetBytes(UInt32.Parse(_cdKey.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)));
+            hashData.AddRange(Public);
             hashData.AddRange(BitConverter.GetBytes((int)0));
-            hashData.AddRange(BitConverter.GetBytes(UInt32.Parse(manipulatedKey.Substring(8, 8), System.Globalization.NumberStyles.HexNumber)));
+            hashData.AddRange(BitConverter.GetBytes(UInt32.Parse(_cdKey.Substring(8, 8), System.Globalization.NumberStyles.HexNumber)));
 
-            output = Bsha1.GetHash(hashData);
-
-            return true;
+            return Bsha1.GetHash(hashData);
         }
     }
 }

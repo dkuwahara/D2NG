@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using D2NG.BNCS.Packet;
 
 namespace D2NG.BNCS.Login
 {
@@ -66,12 +67,7 @@ namespace D2NG.BNCS.Login
              * Download MPQ would go here.
              */
 
-            var exeChecksum = AdvancedCheckRevision.FastComputeHash(
-                formulaString,
-                mpqFileName,
-                Path.Combine(DATA_DIRECTORY, "Game.exe"),
-                Path.Combine(DATA_DIRECTORY, "Bnclient.dll"),
-                Path.Combine(DATA_DIRECTORY, "D2Client.dll"));
+            var result = CheckRevisionV4.CheckRevision(formulaString);
 
             var clientToken = (uint)Environment.TickCount;
 
@@ -79,15 +75,15 @@ namespace D2NG.BNCS.Login
                 lodHash = new List<byte>(),
                 classicPublic = new List<byte>(),
                 lodPublic = new List<byte>();
-            ClassicKey.GetD2KeyHash(ref clientToken, serverToken, ref classicHash, ref classicPublic);
-            ExpansionKey.GetD2KeyHash(ref clientToken, serverToken, ref lodHash, ref lodPublic);
+            //ClassicKey.GetD2KeyHash(ref clientToken, serverToken, ref classicHash, ref classicPublic);
+            //ExpansionKey.GetD2KeyHash(ref clientToken, serverToken, ref lodHash, ref lodPublic);
 
-            _bncs.SendPacket(0x51, BitConverter.GetBytes(clientToken), BitConverter.GetBytes(0x01000001),
-                BitConverter.GetBytes(exeChecksum), BitConverter.GetBytes(0x00000002), NULL_INT_AS_BYTE_ARRAY,
+            _bncs.SendPacket(0x51, BitConverter.GetBytes(clientToken), BitConverter.GetBytes(result.Version),
+                result.Checksum, BitConverter.GetBytes(0x00000002), NULL_INT_AS_BYTE_ARRAY,
                 TEN, SIX, classicPublic, NULL_INT_AS_BYTE_ARRAY, classicHash, TEN,
                 BitConverter.GetBytes((UInt32)10), lodPublic, NULL_INT_AS_BYTE_ARRAY, lodHash,
-                Encoding.UTF8.GetBytes(EXE_INFO),
-                ZERO_BYTE, Encoding.ASCII.GetBytes("D2NG"), ZERO_BYTE);
+                result.Info,
+                Encoding.ASCII.GetBytes("D2NG"), ZERO_BYTE);
         }
     }
 }

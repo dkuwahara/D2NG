@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace D2NG.BNCS
+namespace D2NG.BNCS.Packet
 {
     public class BncsPacket
     {

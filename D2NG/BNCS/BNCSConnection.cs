@@ -1,4 +1,5 @@
 ﻿using D2NG.BNCS;
+using D2NG.BNCS.Packet;
 using Serilog;
 using Stateless;
 using Stateless.Graph;
@@ -11,7 +12,7 @@ using System.Threading;
 
 namespace D2NG
 {
-    class BNCSConnection
+    class BncsConnection
     {
 
         /**
@@ -46,7 +47,7 @@ namespace D2NG
             Read
         }
 
-        public BNCSConnection()
+        public BncsConnection()
         {
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.ConnectSocket);
             _writeTrigger = _machine.SetTriggerParameters<byte[]>(Trigger.Write);
@@ -123,7 +124,7 @@ namespace D2NG
             PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(packet));
         }
 
-        public BncsPacket ReadPacket()
+        public byte[] ReadPacket()
         {
             List<byte> buffer = new List<byte>();
 
@@ -136,7 +137,7 @@ namespace D2NG
 
             var packet = new BncsPacket(buffer.ToArray());
             _machine.Fire(_readTrigger, packet);
-            return packet;
+            return buffer.ToArray();
         }
 
         private void ReadUpTo(ref List<byte> bncsBuffer, int count)
