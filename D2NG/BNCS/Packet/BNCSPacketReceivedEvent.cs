@@ -10,7 +10,6 @@ namespace D2NG
         public BNCSPacketReceivedEvent(BncsPacket packet)
         {
             this.Packet = packet;
-        }
-        
+        }        
     }
 }
