@@ -12,7 +12,7 @@ using Serilog;
 
 namespace D2NG.BNCS.Login
 {
-    class CheckRevisionV4
+    public class CheckRevisionV4
     {
         private const String VERSION = "1.14.3.71";
         public static Result CheckRevision(string value)
