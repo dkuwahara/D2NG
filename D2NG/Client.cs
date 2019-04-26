@@ -10,7 +10,8 @@ namespace D2NG
     {
         public BattleNetChatServer BNCS { get; }
 
-        private Config _config;
+        private readonly Config _config;
+
         public Client(String config)
         {
             _config = Config.FromFile(config);
