@@ -10,7 +10,7 @@ namespace D2NG.BNCS.Packet
 
         public byte[] Raw { get => _packet; } 
 
-        private byte[] _packet;
+        private readonly byte[] _packet;
 
         public BncsPacket(byte[] packet)
         {
