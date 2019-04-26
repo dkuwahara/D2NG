@@ -21,7 +21,7 @@ namespace ConsoleBot
             Log.Debug("Starting bot");
             Client client = new Client("config.yml");
 
-            client.BNCS.ConnectTo("useast.battle.net");
+            client.Bncs.ConnectTo("useast.battle.net");
             Log.Debug("Waiting for input");
             Console.ReadKey(true);
         }

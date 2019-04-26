@@ -1,11 +1,11 @@
 ﻿
 namespace D2NG.BNCS.Packet
 {
-    public class BNCSPacketReceivedEvent : BNCSEvent
+    public class BncsPacketReceivedEvent : BncsEvent
     {
         public BncsPacket Packet { get; }
 
-        public BNCSPacketReceivedEvent(BncsPacket packet)
+        public BncsPacketReceivedEvent(BncsPacket packet)
         {
             this.Packet = packet;
         }        

@@ -6,11 +6,18 @@ namespace D2NG.BNCS.Packet
 {
     public class BncsAuthInfoResponsePacket : BncsPacket
     {
+        private readonly byte AuthInfoType = 0x50;
         public BncsAuthInfoResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
-            _ = reader.ReadByte(); // 0xFF
-            byte type = reader.ReadByte(); // 0x50
+            if (PrefixByte != reader.ReadByte())
+            {
+                throw new BncsPacketException("Not a valid BNCS Packet");
+            }
+            if (AuthInfoType != reader.ReadByte())
+            {
+                throw new BncsPacketException("Expected type was not found");
+            } 
             LogonType = reader.ReadInt32();
             ServerToken = reader.ReadUInt32();
             _ = reader.ReadInt32();

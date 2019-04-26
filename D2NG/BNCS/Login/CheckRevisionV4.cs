@@ -8,12 +8,12 @@ namespace D2NG.BNCS.Login
 {
     public static class CheckRevisionV4
     {
-        private const String VERSION = "1.14.3.71";
+        private const String Version = "1.14.3.71";
         public static CheckRevisionResult CheckRevision(string value)
         {
             var bytes = new List<byte>(Convert.FromBase64String(value))
                 .GetRange(0, 4);
-            bytes.AddRange(Encoding.ASCII.GetBytes(":" + VERSION + ":"));
+            bytes.AddRange(Encoding.ASCII.GetBytes(":" + Version + ":"));
             bytes.Add(1);
 
             SHA1 sha = new SHA1CryptoServiceProvider();

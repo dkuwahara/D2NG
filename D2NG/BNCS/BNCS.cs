@@ -14,9 +14,9 @@ namespace D2NG
     {
         private BncsConnection Connection { get; } = new BncsConnection();
 
-        protected ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BNCSPacketReceivedEvent>>();
+        protected ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>>();
 
-        protected ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BNCSPacketSentEvent>>();
+        protected ConcurrentDictionary<byte, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketSentEvent>>();
 
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
@@ -144,7 +144,7 @@ namespace D2NG
             return packet.ToArray();
         }
 
-        public void OnReceivedPacketEvent(byte type, Action<BNCSPacketReceivedEvent> handler)
+        public void OnReceivedPacketEvent(byte type, Action<BncsPacketReceivedEvent> handler)
         {
             if (PacketReceivedEventHandlers.ContainsKey(type))
             {
@@ -156,7 +156,7 @@ namespace D2NG
             }
         }
 
-        public void OnSentPacketEvent(byte type, Action<BNCSPacketSentEvent> handler)
+        public void OnSentPacketEvent(byte type, Action<BncsPacketSentEvent> handler)
         {
             if (PacketSentEventHandlers.ContainsKey(type))
             {

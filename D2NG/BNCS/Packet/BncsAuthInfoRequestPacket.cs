@@ -8,26 +8,26 @@ namespace D2NG.BNCS.Packet
 
     public class BncsAuthInfoRequestPacket : BncsPacket
     {
-        private static readonly byte[] PROTOCOL_ID = BitConverter.GetBytes(0x00);
+        private static readonly byte[] ProtocolId = BitConverter.GetBytes(0x00);
 
 
-        private const String PLATFORM_CODE = "IX86";
+        private const String PlatformCode = "IX86";
 
-        private const String PRODUCT_CODE = "D2XP";
+        private const String ProductCode = "D2XP";
 
-        private const String LANGUAGE_CODE = "enUS";
+        private const String LanguageCode = "enUS";
 
-        private static readonly byte[] LOCAL_IP = BitConverter.GetBytes(0x00);
+        private static readonly byte[] LocalIp = BitConverter.GetBytes(0x00);
 
-        private static readonly byte[] TIME_ZONE_BIAS = BitConverter.GetBytes((int)(DateTime.UtcNow.Subtract(DateTime.Now).TotalSeconds / 60));
+        private static readonly byte[] TimeZoneBias = BitConverter.GetBytes((int)(DateTime.UtcNow.Subtract(DateTime.Now).TotalSeconds / 60));
 
-        private static readonly byte[] MPQ_LOCALE_ID = BitConverter.GetBytes(0x00);
+        private static readonly byte[] MpqLocaleId = BitConverter.GetBytes(0x00);
 
-        private static readonly byte[] USER_LANG_ID = BitConverter.GetBytes(0x00);
+        private static readonly byte[] UserLangId = BitConverter.GetBytes(0x00);
 
-        private const String COUNTRY_ABBR = "USA\0";
+        private const String CountryAbbr = "USA\0";
 
-        private const String COUNTRY = "United States\0";
+        private const String Country = "United States\0";
 
         public BncsAuthInfoRequestPacket()
             : this(0x0e)
@@ -38,17 +38,17 @@ namespace D2NG.BNCS.Packet
             : base(
                 BuildPacket(
                     0x50,
-                    PROTOCOL_ID,
-                    Encoding.ASCII.GetBytes(PLATFORM_CODE).Reverse().ToArray(),
-                    Encoding.ASCII.GetBytes(PRODUCT_CODE).Reverse().ToArray(),
+                    ProtocolId,
+                    Encoding.ASCII.GetBytes(PlatformCode).Reverse().ToArray(),
+                    Encoding.ASCII.GetBytes(ProductCode).Reverse().ToArray(),
                     BitConverter.GetBytes(version),
-                    Encoding.ASCII.GetBytes(LANGUAGE_CODE).Reverse().ToArray(),
-                    LOCAL_IP,
-                    TIME_ZONE_BIAS,
-                    MPQ_LOCALE_ID,
-                    USER_LANG_ID,
-                    Encoding.ASCII.GetBytes(COUNTRY_ABBR),
-                    Encoding.ASCII.GetBytes(COUNTRY)
+                    Encoding.ASCII.GetBytes(LanguageCode).Reverse().ToArray(),
+                    LocalIp,
+                    TimeZoneBias,
+                    MpqLocaleId,
+                    UserLangId,
+                    Encoding.ASCII.GetBytes(CountryAbbr),
+                    Encoding.ASCII.GetBytes(Country)
                 )
             )
         {

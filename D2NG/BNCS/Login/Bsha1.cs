@@ -6,7 +6,7 @@ namespace D2NG.BNCS.Login
 {
     internal static class Bsha1
     {
-        private static void setBufferByte(uint[] buffer, int offset, byte val)
+        private static void SetBufferByte(uint[] buffer, int offset, byte val)
         {
             var index = offset / 4;
             var position = offset % 4;
@@ -15,7 +15,7 @@ namespace D2NG.BNCS.Login
             buffer[index] |= (uint) val << bitOffset;
         }
 
-        private static byte getBufferByte(uint[] buffer, int offset)
+        private static byte GetBufferByte(uint[] buffer, int offset)
         {
             var index = offset / 4;
             var position = offset % 4;
@@ -122,14 +122,14 @@ namespace D2NG.BNCS.Login
                 {
                     var temp = new byte[input.Count];
                     input.CopyTo(temp);
-                    setBufferByte(buffer, (int) (initializedLength + j), temp[(int) (j + i)]);
+                    SetBufferByte(buffer, (int) (initializedLength + j), temp[(int) (j + i)]);
                 }
 
                 if (subsectionLength < maxSubsectionLength)
                 {
                     for (var j = subsectionLength; j < maxSubsectionLength; j++)
                     {
-                        setBufferByte(buffer, (int) (initializedLength + j), 0);
+                        SetBufferByte(buffer, (int) (initializedLength + j), 0);
                     }
                 }
 
@@ -141,7 +141,7 @@ namespace D2NG.BNCS.Login
             {
                 for (uint j = 0; j < 4; j++)
                 {
-                    op.Add(getBufferByte(buffer, (int) (i * 4 + j)));
+                    op.Add(GetBufferByte(buffer, (int) (i * 4 + j)));
                 }
             }
 

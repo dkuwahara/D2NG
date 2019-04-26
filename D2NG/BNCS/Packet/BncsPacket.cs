@@ -6,15 +6,15 @@ namespace D2NG.BNCS.Packet
 {
     public class BncsPacket
     {
-        public byte Type { get => _packet[1]; }
+        protected readonly byte PrefixByte = 0xFF;
 
-        public byte[] Raw { get => _packet; } 
+        public byte Type { get => Raw[1]; }
 
-        private readonly byte[] _packet;
+        public byte[] Raw { get; }
 
         public BncsPacket(byte[] packet)
         {
-            _packet = packet;
+            Raw = packet;
         }
 
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)

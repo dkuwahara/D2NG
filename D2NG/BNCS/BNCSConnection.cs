@@ -18,7 +18,7 @@ namespace D2NG
         /**
          * Default port used to connected to BNCS
          */
-        public static readonly int DEFAULT_PORT = 6112;
+        public static readonly int DefaultPort = 6112;
 
         private TcpClient _tcpClient;
 
@@ -29,9 +29,9 @@ namespace D2NG
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<byte[]> _writeTrigger;
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<BncsPacket> _readTrigger;
 
-        public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
+        public event EventHandler<BncsPacketReceivedEvent> PacketReceived;
 
-        public event EventHandler<BNCSPacketSentEvent> PacketSent;
+        public event EventHandler<BncsPacketSentEvent> PacketSent;
 
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
@@ -84,7 +84,7 @@ namespace D2NG
             var server = Dns.GetHostAddresses(realm).First();
 
             Log.Debug("[{0}] Found server {1}", GetType(), server);
-            this.Connect(server, DEFAULT_PORT);
+            this.Connect(server, DefaultPort);
         }
 
         private void Connect(IPAddress ip, int port)
@@ -100,7 +100,7 @@ namespace D2NG
                 _stream.Close();
                 _tcpClient = null;
                 _stream = null;
-                throw new BNCSConnectException();
+                throw new BncsConnectException();
             }
             _stream.WriteByte(0x01);
             Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
@@ -109,7 +109,7 @@ namespace D2NG
         private void OnWritePacket(byte[] packet)
         {
             _stream.Write(packet, 0, packet.Length);
-            PacketSent?.Invoke(this, new BNCSPacketSentEvent(packet));
+            PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
         }
 
         private void OnTerminate()
@@ -120,7 +120,7 @@ namespace D2NG
 
         private void OnGetPacket(BncsPacket packet)
         {
-            PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(packet));
+            PacketReceived?.Invoke(this, new BncsPacketReceivedEvent(packet));
         }
 
         public byte[] ReadPacket()
