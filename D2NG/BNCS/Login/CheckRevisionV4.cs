@@ -15,7 +15,7 @@ namespace D2NG.BNCS.Login
     public class CheckRevisionV4
     {
         private const String VERSION = "1.14.3.71";
-        public static Result CheckRevision(string value)
+        public static CheckRevisionResult CheckRevision(string value)
         {
             var bytes = new List<byte>(Convert.FromBase64String(value))
                 .GetRange(0, 4);
@@ -28,17 +28,17 @@ namespace D2NG.BNCS.Login
 
             var checksum = Encoding.ASCII.GetBytes(b64Hash.Substring(0, 4));
             var info = Encoding.ASCII.GetBytes(b64Hash.Substring(4) + "\0");
-            return new Result(0, checksum, info);
+            return new CheckRevisionResult(0, checksum, info);
         }
     }
 
-    public class Result
+    public class CheckRevisionResult
     {
         public int Version { get; }
         public byte[] Checksum { get; }
         public byte[] Info { get; }
 
-        public Result(int version, byte[] checksum, byte[] info)
+        public CheckRevisionResult(int version, byte[] checksum, byte[] info)
         {
             Version = version;
             Checksum = checksum;

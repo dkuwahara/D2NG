@@ -43,6 +43,6 @@ namespace D2NG.BNCS.Login
             Assert.Equal(1699508065, BitConverter.ToInt32(result.Checksum));
             Assert.Equal("Kyl+7a6yKVGWEj7rzhB+Q40=\0", Encoding.ASCII.GetString(result.Info));
         }
-        
+
     }
 }

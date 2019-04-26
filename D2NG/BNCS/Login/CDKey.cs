@@ -9,6 +9,8 @@ namespace D2NG.BNCS.Login
 
         private readonly String _cdKey;
 
+        public int KeyLength { get; }
+
         private static readonly byte[] AlphaMap =
         {
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -47,6 +49,8 @@ namespace D2NG.BNCS.Login
 
         public CdKey(string cdKey)
         {
+            KeyLength = cdKey.Length;
+
             ulong checksum = 0;
             ulong n, n2, v, v2;
             char c1, c2, c;

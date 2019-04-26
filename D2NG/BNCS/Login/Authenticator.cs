@@ -84,6 +84,8 @@ namespace D2NG.BNCS.Login
                 BitConverter.GetBytes((UInt32)10), lodPublic, NULL_INT_AS_BYTE_ARRAY, lodHash,
                 result.Info,
                 Encoding.ASCII.GetBytes("D2NG"), ZERO_BYTE);
+
+
         }
     }
 }

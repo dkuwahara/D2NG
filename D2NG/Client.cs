@@ -8,18 +8,12 @@ namespace D2NG
 {
     public class Client
     {
-        public BattleNetChatServer Bncs { get; } = new BattleNetChatServer();
-        private Authenticator Authenticator { get; }
+        public BattleNetChatServer BNCS { get; } 
 
         public Client()
         {
-            Authenticator = new Authenticator(Bncs);
+            BNCS = new BattleNetChatServer("", "");
         }
 
-        public void UsingKeys(String classicKey, String expansionKey)
-        {
-            Authenticator.ClassicKey = new CdKey(classicKey);
-            Authenticator.ExpansionKey = new CdKey(expansionKey);
-        }
     }
 }
