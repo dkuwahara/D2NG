@@ -8,12 +8,13 @@ namespace D2NG
 {
     public class Client
     {
-        public BattleNetChatServer BNCS { get; } 
+        public BattleNetChatServer BNCS { get; }
 
-        public Client()
+        private Config _config;
+        public Client(String config)
         {
-            BNCS = new BattleNetChatServer("", "");
+            _config = Config.FromFile(config);
+            BNCS = new BattleNetChatServer(_config.ClassicKey, _config.ExpansionKey);
         }
-
     }
 }

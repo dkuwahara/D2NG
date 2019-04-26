@@ -19,7 +19,7 @@ namespace ConsoleBot
                 .CreateLogger();
 
             Log.Debug("Starting bot");
-            Client client = new Client();
+            Client client = new Client("config.yml");
 
             client.BNCS.ConnectTo("useast.battle.net");
             Log.Debug("Waiting for input");
