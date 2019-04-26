@@ -1,5 +1,4 @@
-﻿using D2NG.BNCS;
-using D2NG.BNCS.Packet;
+﻿using D2NG.BNCS.Packet;
 using Serilog;
 using Stateless;
 using Stateless.Graph;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace D2NG
 {

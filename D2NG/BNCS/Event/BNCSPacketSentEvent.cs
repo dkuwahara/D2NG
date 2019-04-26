@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace D2NG
+﻿namespace D2NG
 {
     public class BncsPacketSentEvent : BncsEvent
     {

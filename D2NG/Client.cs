@@ -1,8 +1,4 @@
-﻿using D2NG.BNCS;
-using D2NG.BNCS.Login;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace D2NG
 {
