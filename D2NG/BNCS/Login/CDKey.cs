@@ -95,9 +95,14 @@ namespace D2NG.BNCS.Login
             {
                 c = manipulatedKey[i];
                 if (i > 8)
+                {
                     n = (ulong) i - 9;
+                }
                 else
+                {
                     n = 0xF - (ulong) (8 - i);
+                }
+
                 n &= 0xF;
 
                 c2 = manipulatedKey[(int) n];
@@ -148,7 +153,7 @@ namespace D2NG.BNCS.Login
 
         public int KeyLength { get; }
 
-        protected char ConvertToHexDigit(ulong byt)
+        protected static char ConvertToHexDigit(ulong byt)
         {
             byt &= 0xF;
             if (byt < 10)
@@ -156,10 +161,13 @@ namespace D2NG.BNCS.Login
             return (char) (byt + 0x37);
         }
 
-        protected ulong ConvertFromHexDigit(char input)
+        protected static ulong ConvertFromHexDigit(char input)
         {
             if (input >= '0' && input <= '9')
+            {
                 return (ulong) (input - 0x30);
+            }
+
             return (ulong) (input - 0x37);
         }
 
