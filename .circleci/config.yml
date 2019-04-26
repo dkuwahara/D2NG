@@ -5,5 +5,5 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview2-alpine3.8
     steps:
       - checkout
-      - run: dotnet restore
-      - run: dotnet build 
+      - run: dotnet build
+      - run: dotnet test 
