@@ -75,9 +75,8 @@ namespace D2NG
         public bool IsConnected() => _machine.IsInState(State.Connected);
 
         public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
-        public void WritePacket(List<byte> packet) => WritePacket(packet.ToArray());
         public void WritePacket(byte[] packet) => _machine.Fire(_writeTrigger, packet);
-        public void WritePacket(BncsPacket packet) => WritePacket(packet.Raw);
+        public void WritePacket(BncsPacket packet) => this.WritePacket(packet.Raw);
         public void Terminate() => _machine.Fire(Trigger.KillSocket);
         private void OnConnect(String realm)
         {
