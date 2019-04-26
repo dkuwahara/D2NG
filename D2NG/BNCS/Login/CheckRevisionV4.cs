@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.CSharp.RuntimeBinder;
-using Serilog;
 
 namespace D2NG.BNCS.Login
 {
-    public class CheckRevisionV4
+    public static class CheckRevisionV4
     {
         private const String VERSION = "1.14.3.71";
         public static CheckRevisionResult CheckRevision(string value)
