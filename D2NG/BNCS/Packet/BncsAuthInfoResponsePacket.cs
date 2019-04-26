@@ -1,5 +1,4 @@
-﻿using Serilog;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace D2NG.BNCS.Packet
@@ -18,6 +17,7 @@ namespace D2NG.BNCS.Packet
             {
                 throw new BncsPacketException("Expected type was not found");
             } 
+
             LogonType = reader.ReadInt32();
             ServerToken = reader.ReadUInt32();
             _ = reader.ReadInt32();

@@ -4,8 +4,6 @@ using Stateless;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using D2NG.BNCS.Login;
 
 namespace D2NG
