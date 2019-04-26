@@ -89,7 +89,9 @@ namespace D2NG.BNCS.Login
 
             v &= 0xFF;
             if (v != checksum)
-                throw new Exception("Bad Checksum");
+            {
+                throw new CdKeyException("Bad Checksum");
+            }
 
             for (var i = 15; i >= 0; i--)
             {
@@ -157,7 +159,10 @@ namespace D2NG.BNCS.Login
         {
             byt &= 0xF;
             if (byt < 10)
+            {
                 return (char) (byt + 0x30);
+            }
+
             return (char) (byt + 0x37);
         }
 
