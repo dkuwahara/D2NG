@@ -28,7 +28,10 @@ namespace D2NG.BNCS.Login
             var hashBuffer = new uint[80];
             uint hash, a, b, c, d, e, hashBufferOffset;
 
-            for (uint i = 0; i < 0x10; i++) hashBuffer[i] = buffer[(int) i + 5];
+            for (uint i = 0; i < 0x10; i++)
+            {
+                hashBuffer[i] = buffer[(int) i + 5];
+            }
 
             for (uint i = 0x10; i < hashBuffer.Length; i++)
             {
@@ -111,7 +114,9 @@ namespace D2NG.BNCS.Login
                 var subsectionLength = Math.Min(maxSubsectionLength, (uint) input.Count - i);
 
                 if (subsectionLength > maxSubsectionLength)
+                {
                     subsectionLength = maxSubsectionLength;
+                }
 
                 for (uint j = 0; j < subsectionLength; j++)
                 {
@@ -121,16 +126,25 @@ namespace D2NG.BNCS.Login
                 }
 
                 if (subsectionLength < maxSubsectionLength)
+                {
                     for (var j = subsectionLength; j < maxSubsectionLength; j++)
+                    {
                         setBufferByte(buffer, (int) (initializedLength + j), 0);
+                    }
+                }
 
                 CalculateHash(ref buffer);
             }
 
             var op = new List<byte>();
             for (uint i = 0; i < buffer.Length; i++)
-            for (uint j = 0; j < 4; j++)
-                op.Add(getBufferByte(buffer, (int) (i * 4 + j)));
+            {
+                for (uint j = 0; j < 4; j++)
+                {
+                    op.Add(getBufferByte(buffer, (int) (i * 4 + j)));
+                }
+            }
+
             return new List<byte>(op.GetRange(0, 20));
         }
 
