@@ -9,9 +9,8 @@ namespace D2NG.BNCS.Packet
         public BncsAuthInfoResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
-            _ = reader.ReadByte();
-            byte type = reader.ReadByte();
-            Log.Debug("{0} == {1}", this.Type, type);
+            _ = reader.ReadByte(); // 0xFF
+            byte type = reader.ReadByte(); // 0x50
             LogonType = reader.ReadInt32();
             ServerToken = reader.ReadUInt32();
             _ = reader.ReadInt32();
@@ -20,7 +19,7 @@ namespace D2NG.BNCS.Packet
             var offset = 24;
 
             MpqFileName = ReadNullTerminatedString(Encoding.ASCII.GetString(Raw), ref offset);
-            FormulaString = ReadNullTerminatedString(Encoding.ASCII.GetString(Raw), ref offset);
+            FormulaString = ReadNullTerminatedString(Encoding.GetEncoding("ISO-8859-1").GetString(Raw), ref offset);
         }
 
         public int LogonType { get; }

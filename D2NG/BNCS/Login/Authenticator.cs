@@ -12,8 +12,8 @@ namespace D2NG.BNCS.Login
         private const String EXE_INFO = "Game.exe 05/31/16 19:02:24 3618792";
         private const string DATA_DIRECTORY = "data";
         static public readonly byte[] NULL_INT_AS_BYTE_ARRAY = { 0x00, 0x00, 0x00, 0x00 };
-        static public readonly byte[] TEN = { 0x10, 0x00, 0x00, 0x00 };
-        static public readonly byte[] SIX = { 0x06, 0x00, 0x00, 0x00 };
+        static public readonly byte[] KeyLength = { 0x10, 0x00, 0x00, 0x00 };
+        static public readonly byte[] ClassicProduct = { 0x06, 0x00, 0x00, 0x00 };
         static public readonly byte[] ZERO_BYTE = { 0x00 };
         static public readonly byte[] ONE = { 0x01, 0x00, 0x00, 0x00 };
 
@@ -78,10 +78,22 @@ namespace D2NG.BNCS.Login
             //ClassicKey.GetD2KeyHash(ref clientToken, serverToken, ref classicHash, ref classicPublic);
             //ExpansionKey.GetD2KeyHash(ref clientToken, serverToken, ref lodHash, ref lodPublic);
 
-            _bncs.SendPacket(0x51, BitConverter.GetBytes(clientToken), BitConverter.GetBytes(result.Version),
-                result.Checksum, BitConverter.GetBytes(0x00000002), NULL_INT_AS_BYTE_ARRAY,
-                TEN, SIX, classicPublic, NULL_INT_AS_BYTE_ARRAY, classicHash, TEN,
-                BitConverter.GetBytes((UInt32)10), lodPublic, NULL_INT_AS_BYTE_ARRAY, lodHash,
+            _bncs.SendPacket(0x51, 
+                BitConverter.GetBytes(clientToken), 
+                BitConverter.GetBytes(result.Version),
+                result.Checksum, 
+                BitConverter.GetBytes(0x00000002), 
+                NULL_INT_AS_BYTE_ARRAY,
+                KeyLength,
+                ClassicProduct, 
+                classicPublic, 
+                NULL_INT_AS_BYTE_ARRAY, 
+                classicHash, 
+                KeyLength,
+                BitConverter.GetBytes((UInt32)10), 
+                lodPublic, 
+                NULL_INT_AS_BYTE_ARRAY, 
+                lodHash,
                 result.Info,
                 Encoding.ASCII.GetBytes("D2NG"), ZERO_BYTE);
 

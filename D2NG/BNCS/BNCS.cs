@@ -94,6 +94,8 @@ namespace D2NG
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.VerifyClient);
             _machine.Fire(Trigger.AuthorizeKeys);
+
+            
         }
 
         public void OnVerifyClient()
@@ -109,12 +111,14 @@ namespace D2NG
             Log.Debug("{0}", packet);
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
 
-            var authCheck = new BncsAuthCheckRequestPacket(
+            Connection.WritePacket(new BncsAuthCheckRequestPacket(
                 _clientToken,
                 packet.ServerToken,
                 result,
                 _classic,
-                _expansion);
+                _expansion));
+
+            Log.Debug("{0:X}",Connection.ReadPacket());
         }
 
         public void SendPacket(byte command, params IEnumerable<byte>[] args)
