@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace D2NG.BNCS.Login
 {
     [Serializable]
-    internal class CdKeyException : Exception
+    public class CdKeyException : Exception
     {
         public CdKeyException()
         {
