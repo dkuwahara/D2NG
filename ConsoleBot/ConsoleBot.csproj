@@ -8,12 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\D2NG\D2NG.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="data\*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>  
 
 </Project>
