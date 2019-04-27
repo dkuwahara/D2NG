@@ -86,15 +86,19 @@ namespace D2NG
 
         public byte[] ReadPacket()
         {
-            List<byte> buffer = new List<byte>();
+            List<byte> buffer;
+            do
+            {
+                buffer = new List<byte>();
 
-            // Get the first 4 bytes, packet type and length
-            ReadUpTo(ref buffer, 4);
-            short packetLength = BitConverter.ToInt16(buffer.ToArray(), 2);
+                // Get the first 4 bytes, packet type and length
+                ReadUpTo(ref buffer, 4);
+                short packetLength = BitConverter.ToInt16(buffer.ToArray(), 2);
 
-            // Read the rest of the packet and return it
-            ReadUpTo(ref buffer, packetLength);
+                // Read the rest of the packet and return it
+                ReadUpTo(ref buffer, packetLength);
 
+            } while (buffer[1] == 0x00);
             var packet = new BncsPacket(buffer.ToArray());
             _machine.Fire(_readTrigger, packet);
             return buffer.ToArray();

@@ -55,7 +55,11 @@ namespace D2NG.BNCS.Packet
 
         public override string ToString()
         {
-            return $"{nameof(LogonType)}: {LogonType}, {nameof(ServerToken)}: {ServerToken}, {nameof(MpqFileTime)}: {MpqFileTime}, {nameof(FormulaString)}: {FormulaString}, {nameof(MpqFileName)}: {MpqFileName}";
+            return $"{nameof(LogonType)}: {LogonType},\n" +
+                   $"{nameof(ServerToken)}: {ServerToken},\n" +
+                   $"{nameof(MpqFileTime)}: {MpqFileTime},\n" +
+                   $"{nameof(FormulaString)}: {FormulaString},\n" +
+                   $"{nameof(MpqFileName)}: {MpqFileName}\n";
         }
 
     }

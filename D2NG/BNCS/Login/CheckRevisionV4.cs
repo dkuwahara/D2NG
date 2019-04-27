@@ -9,6 +9,7 @@ namespace D2NG.BNCS.Login
     public static class CheckRevisionV4
     {
         private const String Version = "1.14.3.71";
+
         public static CheckRevisionResult CheckRevision(string value)
         {
             var bytes = new List<byte>(Convert.FromBase64String(value))

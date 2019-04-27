@@ -103,7 +103,7 @@ namespace D2NG
         public void OnAuthorizeKeys()
         {
             var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
-            Log.Debug("{0}", packet);
+            Log.Debug("[{0}] Received: {1}", GetType(), packet);
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
 
             Connection.WritePacket(new BncsAuthCheckRequestPacket(
@@ -113,30 +113,9 @@ namespace D2NG
                 _classicKey,
                 _expansionKey));
 
-            Log.Debug("{0:X}",Connection.ReadPacket());
-        }
+            var authCheckResponse = new BncsAuthCheckResponsePacket(Connection.ReadPacket());
 
-        public void SendPacket(byte command, params IEnumerable<byte>[] args)
-        {
-            byte[] packet = BuildPacket(command, args);
-            Connection.WritePacket(packet);
-        }
-
-        protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
-        {
-            var packet = new List<byte> { 0xFF, command };
-            var packetArray = new List<byte>();
-
-            foreach (var a in args)
-            {
-                packetArray.AddRange(a);
-            }
-
-            UInt16 packetSize = (UInt16)(packetArray.Count + 4);
-            packet.AddRange(BitConverter.GetBytes(packetSize));
-            packet.AddRange(packetArray);
-
-            return packet.ToArray();
+            Log.Debug("{0:X}",authCheckResponse);
         }
 
         public void OnReceivedPacketEvent(byte type, Action<BncsPacketReceivedEvent> handler)
