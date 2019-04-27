@@ -20,8 +20,9 @@ namespace D2NG
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
 
-        private readonly CdKey _classic;
-        private readonly CdKey _expansion;
+        private CdKey _classicKey;
+        private CdKey _expansionKey;
+
         private readonly uint _clientToken;
 
         enum State
@@ -42,15 +43,11 @@ namespace D2NG
             Login
         }
 
-        public BattleNetChatServer(String classic, String expansion)
-            : this(new CdKey(classic), new CdKey(expansion))
-        { }
 
-        public BattleNetChatServer(CdKey classic, CdKey expansion)
+        public BattleNetChatServer()
         {
             _clientToken = (uint)Environment.TickCount;
-            _classic = classic;
-            _expansion = expansion;
+            
 
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
 
@@ -64,14 +61,14 @@ namespace D2NG
 
             _machine.Configure(State.Verified)
                 .SubstateOf(State.Connected)
-                .OnEntryFrom(Trigger.VerifyClient, () => OnVerifyClient())
+                .OnEntryFrom(Trigger.VerifyClient, OnVerifyClient)
                 .Permit(Trigger.AuthorizeKeys, State.KeysAuthorized)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
             _machine.Configure(State.KeysAuthorized)
                 .SubstateOf(State.Connected)
                 .SubstateOf(State.Verified)
-                .OnEntryFrom(Trigger.AuthorizeKeys, () => OnAuthorizeKeys());
+                .OnEntryFrom(Trigger.AuthorizeKeys, OnAuthorizeKeys);
 
 
             Connection.PacketReceived += (obj, eventArgs) => {
@@ -87,13 +84,13 @@ namespace D2NG
             OnReceivedPacketEvent(0x25, obj => Connection.WritePacket(obj.Packet.Raw));
         }
 
-        public void ConnectTo(String realm)
+        public void ConnectTo(string realm, string classicKey, string expansionKey)
         {
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.VerifyClient);
+            _classicKey = new CdKey(classicKey);
+            _expansionKey = new CdKey(expansionKey);
             _machine.Fire(Trigger.AuthorizeKeys);
-
-            
         }
 
         public void OnVerifyClient()
@@ -113,8 +110,8 @@ namespace D2NG
                 _clientToken,
                 packet.ServerToken,
                 result,
-                _classic,
-                _expansion));
+                _classicKey,
+                _expansionKey));
 
             Log.Debug("{0:X}",Connection.ReadPacket());
         }

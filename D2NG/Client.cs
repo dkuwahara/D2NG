@@ -6,12 +6,9 @@ namespace D2NG
     {
         public BattleNetChatServer Bncs { get; }
 
-        private readonly Config _config;
-
-        public Client(String config)
+        public Client()
         {
-            _config = Config.FromFile(config);
-            Bncs = new BattleNetChatServer(_config.ClassicKey, _config.ExpansionKey);
+            Bncs = new BattleNetChatServer();
         }
     }
 }
