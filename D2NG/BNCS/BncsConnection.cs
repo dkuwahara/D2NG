@@ -12,32 +12,17 @@ namespace D2NG
 {
     class BncsConnection
     {
-
         /**
          * Default port used to connected to BNCS
          */
         public static readonly int DefaultPort = 6112;
-
-        private TcpClient _tcpClient;
-
-        private NetworkStream _stream;
-
-        private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
-
-        private readonly StateMachine<State, Trigger>.TriggerWithParameters<byte[]> _writeTrigger;
-        private readonly StateMachine<State, Trigger>.TriggerWithParameters<BncsPacket> _readTrigger;
-
-        public event EventHandler<BncsPacketReceivedEvent> PacketReceived;
-
-        public event EventHandler<BncsPacketSentEvent> PacketSent;
-
-        private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
         enum State
         {
             NotConnected,
             Connected
         }
+
         enum Trigger {
             ConnectSocket,
             KillSocket,
@@ -45,8 +30,35 @@ namespace D2NG
             Read
         }
 
+        /**
+         * State Machine for the connection
+         */
+        private readonly StateMachine<State, Trigger> _machine;
+
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
+
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<BncsPacket> _readTrigger;
+
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<byte[]> _writeTrigger;
+
+        /**
+         * Events on send and receive
+         */
+        public event EventHandler<BncsPacketReceivedEvent> PacketReceived;
+
+        public event EventHandler<BncsPacketSentEvent> PacketSent;
+
+        /**
+         * The actual TCP Connection
+         */
+        private NetworkStream _stream;
+
+        private TcpClient _tcpClient;
+
+
         public BncsConnection()
         {
+            _machine = new StateMachine<State, Trigger>(State.NotConnected);
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.ConnectSocket);
             _writeTrigger = _machine.SetTriggerParameters<byte[]>(Trigger.Write);
             _readTrigger = _machine.SetTriggerParameters<BncsPacket>(Trigger.Read);
@@ -70,12 +82,32 @@ namespace D2NG
 
         }
 
+        public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
+
         public bool IsConnected() => _machine.IsInState(State.Connected);
 
-        public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
-        public void WritePacket(byte[] packet) => _machine.Fire(_writeTrigger, packet);
-        public void WritePacket(BncsPacket packet) => this.WritePacket(packet.Raw);
+        public byte[] ReadPacket()
+        {
+            List<byte> buffer = new List<byte>();
+
+            // Get the first 4 bytes, packet type and length
+            ReadUpTo(ref buffer, 4);
+            short packetLength = BitConverter.ToInt16(buffer.ToArray(), 2);
+
+            // Read the rest of the packet and return it
+            ReadUpTo(ref buffer, packetLength);
+
+            var packet = new BncsPacket(buffer.ToArray());
+            _machine.Fire(_readTrigger, packet);
+            return buffer.ToArray();
+        }
+
         public void Terminate() => _machine.Fire(Trigger.KillSocket);
+
+        public void WritePacket(byte[] packet) => _machine.Fire(_writeTrigger, packet);
+
+        public void WritePacket(BncsPacket packet) => this.WritePacket(packet.Raw);
+
         private void OnConnect(String realm)
         {
             Log.Debug("[{0}] Resolving {1}", GetType(), realm);
@@ -104,10 +136,9 @@ namespace D2NG
             Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
 
-        private void OnWritePacket(byte[] packet)
+        private void OnGetPacket(BncsPacket packet)
         {
-            _stream.Write(packet, 0, packet.Length);
-            PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
+            PacketReceived?.Invoke(this, new BncsPacketReceivedEvent(packet));
         }
 
         private void OnTerminate()
@@ -116,25 +147,11 @@ namespace D2NG
             _stream.Close();
         }
 
-        private void OnGetPacket(BncsPacket packet)
+
+        private void OnWritePacket(byte[] packet)
         {
-            PacketReceived?.Invoke(this, new BncsPacketReceivedEvent(packet));
-        }
-
-        public byte[] ReadPacket()
-        {
-            List<byte> buffer = new List<byte>();
-
-            // Get the first 4 bytes, packet type and length
-            ReadUpTo(ref buffer, 4);
-            short packetLength = BitConverter.ToInt16(buffer.ToArray(), 2);
-
-            // Read the rest of the packet and return it
-            ReadUpTo(ref buffer, packetLength);
-
-            var packet = new BncsPacket(buffer.ToArray());
-            _machine.Fire(_readTrigger, packet);
-            return buffer.ToArray();
+            _stream.Write(packet, 0, packet.Length);
+            PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
         }
 
         private void ReadUpTo(ref List<byte> bncsBuffer, int count)
