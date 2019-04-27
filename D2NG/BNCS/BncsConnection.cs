@@ -17,13 +17,14 @@ namespace D2NG
          */
         public static readonly int DefaultPort = 6112;
 
-        enum State
+        private enum State
         {
             NotConnected,
             Connected
         }
 
-        enum Trigger {
+        private enum Trigger
+        {
             ConnectSocket,
             KillSocket,
             Write,
@@ -81,7 +82,7 @@ namespace D2NG
 
         public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
 
-        public bool IsConnected() => _machine.IsInState(State.Connected);
+        public bool Connected => _machine.IsInState(State.Connected);
 
         public byte[] ReadPacket()
         {
