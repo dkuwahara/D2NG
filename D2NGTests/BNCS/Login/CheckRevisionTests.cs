@@ -7,7 +7,7 @@ namespace D2NG.BNCS.Login
     public class CheckRevisionTests
     {
         [Fact]
-        public void TestCheckRevision1()
+        public static void TestCheckRevision1()
         {
             byte[] checksum = { 0x4f, 0x78, 0x39, 0x2b };
 
@@ -18,7 +18,7 @@ namespace D2NG.BNCS.Login
         }
 
         [Fact]
-        public void TestCheckRevision2()
+        public static void TestCheckRevision2()
         {
             byte[] checksum = { 0x70, 0x6d, 0x58, 0x4d };
 
@@ -29,7 +29,7 @@ namespace D2NG.BNCS.Login
         }
 
         [Fact]
-        public void TestCheckRevision3()
+        public static void TestCheckRevision3()
         {
             byte[] checksum = { 0x67, 0x67, 0x4c, 0x56 };
 
@@ -40,7 +40,7 @@ namespace D2NG.BNCS.Login
         }
 
         [Fact]
-        public void TestCheckRevision4()
+        public static void TestCheckRevision4()
         {
             byte[] checksum = { 0x65, 0x4c, 0x6f, 0x61 };
 
