@@ -2,7 +2,7 @@
 using System.IO;
 using YamlDotNet.Serialization;
 
-namespace D2NG
+namespace ConsoleBot
 {
     public class Config
     {

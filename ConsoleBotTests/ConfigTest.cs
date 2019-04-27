@@ -1,8 +1,8 @@
-﻿using System;
-using D2NG;
+﻿using ConsoleBot;
+using System;
 using Xunit;
 
-namespace D2NGTests
+namespace ConfigTests
 {
     public class ConfigTest
     {
