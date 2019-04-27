@@ -6,4 +6,4 @@ jobs:
     steps:
       - checkout
       - run: dotnet build
-      - run: dotnet test 
+      - run: dotnet test --collect:"Code Coverage"
