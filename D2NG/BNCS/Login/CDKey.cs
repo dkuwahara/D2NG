@@ -155,14 +155,14 @@ namespace D2NG.BNCS.Login
 
         public int KeyLength { get; }
 
-        protected static char ConvertToHexDigit(ulong byt)
+        protected static char ConvertToHexDigit(ulong hex)
         {
+            var byt = hex;
             byt &= 0xF;
             if (byt < 10)
             {
                 return (char) (byt + 0x30);
             }
-
             return (char) (byt + 0x37);
         }
 
