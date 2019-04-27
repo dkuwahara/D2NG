@@ -77,9 +77,6 @@ namespace D2NG
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Connected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Connected));
 
-
-            Log.Debug("{0}", UmlDotGraph.Format(_machine.GetInfo()));
-
         }
 
         public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
