@@ -21,10 +21,10 @@ namespace D2NG
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
 
         private CdKey _classicKey;
+
         private CdKey _expansionKey;
 
         private readonly uint _clientToken;
-
         enum State
         {
             NotConnected,
