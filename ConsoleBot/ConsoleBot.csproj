@@ -8,6 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\D2NG\D2NG.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
 
 </Project>

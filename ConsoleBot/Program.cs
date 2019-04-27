@@ -1,6 +1,6 @@
 ﻿using D2NG;
 using Serilog;
-using System.Threading;
+using System;
 
 namespace ConsoleBot
 {
@@ -14,9 +14,13 @@ namespace ConsoleBot
                 .CreateLogger();
 
             Log.Debug("Starting bot");
-            BNCS client = new BNCS();
-            client.ConnectTo("useast.battle.net");
-            Thread.Sleep(5000);
+            Client client = new Client();
+
+            Config config = Config.FromFile("config.yml");
+            
+            client.Bncs.ConnectTo("useast.battle.net", config.ClassicKey, config.ExpansionKey);
+            Log.Debug("Waiting for input");
+            Console.ReadKey(true);
         }
     }
 }

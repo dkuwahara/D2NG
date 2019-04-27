@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using D2NG.BNCS.Packet;
+using Serilog;
 using Stateless;
 using Stateless.Graph;
 using System;
@@ -6,50 +7,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace D2NG
 {
-    class BNCSConnection
+    class BncsConnection
     {
 
         /**
          * Default port used to connected to BNCS
          */
-
-        public static readonly int DEFAULT_PORT = 6112;
+        public static readonly int DefaultPort = 6112;
 
         private TcpClient _tcpClient;
 
         private NetworkStream _stream;
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
+
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<byte[]> _writeTrigger;
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<BncsPacket> _readTrigger;
 
-        public event EventHandler<BNCSPacketReceivedEvent> PacketReceived;
+        public event EventHandler<BncsPacketReceivedEvent> PacketReceived;
 
-        public event EventHandler<BNCSPacketSentEvent> PacketSent;
+        public event EventHandler<BncsPacketSentEvent> PacketSent;
 
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
         enum State
         {
             NotConnected,
-            Connected,
-            Listening
+            Connected
         }
         enum Trigger {
             ConnectSocket,
-            ListenToSocket,
             KillSocket,
-            Write
+            Write,
+            Read
         }
 
-        public BNCSConnection()
+        public BncsConnection()
         {
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.ConnectSocket);
             _writeTrigger = _machine.SetTriggerParameters<byte[]>(Trigger.Write);
-            
+            _readTrigger = _machine.SetTriggerParameters<BncsPacket>(Trigger.Read);
+
             _machine.Configure(State.NotConnected)
                 .OnEntryFrom(Trigger.KillSocket, t => OnTerminate())
                 .Permit(Trigger.ConnectSocket, State.Connected)
@@ -58,33 +59,22 @@ namespace D2NG
 
             _machine.Configure(State.Connected)
                 .OnEntryFrom<String>(_connectTrigger, realm => OnConnect(realm), "Realm to connect to")
-                .InternalTransition(_writeTrigger, (data, t) => OnWrite(data))
-                .Permit(Trigger.ListenToSocket, State.Listening)
+                .InternalTransition(_writeTrigger, (data, t) => OnWritePacket(data))
+                .InternalTransition(_readTrigger, (packet, t) => OnGetPacket(packet))
                 .Permit(Trigger.KillSocket, State.NotConnected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Connected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Connected));
 
-            _machine.Configure(State.Listening)
-                .OnEntryFrom(Trigger.ListenToSocket, t => OnListen())
-                .SubstateOf(State.Connected)
-                .Permit(Trigger.KillSocket, State.NotConnected)
-                .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Listening))
-                .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Listening));
 
             Log.Debug("{0}", UmlDotGraph.Format(_machine.GetInfo()));
 
         }
 
-        public bool IsListening() => _machine.IsInState(State.Listening);
-
         public bool IsConnected() => _machine.IsInState(State.Connected);
 
         public void Connect(String realm) => _machine.Fire(_connectTrigger, realm);
-
-        public void Listen() => _machine.Fire(Trigger.ListenToSocket);
-        public void Send(byte packet) => Send(new [] { packet });
-        public void Send(List<byte> packet) => Send(packet.ToArray());
-        public void Send(byte[] packet) => _machine.Fire(_writeTrigger, packet);
+        public void WritePacket(byte[] packet) => _machine.Fire(_writeTrigger, packet);
+        public void WritePacket(BncsPacket packet) => this.WritePacket(packet.Raw);
         public void Terminate() => _machine.Fire(Trigger.KillSocket);
         private void OnConnect(String realm)
         {
@@ -92,7 +82,7 @@ namespace D2NG
             var server = Dns.GetHostAddresses(realm).First();
 
             Log.Debug("[{0}] Found server {1}", GetType(), server);
-            this.Connect(server, DEFAULT_PORT);
+            this.Connect(server, DefaultPort);
         }
 
         private void Connect(IPAddress ip, int port)
@@ -108,22 +98,16 @@ namespace D2NG
                 _stream.Close();
                 _tcpClient = null;
                 _stream = null;
-                throw new BNCSConnectException();
+                throw new BncsConnectException();
             }
+            _stream.WriteByte(0x01);
             Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
 
-        private void OnWrite(byte[] packet)
+        private void OnWritePacket(byte[] packet)
         {
-            if (packet.Length == 1)
-            {
-                _stream.WriteByte(packet[0]);
-            }
-            else
-            { 
-                _stream.Write(packet, 0, packet.Length);
-                PacketSent?.Invoke(this, new BNCSPacketSentEvent(packet));
-            }
+            _stream.Write(packet, 0, packet.Length);
+            PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
         }
 
         private void OnTerminate()
@@ -132,26 +116,12 @@ namespace D2NG
             _stream.Close();
         }
 
-        private void OnListen()
+        private void OnGetPacket(BncsPacket packet)
         {
-            ThreadPool.QueueUserWorkItem((obj) =>
-            {
-                while (_machine.IsInState(State.Connected))
-                {
-                    try
-                    {
-                        PacketReceived?.Invoke(this, new BNCSPacketReceivedEvent(GetPacket()));
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e, "[{0}] Failed to get Packet", GetType());
-                        Terminate();
-                    }
-                }
-            });
+            PacketReceived?.Invoke(this, new BncsPacketReceivedEvent(packet));
         }
 
-        private byte[] GetPacket()
+        public byte[] ReadPacket()
         {
             List<byte> buffer = new List<byte>();
 
@@ -161,6 +131,9 @@ namespace D2NG
 
             // Read the rest of the packet and return it
             ReadUpTo(ref buffer, packetLength);
+
+            var packet = new BncsPacket(buffer.ToArray());
+            _machine.Fire(_readTrigger, packet);
             return buffer.ToArray();
         }
 

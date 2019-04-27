@@ -4,21 +4,21 @@ using System.Runtime.Serialization;
 namespace D2NG
 {
     [Serializable]
-    public class BNCSConnectException : Exception
+    public class BncsConnectException : Exception
     {
-        public BNCSConnectException()
+        public BncsConnectException()
         {
         }
 
-        public BNCSConnectException(string message) : base(message)
+        public BncsConnectException(string message) : base(message)
         {
         }
 
-        public BNCSConnectException(string message, Exception innerException) : base(message, innerException)
+        public BncsConnectException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
-        protected BNCSConnectException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected BncsConnectException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
