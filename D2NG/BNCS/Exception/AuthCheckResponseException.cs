@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace D2NG.BNCS.Packet
 {
     [Serializable]
-    internal class AuthCheckResponseException : Exception
+    public class AuthCheckResponseException : Exception
     {
         public AuthCheckResponseException()
         {

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace D2NG
 {
     [Serializable]
-    internal class UnknownAuthCheckResultException : Exception
+    public class UnknownAuthCheckResultException : Exception
     {
         public UnknownAuthCheckResultException()
         {
