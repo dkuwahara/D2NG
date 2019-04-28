@@ -12,6 +12,8 @@ namespace D2NG.BNCS.Packet
 
         private static readonly byte[] ExpansionProduct = BitConverter.GetBytes(0x0A);
 
+        private static readonly byte[] IsSpawn = BitConverter.GetBytes(0x00);
+
         public BncsAuthCheckRequestPacket(
             uint clientToken,
             uint serverToken,
@@ -25,7 +27,7 @@ namespace D2NG.BNCS.Packet
                     BitConverter.GetBytes(crResult.Version),
                     crResult.Checksum,
                     KeyCount,
-                    BitConverter.GetBytes(0x0),
+                    IsSpawn,
                     BitConverter.GetBytes(classic.KeyLength),
                     ClassicProduct,
                     classic.Public,
