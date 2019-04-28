@@ -1,25 +1,20 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using D2NG.BNCS.Packet;
 using Serilog;
 
-namespace D2NG
+namespace D2NG.BNCS.Packet
 {
     internal class BncsAuthCheckResponsePacket : BncsPacket
     {
         private const byte AuthCheckType = 0x51;
 
-        private ushort _packetSize;
+        private readonly uint _result;
 
-        private uint _result;
-
-        private string _info;
+        private readonly string _info;
 
         public BncsAuthCheckResponsePacket(byte[] packet) : base(packet)
         {
-
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())
             {
@@ -30,10 +25,10 @@ namespace D2NG
             {
                 throw new BncsPacketException("Expected type was not found");
             }
-
-            _packetSize = reader.ReadUInt16();
+            
+            var packetSize = reader.ReadUInt16();
             _result = reader.ReadUInt32();
-            _info = Encoding.ASCII.GetString(reader.ReadBytes(_packetSize - 8));
+            _info = Encoding.ASCII.GetString(reader.ReadBytes(packetSize - 8));
 
             InspectResult();
         }
@@ -47,34 +42,27 @@ namespace D2NG
                     Log.Debug("Auth Check OK");
                     break;
                 case 0x100:
-                    Log.Debug("[BNCS] Old game version");
-                    Log.Debug("Info: {0}", _info);
-                    break;
+                    throw new AuthCheckResponseException(String.Format(" Old game version: {0}", _info));
                 case 0x101:
-                    Log.Debug("[BNCS] Invalid game version");
-                    break;
+                    throw new AuthCheckResponseException("Invalid game version");
                 case 0x102:
-                    break;
+                    throw new AuthCheckResponseException("Game version must be downgraded");
                 case 0x200:
-                    Log.Debug("[BNCS] STATUS_INVALID_CD_KEY");
-                    break;
+                    throw new AuthCheckResponseException("STATUS_INVALID_CD_KEY");
                 case 0x210:
-                    Log.Debug("[BNCS] STATUS_INVALID_EXP_CD_KEY");
-                    break;
+                    throw new AuthCheckResponseException("STATUS_INVALID_EXP_CD_KEY");
                 case 0x201:
-                    Log.Debug("[BNCS] STATUS_KEY_IN_USE");
-                    break;
+                    throw new AuthCheckResponseException("STATUS_KEY_IN_USE");
                 case 0x211:
-                    Log.Debug("[BNCS] STATUS_EXP_KEY_IN_USE");
-                    break;
+                    throw new AuthCheckResponseException("STATUS_EXP_KEY_IN_USE");
                 case 0x202:
-                    Log.Debug("[BNCS] STATUS_BANNED_CD_KEY");
-                    break;
+                    throw new AuthCheckResponseException("STATUS_BANNED_CD_KEY");
                 case 0x212:
-                    Log.Debug("[BNCS] STATUS_BANNED_EXP_CD_KEY");
-                    break;
+                    throw new AuthCheckResponseException("STATUS_BANNED_EXP_CD_KEY");
                 case 0x203:
-                    break;
+                    throw new AuthCheckResponseException("WRONG_PRODUCT");
+                default:
+                    throw new UnknownAuthCheckResultException("Unable to determine result of AuthCheck");
             }
         }
     }
