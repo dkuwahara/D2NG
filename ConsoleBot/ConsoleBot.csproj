@@ -7,16 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="config.yml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="config.yml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\D2NG\D2NG.csproj" />
   </ItemGroup>  
 
