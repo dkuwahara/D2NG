@@ -11,19 +11,19 @@ namespace D2NGTests.BNCS.Login
         public CdKeySha1Tests() : base("01234567890123456789123456")
         {
         }
-        
-        //[Fact]
-        //public void TestMaskingBytes()
-        //{
-        //    byte[] priv =
-        //    {
-        //        53, 4, 41, 65, 24, 76, 124, 36, 12, 42
-        //    };
-           
-        //    Assert.Equal(9993, this.Product);
-        //    Assert.Equal(BitConverter.GetBytes(18067384), this.Public);
-        //    Assert.Equal(priv, this.Private);
-        //}
+
+        [Fact]
+        public void TestMaskingBytes()
+        {
+            byte[] priv =
+            {
+                53, 4, 41, 65, 24, 76, 124, 36, 12, 42
+            };
+
+            Assert.Equal(9993, this.Product);
+            Assert.Equal(BitConverter.GetBytes(18067384), this.Public);
+            Assert.Equal(priv, this.Private);
+        }
 
         [Fact]
         public void TestBuildTableFromKey()

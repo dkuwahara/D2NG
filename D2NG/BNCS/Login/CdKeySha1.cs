@@ -113,7 +113,7 @@ namespace D2NG.BNCS.Login
             {
                 var posA = rounds - 1;
                 var posB = posA;
-                var byt = (long)table[i - 1];
+                long byt = table[i - 1];
 
                 for (int j = 0; j < rounds; j++)
                 {
@@ -123,8 +123,8 @@ namespace D2NG.BNCS.Login
                     var p2 = mulx & 0x00000000FFFFFFFFL;
                     var edxeax = p1 * p2;
 
-                    values[posB] = byt + edxeax;
-                    byt = (edxeax >> 32);
+                    values[posB] = (int)byt + (int)edxeax;
+                    byt = edxeax >> 32;
                     posB -= 1;
                 }
             }
@@ -153,7 +153,7 @@ namespace D2NG.BNCS.Login
 
                 var index = 3 - var4;
                 var ebx = (Translate[varC + i] & 0x0FL) << esi;
-                values[index] = (ebx | (~(0x0FL << esi)) & values[index]);
+                values[index] = (ebx | ~(0x0FL << esi) & values[index]);
 
             }
 
@@ -184,7 +184,8 @@ namespace D2NG.BNCS.Login
              */
              
             var esi = 0;
-            var copy = values.Select(BitConverter.GetBytes)
+            var copy = values
+                .Select(BitConverter.GetBytes)
                 .Aggregate(new List<byte>(), 
                     (current, next) =>
                     {
