@@ -102,7 +102,7 @@ namespace D2NG.BNCS.Login
             return table;
         }
 
-        protected static long[] GenerateValues(int[] table)
+        protected static int[] GenerateValues(int[] table)
         {
             var values = new long[4];
 
@@ -117,10 +117,10 @@ namespace D2NG.BNCS.Login
 
                 for (int j = 0; j < rounds; j++)
                 {
-                    var p1 = values[posA] & 0x00000000FFFFFFFFL;
+                    var p1 = values[posA] & 0xFFFFFFFFL;
                     posA -= 1;
 
-                    var p2 = mulx & 0x00000000FFFFFFFFL;
+                    var p2 = mulx & 0xFFFFFFFFL;
                     var edxeax = p1 * p2;
 
                     values[posB] = (int)byt + (int)edxeax;
@@ -157,7 +157,7 @@ namespace D2NG.BNCS.Login
 
             }
 
-            return values;
+            return values.Select(v => (int)v).ToArray(); ;
         }
 
         protected static long RecalcVarC(long varC, long[] values, int i, int j)
@@ -172,21 +172,12 @@ namespace D2NG.BNCS.Login
 
         protected static long CalculateEbp(long value, int ecx) => (value & (0x0FL << ecx)) >> ecx;
         
-
         private void Decode()
         {
             var table = BuildTableFromKey(this.Key);
-
             var values = GenerateValues(table);
 
-            /**
-             * Removed the c_int32 casting
-             */
-
-            var intValues = values.Select(v => (int)v).ToArray();
-             
-            var esi = 0;
-            var copy = intValues
+            var valuesAsBytes = values
                 .Select(BitConverter.GetBytes)
                 .Aggregate(new List<byte>(), 
                     (current, next) =>
@@ -196,6 +187,7 @@ namespace D2NG.BNCS.Login
                     },
                     a => a.ToArray());
 
+            var esi = 0;
             for (byte edi = 0; edi < 120; edi++)
             {
                 var eax = edi & 0x1F;
@@ -203,10 +195,10 @@ namespace D2NG.BNCS.Login
                 var edx = 3 - (edi >> 5);
 
                 var loc = 12 - ((esi >> 5) << 2);
-                var ebp = BitConverter.ToInt32(copy, loc);
+                var ebp = BitConverter.ToInt32(valuesAsBytes, loc);
                 ebp = (ebp & (1 << ecx)) >> ecx;
 
-                intValues[edx] = ((ebp & 1) << eax) | (~(1 << eax) & intValues[edx]);
+                values[edx] = ((ebp & 1) << eax) | (~(1 << eax) & values[edx]);
 
                 esi += 0x0B;
                 if (esi > 120)
@@ -215,14 +207,14 @@ namespace D2NG.BNCS.Login
                 }
             }
 
-            this.Product = intValues[0] >> 0X0A;
-            this.Public = BitConverter.GetBytes(((intValues[0] & 0x03FF) << 0x10) | (int)((uint)intValues[1] >> 0x10));
+            this.Product = values[0] >> 0X0A;
+            this.Public = BitConverter.GetBytes(((values[0] & 0x03FF) << 0x10) | (int)((uint)values[1] >> 0x10));
 
             var priv = new List<byte>();
-            priv.Add((byte) ((intValues[1] & 0x00FF) >> 0));
-            priv.Add((byte) ((intValues[1] & 0xFF00) >> 8));
-            priv.AddRange(BitConverter.GetBytes(intValues[2]));
-            priv.AddRange(BitConverter.GetBytes(intValues[3]));
+            priv.Add((byte) ((values[1] & 0x00FF) >> 0));
+            priv.Add((byte) ((values[1] & 0xFF00) >> 8));
+            priv.AddRange(BitConverter.GetBytes(values[2]));
+            priv.AddRange(BitConverter.GetBytes(values[3]));
             this.Private = priv.ToArray();
         }
 
