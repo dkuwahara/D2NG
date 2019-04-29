@@ -18,8 +18,8 @@ namespace D2NG.BNCS.Packet
             uint clientToken,
             uint serverToken,
             CheckRevisionResult crResult,
-            CdKey classic,
-            CdKey expansion
+            CdKeyBsha1 classic,
+            CdKeyBsha1 expansion
             ) : base(
             BuildPacket(
                     0x51,

@@ -20,9 +20,9 @@ namespace D2NG
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
 
-        private CdKey _classicKey;
+        private CdKeyBsha1 _classicKey;
 
-        private CdKey _expansionKey;
+        private CdKeyBsha1 _expansionKey;
 
         private readonly uint _clientToken;
         enum State
@@ -88,8 +88,8 @@ namespace D2NG
         {
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.VerifyClient);
-            _classicKey = new CdKey(classicKey);
-            _expansionKey = new CdKey(expansionKey);
+            _classicKey = new CdKeyBsha1(classicKey);
+            _expansionKey = new CdKeyBsha1(expansionKey);
             _machine.Fire(Trigger.AuthorizeKeys);
         }
 
