@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using D2NG.BNCS.Login;
 using Xunit;
 
@@ -15,14 +16,13 @@ namespace D2NGTests.BNCS.Login
         [Fact]
         public void TestMaskingBytes()
         {
-            byte[] priv =
+            int[] priv =
             {
-                53, 4, 41, 65, 24, 76, 124, 36, 12, 42
+                53, -4, 41, 65, -24, 76, -124, 36, 12, 42
             };
-
             Assert.Equal(9993, this.Product);
             Assert.Equal(BitConverter.GetBytes(18067384), this.Public);
-            Assert.Equal(priv, this.Private);
+            Assert.Equal(priv.Select(v => (byte)v), this.Private);
         }
 
         [Fact]

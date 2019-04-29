@@ -182,9 +182,11 @@ namespace D2NG.BNCS.Login
             /**
              * Removed the c_int32 casting
              */
+
+            var intValues = values.Select(v => (int)v).ToArray();
              
             var esi = 0;
-            var copy = values
+            var copy = intValues
                 .Select(BitConverter.GetBytes)
                 .Aggregate(new List<byte>(), 
                     (current, next) =>
@@ -196,15 +198,15 @@ namespace D2NG.BNCS.Login
 
             for (byte edi = 0; edi < 120; edi++)
             {
-                int eax = edi & 0x1F;
+                var eax = edi & 0x1F;
                 var ecx = esi & 0x1F;
                 var edx = 3 - (edi >> 5);
 
                 var loc = 12 - ((esi >> 5) << 2);
-                var ebp = (long) BitConverter.ToUInt32(copy, loc);
-                ebp = (ebp & 1 << ecx) >> ecx;
+                var ebp = BitConverter.ToInt32(copy, loc);
+                ebp = (ebp & (1 << ecx)) >> ecx;
 
-                values[edx] = ((ebp & 1) << eax) |  (~(1 << eax) & values[edx]);
+                intValues[edx] = ((ebp & 1) << eax) | (~(1 << eax) & intValues[edx]);
 
                 esi += 0x0B;
                 if (esi > 120)
@@ -213,17 +215,16 @@ namespace D2NG.BNCS.Login
                 }
             }
 
-            this.Product = (int)(values[0] >> 0X0A);
-            this.Public = BitConverter.GetBytes(((values[0] & 0x03FF) << 0x10) | (values[1] >> 0x10));
+            this.Product = intValues[0] >> 0X0A;
+            this.Public = BitConverter.GetBytes(((intValues[0] & 0x03FF) << 0x10) | (int)((uint)intValues[1] >> 0x10));
+
             var priv = new List<byte>();
-            priv.Add((byte) ((values[1] & 0x00FF) >> 0));
-            priv.Add((byte) ((values[1] & 0xFF00) >> 8));
-            priv.AddRange(BitConverter.GetBytes(values[2]));
-            priv.AddRange(BitConverter.GetBytes(values[3]));
+            priv.Add((byte) ((intValues[1] & 0x00FF) >> 0));
+            priv.Add((byte) ((intValues[1] & 0xFF00) >> 8));
+            priv.AddRange(BitConverter.GetBytes(intValues[2]));
+            priv.AddRange(BitConverter.GetBytes(intValues[3]));
             this.Private = priv.ToArray();
         }
-
-
 
         public override List<byte> Hash(uint clientToken, uint serverToken)
         {
