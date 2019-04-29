@@ -5,7 +5,7 @@ using YamlDotNet.Core.Tokens;
 
 namespace D2NG.BNCS.Login
 {
-    public abstract class CdKey : IHashableKey
+    public abstract class CdKey
     {
         public string Key { get; }
         public int Product { get; set; }
