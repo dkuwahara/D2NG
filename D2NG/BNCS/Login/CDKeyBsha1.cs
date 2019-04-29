@@ -151,8 +151,6 @@ namespace D2NG.BNCS.Login
             Public = BitConverter.GetBytes(num);
         }
 
-        public int KeyLength { get; }
-
         protected static char ConvertToHexDigit(ulong hex)
         {
             var byt = hex;
@@ -174,7 +172,7 @@ namespace D2NG.BNCS.Login
             return (ulong) (input - 0x37);
         }
 
-        public override List<byte> Hash(uint clientToken, uint serverToken)
+        public override byte[] ComputeHash(uint clientToken, uint serverToken)
         {
             var hashData = new List<byte>(BitConverter.GetBytes(clientToken));
             hashData.AddRange(BitConverter.GetBytes(serverToken));
@@ -183,7 +181,7 @@ namespace D2NG.BNCS.Login
             hashData.AddRange(BitConverter.GetBytes(0));
             hashData.AddRange(BitConverter.GetBytes(uint.Parse(_cdKey.Substring(8, 8), NumberStyles.HexNumber)));
 
-            return Bsha1.GetHash(hashData);
+            return Bsha1.GetHash(hashData).ToArray();
         }
     }
 }

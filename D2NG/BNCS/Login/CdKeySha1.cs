@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data.SqlTypes;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
 
 namespace D2NG.BNCS.Login
@@ -82,6 +83,7 @@ namespace D2NG.BNCS.Login
 
         public CdKeySha1(string key) : base(key)
         {
+            KeyLength = key.Length;
             Decode();
         }
         protected static int[] BuildTableFromKey(String cdKey)
@@ -218,9 +220,16 @@ namespace D2NG.BNCS.Login
             this.Private = priv.ToArray();
         }
 
-        public override List<byte> Hash(uint clientToken, uint serverToken)
+        public override byte[] ComputeHash(uint clientToken, uint serverToken)
         {
-            throw new NotImplementedException();
+            var buffer = new List<byte>();
+            buffer.AddRange(BitConverter.GetBytes(clientToken));
+            buffer.AddRange(BitConverter.GetBytes(serverToken));
+            buffer.AddRange(BitConverter.GetBytes(Product));
+            buffer.AddRange(Public);
+            buffer.AddRange(Private);
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            return sha.ComputeHash(buffer.ToArray());
         }
 
     }

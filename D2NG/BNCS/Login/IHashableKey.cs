@@ -6,6 +6,6 @@ namespace D2NG.BNCS.Login
 {
     interface IHashableKey
     {
-        List<byte> Hash(uint clientToken, uint serverToken);
+        byte[] ComputeHash(uint clientToken, uint serverToken);
     }
 }

@@ -11,12 +11,13 @@ namespace D2NG.BNCS.Login
         public int Product { get; set; }
         public byte[] Public { get; set; }
         public byte[] Private { get; set; }
+        public int KeyLength { get; set; }
 
         public CdKey(String key)
         {
             Key = key;
         }
 
-        public abstract List<byte> Hash(uint clientToken, uint serverToken);
+        public abstract byte[] ComputeHash(uint clientToken, uint serverToken);
     }
 }

@@ -18,8 +18,8 @@ namespace D2NG.BNCS.Packet
             uint clientToken,
             uint serverToken,
             CheckRevisionResult crResult,
-            CdKeyBsha1 classic,
-            CdKeyBsha1 expansion
+            CdKey classic,
+            CdKey expansion
             ) : base(
             BuildPacket(
                     0x51,
@@ -29,15 +29,15 @@ namespace D2NG.BNCS.Packet
                     KeyCount,
                     IsSpawn,
                     BitConverter.GetBytes(classic.KeyLength),
-                    ClassicProduct,
+                    BitConverter.GetBytes(classic.Product),
                     classic.Public,
                     BitConverter.GetBytes(0x0),
-                    classic.Hash(clientToken, serverToken),
+                    classic.ComputeHash(clientToken, serverToken),
                     BitConverter.GetBytes(expansion.KeyLength),
-                    ExpansionProduct,
+                    BitConverter.GetBytes(expansion.Product),
                     expansion.Public,
                     BitConverter.GetBytes(0x0),
-                    expansion.Hash(clientToken, serverToken),
+                    expansion.ComputeHash(clientToken, serverToken),
                     crResult.Info,
                     Encoding.ASCII.GetBytes("D2NG\0")
                 )
