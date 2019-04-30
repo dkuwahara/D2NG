@@ -28,7 +28,7 @@ namespace D2NGTests.BNCS.Login
         [Fact]
         public void TestBuildTableFromKey()
         {
-            var expectedTable = new int[]
+            var expectedTable = new []
             {
                 0x33, 0x00, 0x33, 0x01, 0x33, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00, 0x33, 0x00, 0x33, 0x00,
@@ -38,25 +38,16 @@ namespace D2NGTests.BNCS.Login
                 0x00, 0x00, 0x33, 0x02, 0x33, 0x01, 0x00, 0x01,
                 0x00, 0x00, 0x00, 0x0
             };
-            var table = BuildTableFromKey(Key);
+            var table = BuildTableFromKey(this.Key);
             Assert.Equal(expectedTable, table);
-        }
-
-        [Fact]
-        public void TestEsi()
-        {
-            byte esi = (29 & 7) << 2;
-            Assert.True(esi < byte.MaxValue);
         }
 
         [Theory]
         [ClassData(typeof(EbpTestData))]
-        public void TestEbp(long ebp, long value, int ecx)
-        { 
+        public static void TestEbp(long ebp, long value, int ecx)
+        {
             Assert.Equal(ebp, CdKeySha1.CalculateEbp(value, ecx));
         }
-
-     
     }
 
     public class EbpTestData : IEnumerable<object[]>

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using YamlDotNet.Core.Tokens;
 
 namespace D2NG.BNCS.Login
 {
@@ -13,7 +10,7 @@ namespace D2NG.BNCS.Login
         public byte[] Private { get; set; }
         public int KeyLength { get; set; }
 
-        public CdKey(String key)
+        protected CdKey(String key)
         {
             Key = key;
         }

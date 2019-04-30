@@ -160,7 +160,7 @@ namespace D2NG.BNCS.Login
 
             }
 
-            return values.Select(v => (int)v).ToArray(); ;
+            return values.Select(v => (int)v).ToArray();
         }
 
         protected static long RecalcVarC(long varC, long[] values, int i, int j)

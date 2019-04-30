@@ -105,13 +105,13 @@ namespace D2NG
         {
             Connection.WritePacket(new BncsAuthInfoRequestPacket());
             var packet = Connection.ReadPacket();
-            Log.Debug("{0:X}", packet[1]);
+            Log.Debug("[{0}] Received: {1:X}", GetType(), packet);
         }
 
         public void OnAuthorizeKeys()
         {
             var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
-            Log.Debug("[{0}] Received: {1}", GetType(), packet);
+            Log.Debug("[{0}] Received: {1:X}", GetType(), packet.Raw);
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
 
             Connection.WritePacket(new BncsAuthCheckRequestPacket(
