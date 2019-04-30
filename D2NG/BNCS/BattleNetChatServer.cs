@@ -48,7 +48,6 @@ namespace D2NG
         {
             _clientToken = (uint)Environment.TickCount;
             
-
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
 
             _machine.Configure(State.NotConnected)
@@ -88,8 +87,17 @@ namespace D2NG
         {
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.VerifyClient);
-            _classicKey = new CdKey(classicKey);
-            _expansionKey = new CdKey(expansionKey);
+            if (classicKey.Length == 16)
+            {
+                _classicKey = new CdKeyBsha1(classicKey);
+                _expansionKey = new CdKeyBsha1(expansionKey);
+            }
+            else
+            {
+                _classicKey = new CdKeySha1(classicKey);
+                _expansionKey = new CdKeySha1(expansionKey);
+            }
+
             _machine.Fire(Trigger.AuthorizeKeys);
         }
 
@@ -97,13 +105,13 @@ namespace D2NG
         {
             Connection.WritePacket(new BncsAuthInfoRequestPacket());
             var packet = Connection.ReadPacket();
-            Log.Debug("{0:X}", packet[1]);
+            Log.Debug("[{0}] Received: {1:X}", GetType(), packet);
         }
 
         public void OnAuthorizeKeys()
         {
             var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
-            Log.Debug("[{0}] Received: {1}", GetType(), packet);
+            Log.Debug("[{0}] Received: {1:X}", GetType(), packet.Raw);
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
 
             Connection.WritePacket(new BncsAuthCheckRequestPacket(
