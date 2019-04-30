@@ -37,7 +37,7 @@ namespace D2NG.BNCS.Packet
         }
 
         private void ValidateResult()
-        {
+        { 
             switch (_result)
             {
                 case 0x000:

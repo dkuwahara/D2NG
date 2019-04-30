@@ -24,6 +24,7 @@ namespace D2NG.BNCS.Login
             var checksum = Encoding.ASCII.GetBytes(b64Hash.Substring(0, 4))
                 .Reverse()
                 .ToArray();
+
             var info = Encoding.ASCII.GetBytes(b64Hash.Substring(4) + "\0");
             return new CheckRevisionResult(0, checksum, info);
         }
@@ -40,6 +41,13 @@ namespace D2NG.BNCS.Login
             Version = version;
             Checksum = checksum;
             Info = info;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Version)}: {Version},\n" +
+                   $" {nameof(Checksum)}: {BitConverter.ToString(Checksum)},\n" +
+                   $" {nameof(Info)}: {Encoding.ASCII.GetString(Info)}";
         }
     }
 }

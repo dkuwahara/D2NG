@@ -4,6 +4,7 @@ using Stateless;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using D2NG.BNCS.Event;
 using D2NG.BNCS.Login;
 
 namespace D2NG
@@ -71,12 +72,12 @@ namespace D2NG
 
 
             Connection.PacketReceived += (obj, eventArgs) => {
-                Log.Debug("[{0}] Received Packet 0x{1:X}", GetType(), eventArgs.Packet.Type);
+                Log.Debug("[{0}] Received Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet.Raw));
                 PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Packet.Type, null)?.Invoke(eventArgs);
             };
 
             Connection.PacketSent += (obj, eventArgs) => {
-                Log.Debug("[{0}] Sent Packet 0x{1:X}", GetType(), eventArgs.Type);
+                Log.Debug("[{0}] Sent Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet));
                 PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             };
 
@@ -105,15 +106,15 @@ namespace D2NG
         {
             Connection.WritePacket(new BncsAuthInfoRequestPacket());
             var packet = Connection.ReadPacket();
-            Log.Debug("[{0}] Received: {1:X}", GetType(), packet);
         }
 
         public void OnAuthorizeKeys()
         {
             var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
-            Log.Debug("[{0}] Received: {1:X}", GetType(), packet.Raw);
-            var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
+            Log.Debug("[{0}] {1}", GetType(), packet);
 
+            var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
+            Log.Debug("[{0}] CheckRevision: {1}", GetType(), result);
             Connection.WritePacket(new BncsAuthCheckRequestPacket(
                 _clientToken,
                 packet.ServerToken,
@@ -123,7 +124,7 @@ namespace D2NG
 
             var authCheckResponse = new BncsAuthCheckResponsePacket(Connection.ReadPacket());
 
-            Log.Debug("{0:X}",authCheckResponse);
+            Log.Debug("{0:X}", authCheckResponse);
         }
 
         public void OnReceivedPacketEvent(byte type, Action<BncsPacketReceivedEvent> handler)

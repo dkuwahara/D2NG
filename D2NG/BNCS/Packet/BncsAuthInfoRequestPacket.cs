@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Serilog;
 
 namespace D2NG.BNCS.Packet
 {
@@ -8,7 +9,6 @@ namespace D2NG.BNCS.Packet
     public class BncsAuthInfoRequestPacket : BncsPacket
     {
         private static readonly byte[] ProtocolId = BitConverter.GetBytes(0x00);
-
 
         private const String PlatformCode = "IX86";
 
@@ -18,7 +18,7 @@ namespace D2NG.BNCS.Packet
 
         private static readonly byte[] LocalIp = BitConverter.GetBytes(0x00);
 
-        private static readonly byte[] TimeZoneBias = BitConverter.GetBytes((int)(DateTime.UtcNow.Subtract(DateTime.Now).TotalSeconds / 60));
+        private static readonly byte[] TimeZoneBias = BitConverter.GetBytes((uint)(DateTime.UtcNow.Subtract(DateTime.Now).TotalSeconds / 60));
 
         private static readonly byte[] MpqLocaleId = BitConverter.GetBytes(1033);
 
@@ -29,8 +29,9 @@ namespace D2NG.BNCS.Packet
         private const String Country = "United States\0";
 
         public BncsAuthInfoRequestPacket()
-            : this(0x0e)
+            : this(0x0E)
         {
+            Log.Debug("VERSION BYTE: {0}",  BitConverter.ToString(BitConverter.GetBytes(0x0E)));
         }
 
         public BncsAuthInfoRequestPacket(int version)

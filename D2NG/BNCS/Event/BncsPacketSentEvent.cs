@@ -1,8 +1,8 @@
-﻿namespace D2NG
+﻿namespace D2NG.BNCS.Event
 {
     public class BncsPacketSentEvent : BncsEvent
     {
-        private byte[] Packet { get; set; }
+        public byte[] Packet { get; set; }
 
         public byte Type { get; set; }
 
