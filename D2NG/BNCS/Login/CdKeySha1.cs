@@ -181,14 +181,8 @@ namespace D2NG.BNCS.Login
             var values = GenerateValues(table);
 
             var valuesAsBytes = values
-                .Select(BitConverter.GetBytes)
-                .Aggregate(new List<byte>(), 
-                    (current, next) =>
-                    {
-                        current.AddRange(next);
-                        return current;
-                    },
-                    a => a.ToArray());
+                .SelectMany(BitConverter.GetBytes)
+                .ToArray();
 
             var esi = 0;
             for (byte edi = 0; edi < 120; edi++)
