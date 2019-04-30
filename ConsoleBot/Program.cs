@@ -17,8 +17,15 @@ namespace ConsoleBot
             Client client = new Client();
 
             Config config = Config.FromFile("config.yml");
-            
-            client.Bncs.ConnectTo("useast.battle.net", config.ClassicKey, config.ExpansionKey);
+
+            try
+            {
+                client.Bncs.ConnectTo(config.Realm, config.ClassicKey, config.ExpansionKey);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Unhandled Exception");
+            }
             Log.Debug("Waiting for input");
             Console.ReadKey(true);
         }
