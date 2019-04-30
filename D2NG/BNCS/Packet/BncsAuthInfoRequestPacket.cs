@@ -20,9 +20,9 @@ namespace D2NG.BNCS.Packet
 
         private static readonly byte[] TimeZoneBias = BitConverter.GetBytes((int)(DateTime.UtcNow.Subtract(DateTime.Now).TotalSeconds / 60));
 
-        private static readonly byte[] MpqLocaleId = BitConverter.GetBytes(0x00);
+        private static readonly byte[] MpqLocaleId = BitConverter.GetBytes(1033);
 
-        private static readonly byte[] UserLangId = BitConverter.GetBytes(0x00);
+        private static readonly byte[] UserLangId = BitConverter.GetBytes(1033);
 
         private const String CountryAbbr = "USA\0";
 

@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
+using Serilog;
 
 namespace D2NG.BNCS.Login
 {
@@ -210,6 +211,7 @@ namespace D2NG.BNCS.Login
             }
 
             this.Product = values[0] >> 0X0A;
+            Log.Debug("[{0}] Product: 0x{1:X}", GetType(), Product);
             this.Public = BitConverter.GetBytes(((values[0] & 0x03FF) << 0x10) | (int)((uint)values[1] >> 0x10));
 
             var priv = new List<byte>();

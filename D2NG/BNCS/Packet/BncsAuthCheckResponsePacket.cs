@@ -20,21 +20,23 @@ namespace D2NG.BNCS.Packet
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
             }
-
             if (AuthCheckType != reader.ReadByte())
             {
                 throw new BncsPacketException("Expected type was not found");
             }
-            
             var packetSize = reader.ReadUInt16();
+            if (packet.Length != packetSize)
+            {
+                throw new BncsPacketException("Packet length does not match");
+            }
+            
             _result = reader.ReadUInt32();
             _info = Encoding.ASCII.GetString(reader.ReadBytes(packetSize - 8));
 
-            InspectResult();
+            ValidateResult();
         }
 
-
-        private void InspectResult()
+        private void ValidateResult()
         {
             switch (_result)
             {
@@ -42,7 +44,7 @@ namespace D2NG.BNCS.Packet
                     Log.Debug("Auth Check OK");
                     break;
                 case 0x100:
-                    throw new AuthCheckResponseException(String.Format(" Old game version: {0}", _info));
+                    throw new AuthCheckResponseException($" Old game version: {_info}");
                 case 0x101:
                     throw new AuthCheckResponseException("Invalid game version");
                 case 0x102:

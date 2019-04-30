@@ -48,7 +48,6 @@ namespace D2NG
         {
             _clientToken = (uint)Environment.TickCount;
             
-
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
 
             _machine.Configure(State.NotConnected)

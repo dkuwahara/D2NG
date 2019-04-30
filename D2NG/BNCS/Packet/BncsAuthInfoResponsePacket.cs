@@ -16,20 +16,25 @@ namespace D2NG.BNCS.Packet
             if (AuthInfoType != reader.ReadByte())
             {
                 throw new BncsPacketException("Expected type was not found");
-            } 
+            }
+            if (packet.Length != reader.ReadUInt16())
+            {
+                throw new BncsPacketException("Packet length does not match");
+            }
 
-            LogonType = reader.ReadInt32();
+            LogonType = reader.ReadUInt32();
             ServerToken = reader.ReadUInt32();
             _ = reader.ReadInt32();
             MpqFileTime = reader.ReadUInt64();
 
+            reader.Close();
             var offset = 24;
 
             MpqFileName = ReadNullTerminatedString(Encoding.ASCII.GetString(Raw), ref offset);
             FormulaString = ReadNullTerminatedString(Encoding.GetEncoding("ISO-8859-1").GetString(Raw), ref offset);
         }
 
-        public int LogonType { get; }
+        public uint LogonType { get; }
         public uint ServerToken { get; }
         public ulong MpqFileTime { get; }
         public string FormulaString { get; }
