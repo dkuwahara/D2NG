@@ -22,7 +22,6 @@ namespace D2NG.BNCS.Login
             var b64Hash = Convert.ToBase64String(hash);
 
             var checksum = Encoding.ASCII.GetBytes(b64Hash.Substring(0, 4))
-                .Reverse()
                 .ToArray();
 
             var info = Encoding.ASCII.GetBytes(b64Hash.Substring(4) + "\0");
