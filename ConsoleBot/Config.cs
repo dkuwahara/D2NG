@@ -20,5 +20,8 @@ namespace ConsoleBot
         public String ClassicKey { get; set; }
         [YamlMember(Alias = "expansionKey")]
         public String ExpansionKey { get; set; }
+
+        [YamlMember(Alias = "realm")]
+        public String Realm { get; set; }
     }
 }
