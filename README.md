@@ -6,7 +6,7 @@
 This project builds with .NET Core 2.1 and can be built by running `dotnet build` on the command line from the root of the Solution.
 
 ## Configuring
-ConsoleBot expects a `config.yml` file in the same directory as the `.exe`. The `config.yml` should look as follows:
+ConsoleBot expects a `config.yml` file in the same directory as the `.exe` or executable `.dll`. The `config.yml` should look as follows:
 ```
 classicKey: string
 expansionKey: string
