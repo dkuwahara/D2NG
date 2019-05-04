@@ -8,9 +8,6 @@ This project builds with .NET Core 2.1 and can be built by running `dotnet build
 ### Building Docker
 You can build the `ConsoleBot` in to a docker container by executing `docker build -t "dkuwahara/d2ng:$TAG ."` from the root of the project.
 
-### Running ConsoleBot Docker Image
-You'll need to mount the directory that has your `config.yml`so that the program can find it. Example: `docker run --mount src="%cd%/config",target=/config,type=bind dkuwahara/d2ng:$TAG --config /config/config.yml`
-
 ## Configuring
 ConsoleBot expects a `config.yml` file in the same directory as the `.exe` or executable `.dll`. The `config.yml` should look as follows:
 ```
@@ -18,3 +15,6 @@ classicKey: string
 expansionKey: string
 realm: string
 ```
+
+### Running ConsoleBot Docker Image
+You'll need to mount the directory that has your `config.yml`so that the program can find it. Example: `docker run --mount src="%cd%/config",target=/config,type=bind dkuwahara/d2ng:$TAG --config /config/config.yml`
