@@ -2,8 +2,12 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
       - checkout
-      - run: dotnet build
-      - run: dotnet test --collect:"Code Coverage"
+      - run: |
+          dotnet build
+          dotnet test
+          dotnet publish -c Release
+      - setup_remote_docker
+      - run: docker build -t dkuwahara/d2ng:$CIRCLE_BRANCH .
