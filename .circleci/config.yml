@@ -1,25 +1,46 @@
 version: 2
 jobs:
+  checkout_code:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+      - image: circleci/postgres:9.4.12-alpine
+    working_directory: ~/project
+    steps:
+      - checkout
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/project
   build:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
-      - checkout
+      - restore_cache:
+          keys: 
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: dotnet build
-      - run: dotnet publish -c Release
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1  }}
+          paths:
+            - ~/project
   test:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
-      - checkout
+      - restore_cache:
+          keys: 
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: dotnet test
   build_docker:
     machine: true
     steps:
-      - run: docker build -t dkuwahara/d2ng:local .
+      - checkout
+      - run: |
+          docker build -t dkuwahara/d2ng:local .
   push_docker:
     machine: true
     steps:
+      - checkout
       - run: | 
           TAG=0.1.$CIRCLE_BUILD_NUM
           docker build -t dkuwahara/d2ng:$TAG
@@ -30,20 +51,23 @@ workflows:
   version: 2
   build-test-and-docker:
     jobs:
-      - build
-      - test:
+      - checkout_code
+      - build:
           requires:
+            - checkout_code
+      - test:
+          requires: 
             - build
       - build_docker:
           requires:
-            - build
+            - test
           filters:
             branches:
               ignore: 
                 - master
       - push_docker:
           requires:
-            - build
+            - test
           filters:
             branches:
               only: master
