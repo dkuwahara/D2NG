@@ -1,12 +1,21 @@
 ﻿using D2NG;
 using Serilog;
 using System;
+using System.ComponentModel.DataAnnotations;
+using McMaster.Extensions.CommandLineUtils;
 
 namespace ConsoleBot
 {
-    static class Program
+    class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
+            => CommandLineApplication.Execute<Program>(args);
+
+        [Option(Description = "Config File", LongName = "config", ShortName = "c")]
+        [Required]
+        public String ConfigFile { get; }
+
+        private void OnExecute()
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -16,7 +25,7 @@ namespace ConsoleBot
             Log.Debug("Starting bot");
             Client client = new Client();
 
-            Config config = Config.FromFile("config.yml");
+            Config config = Config.FromFile(this.ConfigFile);
 
             try
             {
