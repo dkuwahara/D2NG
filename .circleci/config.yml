@@ -68,6 +68,7 @@ workflows:
       - push_docker:
           requires:
             - test
+          context: d2ng
           filters:
             branches:
               only: master
