@@ -16,16 +16,21 @@ namespace D2NG
         protected ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>>();
 
         protected ConcurrentDictionary<byte, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketSentEvent>>();
+        
 
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
+
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<string, string> _loginTrigger;
 
         private CdKey _classicKey;
 
         private CdKey _expansionKey;
 
         private readonly uint _clientToken;
+
+        private uint _serverToken;
         enum State
         {
             NotConnected,
@@ -51,6 +56,8 @@ namespace D2NG
             
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
 
+            _loginTrigger = _machine.SetTriggerParameters<String, String>(Trigger.Login);
+
             _machine.Configure(State.NotConnected)
                 .Permit(Trigger.Connect, State.Connected);
 
@@ -68,7 +75,12 @@ namespace D2NG
             _machine.Configure(State.KeysAuthorized)
                 .SubstateOf(State.Connected)
                 .SubstateOf(State.Verified)
-                .OnEntryFrom(Trigger.AuthorizeKeys, OnAuthorizeKeys);
+                .OnEntryFrom(Trigger.AuthorizeKeys, OnAuthorizeKeys)
+                .Permit(Trigger.Login, State.UserAuthenticated);
+
+            _machine.Configure(State.UserAuthenticated)
+                .OnEntryFrom(_loginTrigger, (username, password) => OnLogin(username, password));
+
 
 
             Connection.PacketReceived += (obj, eventArgs) => {
@@ -83,6 +95,7 @@ namespace D2NG
 
             OnReceivedPacketEvent(0x25, obj => Connection.WritePacket(obj.Packet.Raw));
         }
+
 
         public void ConnectTo(string realm, string classicKey, string expansionKey)
         {
@@ -102,6 +115,18 @@ namespace D2NG
             _machine.Fire(Trigger.AuthorizeKeys);
         }
 
+        public void Login(string username, string password)
+        {
+            _machine.Fire(_loginTrigger, username, password);
+        }
+
+        private void OnLogin(string username, string password)
+        {
+            var packet = new BncsLogonRequestPacket(_clientToken, _serverToken, username, password);
+            Connection.WritePacket(packet);
+            var responsePacket = new BncsLogonResponsePacket(Connection.ReadPacket());
+        }
+
         public void OnVerifyClient()
         {
             Connection.WritePacket(new BncsAuthInfoRequestPacket());
@@ -111,6 +136,7 @@ namespace D2NG
         public void OnAuthorizeKeys()
         {
             var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
+            _serverToken = packet.ServerToken;
             Log.Debug("[{0}] {1}", GetType(), packet);
 
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);

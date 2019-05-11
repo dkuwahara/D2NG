@@ -6,7 +6,7 @@ namespace D2NG.BNCS.Packet
 {
     public class BncsAuthCheckRequestPacket : BncsPacket
     {
-        private static readonly byte[] KeyCount = BitConverter.GetBytes(0x02);
+        private static readonly byte[] KeyCount = BitConverter.GetBytes(0x02U);
 
         private static readonly byte[] IsSpawn = BitConverter.GetBytes(0x00);
 
