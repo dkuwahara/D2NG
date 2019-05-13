@@ -6,7 +6,7 @@ namespace D2NG.BNCS.Packet
 {
     public class BncsLogonResponsePacket : BncsPacket
     {
-        private readonly byte LogonResponseType = 0x3A;
+        public static readonly byte SidByte = 0x3A;
         private uint _status;
 
         public BncsLogonResponsePacket(byte[] packet) : base(packet)
@@ -16,7 +16,7 @@ namespace D2NG.BNCS.Packet
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
             }
-            if (LogonResponseType != reader.ReadByte())
+            if (SidByte != reader.ReadByte())
             {
                 throw new BncsPacketException("Expected type was not found");
             }

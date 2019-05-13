@@ -18,7 +18,7 @@ namespace D2NG.BNCS.Packet
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(serverToken),
                     DoubleHashPassword(clientToken, serverToken, password),
-                    Encoding.ASCII.GetBytes(username)
+                    Encoding.ASCII.GetBytes(username + "\0")
                 )
             )
         {

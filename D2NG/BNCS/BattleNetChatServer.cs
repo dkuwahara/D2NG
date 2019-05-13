@@ -79,9 +79,10 @@ namespace D2NG
                 .Permit(Trigger.Login, State.UserAuthenticated);
 
             _machine.Configure(State.UserAuthenticated)
+                .SubstateOf(State.Connected)
+                .SubstateOf(State.Verified)
+                .SubstateOf(State.KeysAuthorized)
                 .OnEntryFrom(_loginTrigger, (username, password) => OnLogin(username, password));
-
-
 
             Connection.PacketReceived += (obj, eventArgs) => {
                 Log.Debug("[{0}] Received Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet.Raw));
@@ -124,20 +125,32 @@ namespace D2NG
         {
             var packet = new BncsLogonRequestPacket(_clientToken, _serverToken, username, password);
             Connection.WritePacket(packet);
-            var responsePacket = new BncsLogonResponsePacket(Connection.ReadPacket());
+            byte[] response;
+            do
+            {
+                response = Connection.ReadPacket();
+                if (response[1] == 0xFF)
+                {
+                    throw new LogonFailedException();
+                }
+            } while (response[1] != BncsLogonResponsePacket.SidByte);
+            _ = new BncsLogonResponsePacket(response);
+
+            
         }
 
         public void OnVerifyClient()
         {
             Connection.WritePacket(new BncsAuthInfoRequestPacket());
-            var packet = Connection.ReadPacket();
+            _ = Connection.ReadPacket();
         }
 
         public void OnAuthorizeKeys()
         {
             var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
             _serverToken = packet.ServerToken;
-            Log.Debug("[{0}] {1}", GetType(), packet);
+            
+            Log.Debug("[{0}] Server token: {1} Logon Type: {2}", GetType(), _serverToken, packet.LogonType);
 
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
             Log.Debug("[{0}] CheckRevision: {1}", GetType(), result);
