@@ -31,6 +31,7 @@ namespace ConsoleBot
             {
                 client.Bncs.ConnectTo(config.Realm, config.ClassicKey, config.ExpansionKey);
                 client.Bncs.Login(config.Username, config.Password);
+                client.Bncs.EnterChat();
             }
             catch (Exception e)
             {
