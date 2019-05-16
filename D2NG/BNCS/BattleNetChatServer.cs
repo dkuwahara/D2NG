@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using D2NG.BNCS.Event;
 using D2NG.BNCS.Login;
+using System.Threading;
 
 namespace D2NG
 {
@@ -33,6 +34,7 @@ namespace D2NG
         private readonly String DefaultChannel = "Diablo II";
         private uint _serverToken;
         private string _username;
+        private Thread _listener;
 
         enum State
         {
@@ -164,6 +166,16 @@ namespace D2NG
             Connection.WritePacket(new EnterChatRequestPacket(_username));
             Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
             _ = Connection.ReadPacket();
+            _listener = new Thread(Listen);
+            _listener.Start();
+        }
+
+        public void Listen()
+        {
+            while(_machine.IsInState(State.InChat))
+            {
+                _ = Connection.ReadPacket();
+            }
         }
 
         private void OnVerifyClient()
