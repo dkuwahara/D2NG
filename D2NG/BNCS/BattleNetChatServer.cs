@@ -30,6 +30,7 @@ namespace D2NG
 
         private readonly uint _clientToken;
 
+        private readonly String DefaultChannel = "Diablo II";
         private uint _serverToken;
         enum State
         {
@@ -136,7 +137,8 @@ namespace D2NG
             } while (response[1] != BncsLogonResponsePacket.SidByte);
             _ = new BncsLogonResponsePacket(response);
 
-            
+            Connection.WritePacket(new EnterChatRequestPacket(username));
+            Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
         }
 
         public void OnVerifyClient()
