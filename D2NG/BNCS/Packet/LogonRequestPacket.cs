@@ -14,7 +14,7 @@ namespace D2NG.BNCS.Packet
             string password) :
             base(
                 BuildPacket(
-                    0x3A,
+                    (byte)Sid.LOGONRESPONSE2,
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(serverToken),
                     DoubleHashPassword(clientToken, serverToken, password),

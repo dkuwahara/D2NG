@@ -7,8 +7,6 @@ namespace D2NG.BNCS.Packet
 {
     internal class AuthCheckResponsePacket : BncsPacket
     {
-        private const byte AuthCheckType = 0x51;
-
         private readonly uint _result;
 
         private readonly string _info;
@@ -20,7 +18,7 @@ namespace D2NG.BNCS.Packet
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
             }
-            if (AuthCheckType != reader.ReadByte())
+            if ((byte)Sid.AUTH_CHECK != reader.ReadByte())
             {
                 throw new BncsPacketException("Expected type was not found");
             }

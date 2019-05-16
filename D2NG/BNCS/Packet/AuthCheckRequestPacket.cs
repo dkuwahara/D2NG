@@ -17,7 +17,7 @@ namespace D2NG.BNCS.Packet
             CdKey classic,
             CdKey expansion
             ) : base(BuildPacket(
-                    0x51,
+                    (byte)Sid.AUTH_CHECK,
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(crResult.Version),
                     crResult.Checksum,

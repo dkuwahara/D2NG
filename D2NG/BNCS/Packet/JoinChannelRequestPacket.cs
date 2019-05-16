@@ -5,12 +5,12 @@ namespace D2NG.BNCS.Packet
 {
     public class JoinChannelRequestPacket : BncsPacket
     {
-        public JoinChannelRequestPacket(string defaultChannel)
+        public JoinChannelRequestPacket(string channel)
             : base(
                   BuildPacket(
-                      0x0C,
+                      (byte)Sid.JOINCHANNEL,
                       BitConverter.GetBytes(0x05),
-                      Encoding.ASCII.GetBytes(defaultChannel),
+                      Encoding.ASCII.GetBytes(channel),
                       Encoding.ASCII.GetBytes("\0")
                       ))
         {

@@ -155,7 +155,7 @@ namespace D2NG
                 {
                     throw new LogonFailedException();
                 }
-            } while (response[1] != LogonResponsePacket.SidByte);
+            } while (response[1] != (byte)Sid.LOGONRESPONSE2);
             _ = new LogonResponsePacket(response);
         }
 

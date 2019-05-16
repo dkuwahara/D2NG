@@ -37,7 +37,7 @@ namespace D2NG.BNCS.Packet
         public AuthInfoRequestPacket(int version)
             : base(
                 BuildPacket(
-                    0x50,
+                    (byte)Sid.AUTH_INFO,
                     ProtocolId,
                     Encoding.ASCII.GetBytes(PlatformCode).Reverse().ToArray(),
                     Encoding.ASCII.GetBytes(ProductCode).Reverse().ToArray(),
