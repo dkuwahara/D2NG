@@ -5,9 +5,9 @@ using System.Text;
 
 namespace D2NG.BNCS.Packet
 {
-    public class BncsLogonRequestPacket : BncsPacket
+    public class LogonRequestPacket : BncsPacket
     {
-        public BncsLogonRequestPacket(
+        public LogonRequestPacket(
             uint clientToken,
             uint serverToken,
             string username,

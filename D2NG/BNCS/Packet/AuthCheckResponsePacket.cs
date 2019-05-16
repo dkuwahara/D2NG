@@ -5,7 +5,7 @@ using Serilog;
 
 namespace D2NG.BNCS.Packet
 {
-    internal class BncsAuthCheckResponsePacket : BncsPacket
+    internal class AuthCheckResponsePacket : BncsPacket
     {
         private const byte AuthCheckType = 0x51;
 
@@ -13,7 +13,7 @@ namespace D2NG.BNCS.Packet
 
         private readonly string _info;
 
-        public BncsAuthCheckResponsePacket(byte[] packet) : base(packet)
+        public AuthCheckResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())

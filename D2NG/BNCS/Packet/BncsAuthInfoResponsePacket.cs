@@ -3,10 +3,10 @@ using System.Text;
 
 namespace D2NG.BNCS.Packet
 {
-    public class BncsAuthInfoResponsePacket : BncsPacket
+    public class AuthInfoResponsePacket : BncsPacket
     {
         private readonly byte AuthInfoType = 0x50;
-        public BncsAuthInfoResponsePacket(byte[] packet) : base(packet)
+        public AuthInfoResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())

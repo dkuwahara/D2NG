@@ -4,12 +4,12 @@ using System.Text;
 
 namespace D2NG.BNCS.Packet
 {
-    public class BncsLogonResponsePacket : BncsPacket
+    public class LogonResponsePacket : BncsPacket
     {
         public static readonly byte SidByte = 0x3A;
         private uint _status;
 
-        public BncsLogonResponsePacket(byte[] packet) : base(packet)
+        public LogonResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())

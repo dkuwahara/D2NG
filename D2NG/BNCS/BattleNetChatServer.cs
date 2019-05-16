@@ -32,6 +32,8 @@ namespace D2NG
 
         private readonly String DefaultChannel = "Diablo II";
         private uint _serverToken;
+        private string _username;
+
         enum State
         {
             NotConnected,
@@ -40,6 +42,7 @@ namespace D2NG
             KeysAuthorized,
             UserAuthenticated,
             Chatting,
+            InChat,
         }
         enum Trigger
         {
@@ -47,7 +50,8 @@ namespace D2NG
             Disconnect,
             VerifyClient,
             AuthorizeKeys,
-            Login
+            Login,
+            EnterChat
         }
 
 
@@ -77,13 +81,24 @@ namespace D2NG
                 .SubstateOf(State.Connected)
                 .SubstateOf(State.Verified)
                 .OnEntryFrom(Trigger.AuthorizeKeys, OnAuthorizeKeys)
-                .Permit(Trigger.Login, State.UserAuthenticated);
+                .Permit(Trigger.Login, State.UserAuthenticated)
+                .Permit(Trigger.Disconnect, State.NotConnected);
 
             _machine.Configure(State.UserAuthenticated)
                 .SubstateOf(State.Connected)
                 .SubstateOf(State.Verified)
                 .SubstateOf(State.KeysAuthorized)
-                .OnEntryFrom(_loginTrigger, (username, password) => OnLogin(username, password));
+                .OnEntryFrom(_loginTrigger, (username, password) => OnLogin(username, password))
+                .Permit(Trigger.EnterChat, State.InChat)
+                .Permit(Trigger.Disconnect, State.NotConnected);
+
+            _machine.Configure(State.InChat)
+                .SubstateOf(State.Connected)
+                .SubstateOf(State.Verified)
+                .SubstateOf(State.KeysAuthorized)
+                .SubstateOf(State.UserAuthenticated)
+                .OnEntryFrom(Trigger.EnterChat, OnEnterChat)
+                .Permit(Trigger.Disconnect, State.NotConnected);
 
             Connection.PacketReceived += (obj, eventArgs) => {
                 Log.Debug("[{0}] Received Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet.Raw));
@@ -122,9 +137,15 @@ namespace D2NG
             _machine.Fire(_loginTrigger, username, password);
         }
 
+        public void EnterChat()
+        {
+            _machine.Fire(Trigger.EnterChat);
+        }
+
         private void OnLogin(string username, string password)
         {
-            var packet = new BncsLogonRequestPacket(_clientToken, _serverToken, username, password);
+            _username = username;
+            var packet = new LogonRequestPacket(_clientToken, _serverToken, username, password);
             Connection.WritePacket(packet);
             byte[] response;
             do
@@ -134,36 +155,40 @@ namespace D2NG
                 {
                     throw new LogonFailedException();
                 }
-            } while (response[1] != BncsLogonResponsePacket.SidByte);
-            _ = new BncsLogonResponsePacket(response);
-
-            Connection.WritePacket(new EnterChatRequestPacket(username));
-            Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
+            } while (response[1] != LogonResponsePacket.SidByte);
+            _ = new LogonResponsePacket(response);
         }
 
-        public void OnVerifyClient()
+        public void OnEnterChat()
         {
-            Connection.WritePacket(new BncsAuthInfoRequestPacket());
+            Connection.WritePacket(new EnterChatRequestPacket(_username));
+            Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
             _ = Connection.ReadPacket();
         }
 
-        public void OnAuthorizeKeys()
+        private void OnVerifyClient()
         {
-            var packet = new BncsAuthInfoResponsePacket(Connection.ReadPacket());
+            Connection.WritePacket(new AuthInfoRequestPacket());
+            _ = Connection.ReadPacket();
+        }
+
+        private void OnAuthorizeKeys()
+        {
+            var packet = new AuthInfoResponsePacket(Connection.ReadPacket());
             _serverToken = packet.ServerToken;
             
             Log.Debug("[{0}] Server token: {1} Logon Type: {2}", GetType(), _serverToken, packet.LogonType);
 
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
             Log.Debug("[{0}] CheckRevision: {1}", GetType(), result);
-            Connection.WritePacket(new BncsAuthCheckRequestPacket(
+            Connection.WritePacket(new AuthCheckRequestPacket(
                 _clientToken,
                 packet.ServerToken,
                 result,
                 _classicKey,
                 _expansionKey));
 
-            var authCheckResponse = new BncsAuthCheckResponsePacket(Connection.ReadPacket());
+            var authCheckResponse = new AuthCheckResponsePacket(Connection.ReadPacket());
 
             Log.Debug("{0:X}", authCheckResponse);
         }

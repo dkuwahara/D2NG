@@ -6,7 +6,7 @@ using Serilog;
 namespace D2NG.BNCS.Packet
 {
 
-    public class BncsAuthInfoRequestPacket : BncsPacket
+    public class AuthInfoRequestPacket : BncsPacket
     {
         private static readonly byte[] ProtocolId = BitConverter.GetBytes(0x00);
 
@@ -28,13 +28,13 @@ namespace D2NG.BNCS.Packet
 
         private const String Country = "United States\0";
 
-        public BncsAuthInfoRequestPacket()
+        public AuthInfoRequestPacket()
             : this(0x0E)
         {
             Log.Debug("VERSION BYTE: {0}",  BitConverter.ToString(BitConverter.GetBytes(0x0E)));
         }
 
-        public BncsAuthInfoRequestPacket(int version)
+        public AuthInfoRequestPacket(int version)
             : base(
                 BuildPacket(
                     0x50,
