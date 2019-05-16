@@ -6,7 +6,7 @@ namespace D2NG.BNCS.Packet
 {
     public class LogonResponsePacket : BncsPacket
     {
-        private uint _status;
+        public uint Status { get; }
 
         public LogonResponsePacket(byte[] packet) : base(packet)
         {
@@ -24,9 +24,9 @@ namespace D2NG.BNCS.Packet
                 throw new BncsPacketException("Packet length does not match");
             }
 
-            _status = reader.ReadUInt32();
+            Status = reader.ReadUInt32();
             
-            switch (_status)
+            switch (Status)
             {
                 case 0x00:
                     Log.Debug("Logon success");
@@ -39,8 +39,9 @@ namespace D2NG.BNCS.Packet
                     string message = reader.ReadString();
                     throw new LogonFailedException($"Account closed {message}");
                 default:
-                    throw new LogonFailedException($"Unknown login error {_status:X}");
+                    throw new LogonFailedException($"Unknown login error {Status:X}");
             }
         }
+
     }
 }
