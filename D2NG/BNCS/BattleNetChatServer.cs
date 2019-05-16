@@ -56,11 +56,10 @@ namespace D2NG
             EnterChat
         }
 
-
         public BattleNetChatServer()
         {
             _clientToken = (uint)Environment.TickCount;
-            
+
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
 
             _loginTrigger = _machine.SetTriggerParameters<String, String>(Trigger.Login);
@@ -134,14 +133,31 @@ namespace D2NG
             _machine.Fire(Trigger.AuthorizeKeys);
         }
 
+        public void EnterChat()
+        {
+            _machine.Fire(Trigger.EnterChat);
+        }
+
+        public void Listen()
+        {
+            while (_machine.IsInState(State.InChat))
+            {
+                _ = Connection.ReadPacket();
+            }
+        }
+
         public void Login(string username, string password)
         {
             _machine.Fire(_loginTrigger, username, password);
         }
 
-        public void EnterChat()
+        public void OnEnterChat()
         {
-            _machine.Fire(Trigger.EnterChat);
+            Connection.WritePacket(new EnterChatRequestPacket(_username));
+            Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
+            _ = Connection.ReadPacket();
+            _listener = new Thread(Listen);
+            _listener.Start();
         }
 
         private void OnLogin(string username, string password)
@@ -159,23 +175,6 @@ namespace D2NG
                 }
             } while (response[1] != (byte)Sid.LOGONRESPONSE2);
             _ = new LogonResponsePacket(response);
-        }
-
-        public void OnEnterChat()
-        {
-            Connection.WritePacket(new EnterChatRequestPacket(_username));
-            Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
-            _ = Connection.ReadPacket();
-            _listener = new Thread(Listen);
-            _listener.Start();
-        }
-
-        public void Listen()
-        {
-            while(_machine.IsInState(State.InChat))
-            {
-                _ = Connection.ReadPacket();
-            }
         }
 
         private void OnVerifyClient()
