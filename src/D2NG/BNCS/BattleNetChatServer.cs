@@ -36,6 +36,8 @@ namespace D2NG
         private string _username;
         private Thread _listener;
 
+        private ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> _receivedQueue;
+
         enum State
         {
             NotConnected,
@@ -68,7 +70,7 @@ namespace D2NG
                 .Permit(Trigger.Connect, State.Connected);
 
             _machine.Configure(State.Connected)
-                .OnEntryFrom<String>(_connectTrigger, realm => Connection.Connect(realm), "Realm to connect to")
+                .OnEntryFrom<String>(_connectTrigger, OnConnect)
                 .Permit(Trigger.VerifyClient, State.Verified)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
@@ -104,6 +106,8 @@ namespace D2NG
             Connection.PacketReceived += (obj, eventArgs) => {
                 Log.Debug("[{0}] Received Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet.Raw));
                 PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Packet.Type, null)?.Invoke(eventArgs);
+                _receivedQueue.GetOrAdd((Sid)eventArgs.Packet.Type, new ConcurrentQueue<BncsPacket>())
+                    .Enqueue(eventArgs.Packet);
             };
 
             Connection.PacketSent += (obj, eventArgs) => {
@@ -149,6 +153,12 @@ namespace D2NG
         public void Login(string username, string password)
         {
             _machine.Fire(_loginTrigger, username, password);
+        }
+
+        private void OnConnect(String realm)
+        {
+            _receivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
+            Connection.Connect(realm);
         }
 
         public void OnEnterChat()
