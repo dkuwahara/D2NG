@@ -20,6 +20,8 @@ namespace D2NG
         protected ConcurrentDictionary<byte, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketSentEvent>>();
         public ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
 
+        private const int MaxQueueSize = 100;
+
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
@@ -104,8 +106,15 @@ namespace D2NG
             Connection.PacketReceived += (obj, eventArgs) => {
                 Log.Debug("[{0}] Received Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet.Raw));
                 PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Packet.Type, null)?.Invoke(eventArgs);
-                ReceivedQueue.GetOrAdd((Sid)eventArgs.Packet.Type, new ConcurrentQueue<BncsPacket>())
+
+                var sid = (Sid)eventArgs.Packet.Type;
+                ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
                     .Enqueue(eventArgs.Packet);
+
+                if (ReceivedQueue[sid].Count > MaxQueueSize)
+                {
+                    ReceivedQueue[sid].TryDequeue(out _);
+                }
             };
 
             Connection.PacketSent += (obj, eventArgs) => {
@@ -187,7 +196,7 @@ namespace D2NG
             listener.Start();
         }
 
-        public void OnEnterChat()
+        private void OnEnterChat()
         {
             Connection.WritePacket(new EnterChatRequestPacket(_username));
             Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
