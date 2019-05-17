@@ -35,7 +35,6 @@ namespace D2NG
         private readonly String DefaultChannel = "Diablo II";
         private uint _serverToken;
         private string _username;
-        private Thread _listener;
 
         enum State
         {
@@ -184,8 +183,8 @@ namespace D2NG
         {
             ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
             Connection.Connect(realm);
-            _listener = new Thread(Listen);
-            _listener.Start();
+            var listener = new Thread(Listen);
+            listener.Start();
         }
 
         public void OnEnterChat()
