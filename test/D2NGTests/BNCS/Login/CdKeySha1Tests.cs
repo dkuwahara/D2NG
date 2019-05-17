@@ -46,7 +46,7 @@ namespace D2NGTests.BNCS.Login
         [ClassData(typeof(EbpTestData))]
         public static void TestEbp(long ebp, long value, int ecx)
         {
-            Assert.Equal(ebp, CdKeySha1.CalculateEbp(value, ecx));
+            Assert.Equal(ebp, CdKeySha1.Ebp(value, ecx));
         }
     }
 

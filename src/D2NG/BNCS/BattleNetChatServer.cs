@@ -13,30 +13,37 @@ namespace D2NG
 {
     public class BattleNetChatServer
     {
+        /***
+         * Constants
+         */
+        private readonly String DefaultChannel = "Diablo II";
+
+        private const int MaxQueueSize = 100;
+
+        
         private BncsConnection Connection { get; } = new BncsConnection();
 
         protected ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>>();
 
         protected ConcurrentDictionary<byte, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketSentEvent>>();
-        public ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
 
-        private const int MaxQueueSize = 100;
+        protected ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
+
+        private readonly uint _clientToken;
+
+        private CdKey _classicKey;
+
+        private CdKey _expansionKey;
+
+        private uint _serverToken;
+
+        private string _username;
 
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string, string> _loginTrigger;
-
-        private CdKey _classicKey;
-
-        private CdKey _expansionKey;
-
-        private readonly uint _clientToken;
-
-        private readonly String DefaultChannel = "Diablo II";
-        private uint _serverToken;
-        private string _username;
 
         enum State
         {

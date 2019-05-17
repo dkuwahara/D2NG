@@ -162,14 +162,14 @@ namespace D2NG.BNCS.Login
         protected static long RecalcVarC(long varC, long[] values, int i, int j)
         {
             var ecx = ((j & 7) << 2);
-            var idx = CalcIdx(j);
-            var ebp = CalculateEbp(values[idx], ecx);
+            var idx = Idx(j);
+            var ebp = Ebp(values[idx], ecx);
             return Translate[ebp ^ (Translate[varC + i] + i)];
         }
 
-        protected static int CalcIdx(int j) => 0x03 - (j >> 3);
+        protected static int Idx(int j) => 0x03 - (j >> 3);
 
-        protected static long CalculateEbp(long value, int ecx) => (value & (0x0FL << ecx)) >> ecx;
+        protected static long Ebp(long value, int ecx) => (value & (0x0FL << ecx)) >> ecx;
         
         private void Decode()
         {
