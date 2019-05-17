@@ -40,7 +40,7 @@ namespace ConsoleBot
                 Log.Error(e, "Unhandled Exception");
             }
             Log.Debug("Waiting for input");
-            Console.ReadKey(true);
+            Console.ReadKey(false);
         }
 
         private void HandleChatEvent(BncsPacketReceivedEvent obj)

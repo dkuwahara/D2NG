@@ -180,8 +180,11 @@ namespace D2NG
                 .Execute(() => CheckForPacket(sid));
 
             BncsPacket packet;
-            ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
-                .TryDequeue(out packet);
+            if (!ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
+                    .TryDequeue(out packet))
+            {
+                throw new PacketNotFoundException();
+            }
 
             return packet.Raw;
         }
