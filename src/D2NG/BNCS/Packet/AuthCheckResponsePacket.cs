@@ -5,22 +5,20 @@ using Serilog;
 
 namespace D2NG.BNCS.Packet
 {
-    internal class BncsAuthCheckResponsePacket : BncsPacket
+    internal class AuthCheckResponsePacket : BncsPacket
     {
-        private const byte AuthCheckType = 0x51;
-
         private readonly uint _result;
 
         private readonly string _info;
 
-        public BncsAuthCheckResponsePacket(byte[] packet) : base(packet)
+        public AuthCheckResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
             }
-            if (AuthCheckType != reader.ReadByte())
+            if ((byte)Sid.AUTH_CHECK != reader.ReadByte())
             {
                 throw new BncsPacketException("Expected type was not found");
             }

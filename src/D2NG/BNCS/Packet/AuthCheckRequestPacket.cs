@@ -4,20 +4,20 @@ using D2NG.BNCS.Login;
 
 namespace D2NG.BNCS.Packet
 {
-    public class BncsAuthCheckRequestPacket : BncsPacket
+    public class AuthCheckRequestPacket : BncsPacket
     {
-        private static readonly byte[] KeyCount = BitConverter.GetBytes(0x02);
+        private static readonly byte[] KeyCount = BitConverter.GetBytes(0x02U);
 
         private static readonly byte[] IsSpawn = BitConverter.GetBytes(0x00);
 
-        public BncsAuthCheckRequestPacket(
+        public AuthCheckRequestPacket(
             uint clientToken,
             uint serverToken,
             CheckRevisionResult crResult,
             CdKey classic,
             CdKey expansion
             ) : base(BuildPacket(
-                    0x51,
+                    (byte)Sid.AUTH_CHECK,
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(crResult.Version),
                     crResult.Checksum,
