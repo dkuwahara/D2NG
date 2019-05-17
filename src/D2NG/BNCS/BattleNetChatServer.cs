@@ -23,9 +23,9 @@ namespace D2NG
         
         private BncsConnection Connection { get; } = new BncsConnection();
 
-        protected ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>>();
+        protected ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>>();
 
-        protected ConcurrentDictionary<byte, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketSentEvent>>();
+        protected ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>>();
 
         protected ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
 
@@ -111,10 +111,10 @@ namespace D2NG
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
             Connection.PacketReceived += (obj, eventArgs) => {
-                Log.Debug("[{0}] Received Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet.Raw));
-                PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Packet.Type, null)?.Invoke(eventArgs);
-
                 var sid = (Sid)eventArgs.Packet.Type;
+                PacketReceivedEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
+
+                
                 ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
                     .Enqueue(eventArgs.Packet);
 
@@ -125,11 +125,11 @@ namespace D2NG
             };
 
             Connection.PacketSent += (obj, eventArgs) => {
-                Log.Debug("[{0}] Sent Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet));
-                PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
+                var sid = (Sid)eventArgs.Type;
+                PacketSentEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
             };
 
-            OnReceivedPacketEvent(0x25, obj => Connection.WritePacket(obj.Packet.Raw));
+            OnReceivedPacketEvent(Sid.PING, obj => Connection.WritePacket(obj.Packet.Raw));
         }
 
 
@@ -246,7 +246,7 @@ namespace D2NG
             Log.Debug("{0:X}", authCheckResponse);
         }
 
-        public void OnReceivedPacketEvent(byte type, Action<BncsPacketReceivedEvent> handler)
+        public void OnReceivedPacketEvent(Sid type, Action<BncsPacketReceivedEvent> handler)
         {
             if (PacketReceivedEventHandlers.ContainsKey(type))
             {
@@ -258,7 +258,7 @@ namespace D2NG
             }
         }
 
-        public void OnSentPacketEvent(byte type, Action<BncsPacketSentEvent> handler)
+        public void OnSentPacketEvent(Sid type, Action<BncsPacketSentEvent> handler)
         {
             if (PacketSentEventHandlers.ContainsKey(type))
             {
