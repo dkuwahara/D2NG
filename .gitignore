@@ -341,3 +341,4 @@ healthchecksdb
 /ConsoleBot/config.yml
 /ConsoleBot/Properties/launchSettings.json
 /config/config.yml
+log.txt
