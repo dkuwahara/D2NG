@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using D2NG.BNCS.Event;
 using D2NG.BNCS.Login;
 using System.Threading;
+using Polly;
 
 namespace D2NG
 {
@@ -17,7 +18,7 @@ namespace D2NG
         protected ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketReceivedEvent>>();
 
         protected ConcurrentDictionary<byte, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<BncsPacketSentEvent>>();
-        
+        public ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
 
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
@@ -35,8 +36,6 @@ namespace D2NG
         private uint _serverToken;
         private string _username;
         private Thread _listener;
-
-        private ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> _receivedQueue;
 
         enum State
         {
@@ -106,7 +105,7 @@ namespace D2NG
             Connection.PacketReceived += (obj, eventArgs) => {
                 Log.Debug("[{0}] Received Packet {1}", GetType(), BitConverter.ToString(eventArgs.Packet.Raw));
                 PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Packet.Type, null)?.Invoke(eventArgs);
-                _receivedQueue.GetOrAdd((Sid)eventArgs.Packet.Type, new ConcurrentQueue<BncsPacket>())
+                ReceivedQueue.GetOrAdd((Sid)eventArgs.Packet.Type, new ConcurrentQueue<BncsPacket>())
                     .Enqueue(eventArgs.Packet);
             };
 
@@ -144,7 +143,7 @@ namespace D2NG
 
         public void Listen()
         {
-            while (_machine.IsInState(State.InChat))
+            while (_machine.IsInState(State.Connected))
             {
                 _ = Connection.ReadPacket();
             }
@@ -155,19 +154,45 @@ namespace D2NG
             _machine.Fire(_loginTrigger, username, password);
         }
 
+        private byte[] WaitForPacket(Sid sid)
+        {
+            Policy.Handle<PacketNotFoundException>()
+                .WaitAndRetry(new[] {
+                    TimeSpan.FromMilliseconds(100),
+                    TimeSpan.FromMilliseconds(1000),
+                    TimeSpan.FromMilliseconds(2000)
+                })
+                .Execute(() => CheckForPacket(sid));
+
+            BncsPacket packet;
+            ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
+                .TryDequeue(out packet);
+
+            return packet.Raw;
+        }
+
+        private void CheckForPacket(Sid sid)
+        {
+            
+            if (!ReceivedQueue.ContainsKey(sid) || ReceivedQueue[sid].IsEmpty)
+            {
+                throw new PacketNotFoundException("No packet in queue");
+            }
+        }
+
         private void OnConnect(String realm)
         {
-            _receivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
+            ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
             Connection.Connect(realm);
+            _listener = new Thread(Listen);
+            _listener.Start();
         }
 
         public void OnEnterChat()
         {
             Connection.WritePacket(new EnterChatRequestPacket(_username));
             Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
-            _ = Connection.ReadPacket();
-            _listener = new Thread(Listen);
-            _listener.Start();
+            _ = WaitForPacket(Sid.ENTERCHAT);
         }
 
         private void OnLogin(string username, string password)
@@ -175,27 +200,19 @@ namespace D2NG
             _username = username;
             var packet = new LogonRequestPacket(_clientToken, _serverToken, username, password);
             Connection.WritePacket(packet);
-            byte[] response;
-            do
-            {
-                response = Connection.ReadPacket();
-                if (response[1] == 0xFF)
-                {
-                    throw new LogonFailedException();
-                }
-            } while (response[1] != (byte)Sid.LOGONRESPONSE2);
+
+            var response = WaitForPacket(Sid.LOGONRESPONSE2);
             _ = new LogonResponsePacket(response);
         }
 
         private void OnVerifyClient()
         {
             Connection.WritePacket(new AuthInfoRequestPacket());
-            _ = Connection.ReadPacket();
         }
 
         private void OnAuthorizeKeys()
         {
-            var packet = new AuthInfoResponsePacket(Connection.ReadPacket());
+            var packet = new AuthInfoResponsePacket(WaitForPacket(Sid.AUTH_INFO));
             _serverToken = packet.ServerToken;
             
             Log.Debug("[{0}] Server token: {1} Logon Type: {2}", GetType(), _serverToken, packet.LogonType);
@@ -209,7 +226,7 @@ namespace D2NG
                 _classicKey,
                 _expansionKey));
 
-            var authCheckResponse = new AuthCheckResponsePacket(Connection.ReadPacket());
+            var authCheckResponse = new AuthCheckResponsePacket(WaitForPacket(Sid.AUTH_CHECK));
 
             Log.Debug("{0:X}", authCheckResponse);
         }
