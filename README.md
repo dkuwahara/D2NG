@@ -17,6 +17,8 @@ ConsoleBot expects a `config.yml` file that can be passed in via the "--config" 
 classicKey: string
 expansionKey: string
 realm: string
+username: string
+password: string
 ```
 
 ## Running ConsoleBot Docker Image
