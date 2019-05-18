@@ -46,36 +46,7 @@ namespace ConsoleBot
         private void HandleChatEvent(BncsPacketReceivedEvent obj)
         {
             var chatEvent = new ChatEventPacket(obj.Packet.Raw);
-            switch (chatEvent.Eid)
-            {
-                case Eid.JOIN:
-                    Console.WriteLine($"{chatEvent.Username} has joined the channel");
-                    break;
-                case Eid.LEAVE:
-                    Console.WriteLine($"{chatEvent.Username} has left the channel");
-                    break;
-                case Eid.WHISPER:
-                    Console.WriteLine($"From <{chatEvent.Username}>: {chatEvent.Text}");
-                    break;
-                case Eid.TALK:
-                    Console.WriteLine($"<{chatEvent.Username}>: {chatEvent.Text}");
-                    break;
-                case Eid.CHANNEL:
-                    Console.WriteLine($"Joined channel: {chatEvent.Text}");
-                    break;
-                case Eid.INFO:
-                    Console.WriteLine($"INFO: {chatEvent.Text}");
-                    break;
-                case Eid.ERROR:
-                    Console.WriteLine($"ERROR: {chatEvent.Text}");
-                    break;
-                case Eid.EMOTE:
-                    Console.WriteLine($"<{chatEvent.Username} {chatEvent.Text}>");
-                    break;
-                default:
-                    break;
-            }
-        
+            Console.WriteLine(chatEvent.RenderText());
         }
     }
 }

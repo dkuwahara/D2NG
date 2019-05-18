@@ -52,6 +52,31 @@ namespace D2NG.BNCS.Packet
             reader.ReadChar();
             reader.Close();
         }
+
+        public string RenderText()
+        {
+            switch (this.Eid)
+            {
+                case Eid.JOIN:
+                    return $"{this.Username} has joined the channel";
+                case Eid.LEAVE:
+                    return $"{this.Username} has left the channel";
+                case Eid.WHISPER:
+                    return $"From <{this.Username}>: {this.Text}";
+                case Eid.TALK:
+                    return $"<{this.Username}>: {this.Text}";
+                case Eid.CHANNEL:
+                    return $"Joined channel: {this.Text}";
+                case Eid.INFO:
+                    return $"INFO: {this.Text}";
+                case Eid.ERROR:
+                    return $"ERROR: {this.Text}";
+                case Eid.EMOTE:
+                    return $"<{this.Username} {this.Text}>";
+                default:
+                    return $"{this.Text}";
+            }
+        }
     }
 
     public enum Eid
