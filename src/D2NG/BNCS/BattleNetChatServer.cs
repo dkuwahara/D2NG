@@ -112,15 +112,16 @@ namespace D2NG
 
             Connection.PacketReceived += (obj, eventArgs) => {
                 var sid = (Sid)eventArgs.Packet.Type;
-                PacketReceivedEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
+                var handler = PacketReceivedEventHandlers.GetValueOrDefault(sid, null);
 
-                
-                ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
-                    .Enqueue(eventArgs.Packet);
-
-                if (ReceivedQueue[sid].Count > MaxQueueSize)
+                if (handler is null)
                 {
-                    ReceivedQueue[sid].TryDequeue(out _);
+                    ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
+                        .Enqueue(eventArgs.Packet);
+                }
+                else
+                {
+                    handler.Invoke(eventArgs);
                 }
             };
 

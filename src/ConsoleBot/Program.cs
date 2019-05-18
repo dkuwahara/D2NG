@@ -21,6 +21,8 @@ namespace ConsoleBot
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File("log.txt")
+                .MinimumLevel.Information()
+                .WriteTo.Console()
                 .CreateLogger();
 
             Log.Debug("Starting bot");
