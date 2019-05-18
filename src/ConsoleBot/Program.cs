@@ -43,7 +43,7 @@ namespace ConsoleBot
             Console.ReadKey(false);
         }
 
-        private void HandleChatEvent(BncsPacketReceivedEvent obj)
+        private static void HandleChatEvent(BncsPacketReceivedEvent obj)
         {
             var chatEvent = new ChatEventPacket(obj.Packet.Raw);
             Console.WriteLine(chatEvent.RenderText());

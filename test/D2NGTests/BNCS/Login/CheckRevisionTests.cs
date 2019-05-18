@@ -5,7 +5,7 @@ using Xunit;
 
 namespace D2NG.BNCS.Login
 {
-    public class CheckRevisionTests
+    public static class CheckRevisionTests
     {
         [Fact]
         public static void TestCheckRevision1()
