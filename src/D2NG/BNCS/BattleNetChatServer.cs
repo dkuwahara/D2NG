@@ -17,9 +17,6 @@ namespace D2NG
          * Constants
          */
         private readonly String DefaultChannel = "Diablo II";
-
-        private const int MaxQueueSize = 100;
-
         
         private BncsConnection Connection { get; } = new BncsConnection();
 
