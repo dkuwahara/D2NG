@@ -31,20 +31,27 @@ namespace ConsoleBot
 
             Config config = Config.FromFile(this.ConfigFile);
 
-            try
-            {
-                client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
+            client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
+
+            try { 
+            
                 client.Bncs.ConnectTo(config.Realm, config.ClassicKey, config.ExpansionKey);
-                client.Bncs.Login(config.Username, config.Password);
+
+                var username = Prompt.GetString("Username: ", null, ConsoleColor.Red);
+                var password = Prompt.GetPassword("Password: ", ConsoleColor.Red);
+                
+                client.Bncs.Login(username, password);
                 client.Bncs.EnterChat();
 
-                var realms = client.Bncs.ListRealms();
+                var realms = client.ListRealms();
                 var realmPrompt = realms.Select((r, index) => $"{index + 1}. {r.Name} - {r.Description}")
                     .Aggregate((i, j) => i + "\n" + j);
 
-                var realmSelection = Prompt.GetInt(realmPrompt) - 1;
+                var realmSelection = Prompt.GetInt($"Select Realm:\n{realmPrompt}", 1, ConsoleColor.Red) - 1;
 
                 Log.Information($"Selected {realms[realmSelection]}");
+
+                client.RealmLogon(realms[realmSelection].Name);
             }
             catch (Exception e)
             {
