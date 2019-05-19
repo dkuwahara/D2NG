@@ -58,7 +58,7 @@ namespace D2NG
         private (AutoResetEvent Event, List<(string Name, string Description)>  Realms) ListRealmsEvent = (new AutoResetEvent(false), null);
         private (AutoResetEvent Event, RealmLogonResponsePacket Packet) RealmLogonEvent = (new AutoResetEvent(false), null);
 
-        public BattleNetChatServer()
+        internal BattleNetChatServer()
         {
 
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
@@ -154,7 +154,7 @@ namespace D2NG
             _machine.Fire(Trigger.EnterChat);
         }
 
-        public void Listen()
+        private void Listen()
         {
             while (_machine.IsInState(State.Connected))
             {
@@ -274,7 +274,7 @@ namespace D2NG
             }
         }
 
-        public List<(string Name, string Description)> ListRealms()
+        internal List<(string Name, string Description)> ListRealms()
         {
             Connection.WritePacket(new QueryRealmsRequestPacket());
             ListRealmsEvent.Event.WaitOne();
@@ -287,7 +287,7 @@ namespace D2NG
             ListRealmsEvent.Event.Set();
         }
 
-        public RealmLogonResponsePacket RealmLogon(string realmName)
+        internal RealmLogonResponsePacket RealmLogon(string realmName)
         {
             Connection.WritePacket(new RealmLogonRequestPacket(Context.ClientToken, Context.ServerToken, realmName, "password"));
             RealmLogonEvent.Event.WaitOne();
