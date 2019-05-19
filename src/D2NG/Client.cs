@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 
 namespace D2NG
@@ -15,9 +16,11 @@ namespace D2NG
         public List<(string Name, string Description)> ListRealms() => this.Bncs.ListRealms();
 
 
-        public void RealmLogon()
+        public void RealmLogon(string name)
         {
-            //Bncs.RealmLogon();
+            var packet = Bncs.RealmLogon(name);
+            Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
+            Log.Information($"Battle.net Unique Name: {packet.McpUniqueName}");
         }
     }
 }

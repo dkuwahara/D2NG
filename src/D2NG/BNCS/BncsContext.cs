@@ -10,6 +10,5 @@ namespace D2NG
         public string Username { get; internal set; }
         public CdKey ClassicKey { get; internal set; }
         public CdKey ExpansionKey { get; internal set; }
-        public List<(string Name, string Description)> Realms { get; internal set; }
     }
 }

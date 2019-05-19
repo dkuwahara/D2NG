@@ -20,6 +20,7 @@ namespace D2NG
 
         private BncsConnection Connection { get; } = new BncsConnection();
 
+
         protected ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>>();
 
         protected ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>>();
@@ -54,7 +55,8 @@ namespace D2NG
 
         public BncsContext Context { get; set; }
 
-        private AutoResetEvent ListRealmsEvent = new AutoResetEvent(false);
+        private (AutoResetEvent Event, List<(string Name, string Description)>  Realms) ListRealmsEvent = (new AutoResetEvent(false), null);
+        private (AutoResetEvent Event, RealmLogonResponsePacket Packet) RealmLogonEvent = (new AutoResetEvent(false), null);
 
         public BattleNetChatServer()
         {
@@ -122,12 +124,14 @@ namespace D2NG
 
             OnReceivedPacketEvent(Sid.PING, obj => Connection.WritePacket(obj.Packet.Raw));
             OnReceivedPacketEvent(Sid.QUERYREALMS2, obj => OnReceivedQueryRealmsResponse(new QueryRealmsResponsePacket(obj.Packet.Raw)));
+            OnReceivedPacketEvent(Sid.LOGONREALMEX, obj => OnReceivedRealmLogonResponse(new RealmLogonResponsePacket(obj.Packet.Raw)));
         }
 
- 
+
 
         public void ConnectTo(string realm, string classicKey, string expansionKey)
         {
+            Log.Information($"Connecting to {realm}");
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.VerifyClient);
             if (classicKey.Length == 16)
@@ -142,6 +146,7 @@ namespace D2NG
             }
 
             _machine.Fire(Trigger.AuthorizeKeys);
+            Log.Information($"Connected to {realm}");
         }
 
         public void EnterChat()
@@ -159,7 +164,9 @@ namespace D2NG
 
         public void Login(string username, string password)
         {
+            Log.Information($"Logging in as {username}");
             _machine.Fire(_loginTrigger, username, password);
+            Log.Information($"Logged in as {username}");
         }
 
         private byte[] WaitForPacket(Sid sid)
@@ -239,9 +246,8 @@ namespace D2NG
                 Context.ClassicKey,
                 Context.ExpansionKey));
 
-            var authCheckResponse = new AuthCheckResponsePacket(WaitForPacket(Sid.AUTH_CHECK));
+            _ = new AuthCheckResponsePacket(WaitForPacket(Sid.AUTH_CHECK));
 
-            Log.Debug("{0:X}", authCheckResponse);
         }
 
         public void OnReceivedPacketEvent(Sid type, Action<BncsPacketReceivedEvent> handler)
@@ -271,14 +277,27 @@ namespace D2NG
         public List<(string Name, string Description)> ListRealms()
         {
             Connection.WritePacket(new QueryRealmsRequestPacket());
-            ListRealmsEvent.WaitOne();
-            return this.Context.Realms;
+            ListRealmsEvent.Event.WaitOne();
+            return ListRealmsEvent.Realms;
         }
 
         private void OnReceivedQueryRealmsResponse(QueryRealmsResponsePacket packet)
         {
-            this.Context.Realms = packet.Realms;
-            ListRealmsEvent.Set();
+            ListRealmsEvent.Realms = packet.Realms;
+            ListRealmsEvent.Event.Set();
+        }
+
+        public RealmLogonResponsePacket RealmLogon(string realmName)
+        {
+            Connection.WritePacket(new RealmLogonRequestPacket(Context.ClientToken, Context.ServerToken, realmName, "password"));
+            RealmLogonEvent.Event.WaitOne();
+            return RealmLogonEvent.Packet;
+        }
+
+        private void OnReceivedRealmLogonResponse(RealmLogonResponsePacket packet)
+        {
+            RealmLogonEvent.Packet = packet;
+            RealmLogonEvent.Event.Set();
         }
     }
 }
