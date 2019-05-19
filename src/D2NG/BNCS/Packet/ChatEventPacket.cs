@@ -74,7 +74,7 @@ namespace D2NG.BNCS.Packet
                 case Eid.EMOTE:
                     return $"<{this.Username} {this.Text}>";
                 default:
-                    return $"Unhandled EID: {this.Text}";
+                    return $"Unhandled EID: {this.Eid.ToString()} {this.Text}";
             }
         }
     }
