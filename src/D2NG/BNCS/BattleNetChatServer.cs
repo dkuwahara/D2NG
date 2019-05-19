@@ -17,7 +17,7 @@ namespace D2NG
          * Constants
          */
         private readonly String DefaultChannel = "Diablo II";
-        
+
         private BncsConnection Connection { get; } = new BncsConnection();
 
         protected ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>>();
@@ -25,16 +25,6 @@ namespace D2NG
         protected ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>>();
 
         protected ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
-
-        private readonly uint _clientToken;
-
-        private CdKey _classicKey;
-
-        private CdKey _expansionKey;
-
-        private uint _serverToken;
-
-        private string _username;
 
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
@@ -62,9 +52,12 @@ namespace D2NG
             EnterChat
         }
 
+        public BncsContext Context { get; set; }
+
+        private AutoResetEvent ListRealmsEvent = new AutoResetEvent(false);
+
         public BattleNetChatServer()
         {
-            _clientToken = (uint)Environment.TickCount;
 
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
 
@@ -128,8 +121,10 @@ namespace D2NG
             };
 
             OnReceivedPacketEvent(Sid.PING, obj => Connection.WritePacket(obj.Packet.Raw));
+            OnReceivedPacketEvent(Sid.QUERYREALMS2, obj => OnReceivedQueryRealmsResponse(new QueryRealmsResponsePacket(obj.Packet.Raw)));
         }
 
+ 
 
         public void ConnectTo(string realm, string classicKey, string expansionKey)
         {
@@ -137,13 +132,13 @@ namespace D2NG
             _machine.Fire(Trigger.VerifyClient);
             if (classicKey.Length == 16)
             {
-                _classicKey = new CdKeyBsha1(classicKey);
-                _expansionKey = new CdKeyBsha1(expansionKey);
+                Context.ClassicKey = new CdKeyBsha1(classicKey);
+                Context.ExpansionKey = new CdKeyBsha1(expansionKey);
             }
             else
             {
-                _classicKey = new CdKeySha1(classicKey);
-                _expansionKey = new CdKeySha1(expansionKey);
+                Context.ClassicKey = new CdKeySha1(classicKey);
+                Context.ExpansionKey = new CdKeySha1(expansionKey);
             }
 
             _machine.Fire(Trigger.AuthorizeKeys);
@@ -189,7 +184,6 @@ namespace D2NG
 
         private void CheckForPacket(Sid sid)
         {
-            
             if (!ReceivedQueue.ContainsKey(sid) || ReceivedQueue[sid].IsEmpty)
             {
                 throw new PacketNotFoundException("No packet in queue");
@@ -200,21 +194,24 @@ namespace D2NG
         {
             ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
             Connection.Connect(realm);
+            this.Context = new BncsContext();
+            this.Context.ClientToken = (uint)Environment.TickCount;
+
             var listener = new Thread(Listen);
             listener.Start();
         }
 
         private void OnEnterChat()
         {
-            Connection.WritePacket(new EnterChatRequestPacket(_username));
+            Connection.WritePacket(new EnterChatRequestPacket(Context.Username));
             Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
             _ = WaitForPacket(Sid.ENTERCHAT);
         }
 
         private void OnLogin(string username, string password)
         {
-            _username = username;
-            var packet = new LogonRequestPacket(_clientToken, _serverToken, username, password);
+            Context.Username = username;
+            var packet = new LogonRequestPacket(Context.ClientToken, Context.ServerToken, Context.Username, password);
             Connection.WritePacket(packet);
 
             var response = WaitForPacket(Sid.LOGONRESPONSE2);
@@ -229,18 +226,18 @@ namespace D2NG
         private void OnAuthorizeKeys()
         {
             var packet = new AuthInfoResponsePacket(WaitForPacket(Sid.AUTH_INFO));
-            _serverToken = packet.ServerToken;
+            Context.ServerToken = packet.ServerToken;
             
-            Log.Debug("[{0}] Server token: {1} Logon Type: {2}", GetType(), _serverToken, packet.LogonType);
+            Log.Debug("[{0}] Server token: {1} Logon Type: {2}", GetType(), Context.ServerToken, packet.LogonType);
 
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
             Log.Debug("[{0}] CheckRevision: {1}", GetType(), result);
             Connection.WritePacket(new AuthCheckRequestPacket(
-                _clientToken,
-                packet.ServerToken,
+                Context.ClientToken,
+                Context.ServerToken,
                 result,
-                _classicKey,
-                _expansionKey));
+                Context.ClassicKey,
+                Context.ExpansionKey));
 
             var authCheckResponse = new AuthCheckResponsePacket(WaitForPacket(Sid.AUTH_CHECK));
 
@@ -271,6 +268,18 @@ namespace D2NG
             }
         }
 
+        public List<(string Name, string Description)> ListRealms()
+        {
+            Connection.WritePacket(new QueryRealmsRequestPacket());
+            ListRealmsEvent.WaitOne();
+            return this.Context.Realms;
+        }
+
+        private void OnReceivedQueryRealmsResponse(QueryRealmsResponsePacket packet)
+        {
+            this.Context.Realms = packet.Realms;
+            ListRealmsEvent.Set();
+        }
     }
 }
 

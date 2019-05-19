@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace D2NG.BNCS.Packet
 {
@@ -14,6 +16,17 @@ namespace D2NG.BNCS.Packet
         public BncsPacket(byte[] packet)
         {
             Raw = packet;
+        }
+
+        public static String ReadString(BinaryReader reader)
+        {
+            var text = new StringBuilder();
+            while (reader.PeekChar() != 0)
+            {
+                text.Append(reader.ReadChar());
+            }
+            reader.ReadChar();
+            return text.ToString();
         }
 
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)

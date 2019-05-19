@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using McMaster.Extensions.CommandLineUtils;
 using D2NG.BNCS.Packet;
+using System.Linq;
 
 namespace ConsoleBot
 {
@@ -36,6 +37,14 @@ namespace ConsoleBot
                 client.Bncs.ConnectTo(config.Realm, config.ClassicKey, config.ExpansionKey);
                 client.Bncs.Login(config.Username, config.Password);
                 client.Bncs.EnterChat();
+
+                var realms = client.Bncs.ListRealms();
+                var realmPrompt = realms.Select((r, index) => $"{index + 1}. {r.Name} - {r.Description}")
+                    .Aggregate((i, j) => i + "\n" + j);
+
+                var realmSelection = Prompt.GetInt(realmPrompt) - 1;
+
+                Log.Information($"Selected {realms[realmSelection]}");
             }
             catch (Exception e)
             {
@@ -47,8 +56,7 @@ namespace ConsoleBot
 
         private static void HandleChatEvent(BncsPacketReceivedEvent obj)
         {
-            var chatEvent = new ChatEventPacket(obj.Packet.Raw);
-            Console.WriteLine(chatEvent.RenderText());
+            _ = new ChatEventPacket(obj.Packet.Raw);
         }
     }
 }
