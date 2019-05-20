@@ -5,29 +5,16 @@ using System.Text;
 
 namespace D2NG.BNCS.Packet
 {
-    public class BncsPacket
+    public class BncsPacket : D2NG.Packet
     {
         protected readonly byte PrefixByte = 0xFF;
 
         public byte Type { get => Raw[1]; }
 
-        public byte[] Raw { get; }
+        public BncsPacket(byte[] packet) :
+            base(packet)
+        { }
 
-        public BncsPacket(byte[] packet)
-        {
-            Raw = packet;
-        }
-
-        public static String ReadString(BinaryReader reader)
-        {
-            var text = new StringBuilder();
-            while (reader.PeekChar() != 0)
-            {
-                text.Append(reader.ReadChar());
-            }
-            reader.ReadChar();
-            return text.ToString();
-        }
 
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {

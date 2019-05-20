@@ -1,5 +1,5 @@
-﻿using Serilog;
-using System;
+﻿using D2NG.BNCS;
+using Serilog;
 using System.Collections.Generic;
 
 namespace D2NG

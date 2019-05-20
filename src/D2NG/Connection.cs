@@ -1,12 +1,14 @@
-﻿using Stateless;
+﻿using Serilog;
+using Stateless;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
 namespace D2NG
 {
-    class Connection
+    internal abstract class Connection
     {
         protected enum State
         {
@@ -17,7 +19,7 @@ namespace D2NG
         protected enum Trigger
         {
             ConnectSocket,
-            KillSocket,
+            Terminate,
             Write,
             Read
         }
@@ -26,6 +28,9 @@ namespace D2NG
          * State Machine for the connection
          */
         protected readonly StateMachine<State, Trigger> _machine;
+
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<IPAddress, int> _connectTrigger;
+
 
         /**
         * The actual TCP Connection
@@ -38,12 +43,49 @@ namespace D2NG
         public Connection()
         {
             _machine = new StateMachine<State, Trigger>(State.NotConnected);
+            _connectTrigger = _machine.SetTriggerParameters<IPAddress, int>(Trigger.ConnectSocket);
 
             _machine.Configure(State.NotConnected)
+                .OnEntryFrom(Trigger.Terminate, OnTerminate)
                 .Permit(Trigger.ConnectSocket, State.Connected);
 
             _machine.Configure(State.Connected)
-                .Permit(Trigger.KillSocket, State.NotConnected);
+                .OnEntryFrom(_connectTrigger, (ip, port) => OnConnect(ip, port))
+                .Permit(Trigger.Terminate, State.NotConnected);
         }
+
+        internal abstract byte[] ReadPacket();
+
+        internal abstract void WritePacket(byte[] packet);
+
+        public void Connect(IPAddress ip, int port) => _machine.Fire(_connectTrigger, ip, port);
+
+        protected void OnConnect(IPAddress ip, int port)
+        {
+            Log.Debug("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
+            _tcpClient = new TcpClient();
+            _tcpClient.Connect(ip, port);
+            _stream = _tcpClient.GetStream();
+            if (!_stream.CanWrite)
+            {
+                Log.Debug("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
+                Terminate();
+                throw new UnableToConnectException($"Unable to establish {GetType()}");
+            }
+            _stream.WriteByte(0x01);
+            Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
+        }
+
+        public bool Connected => _machine.IsInState(State.Connected);
+
+
+        public void Terminate() => _machine.Fire(Trigger.Terminate);
+
+        protected void OnTerminate()
+        {
+            _tcpClient.Close();
+            _stream.Close();
+        }
+
     }
 }
