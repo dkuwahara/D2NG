@@ -38,7 +38,6 @@ namespace D2NG.BNCS
             do
             {
                 buffer = new List<byte>();
-
                 // Get the first 4 bytes, packet type and length
                 ReadUpTo(ref buffer, 4);
                 short packetLength = BitConverter.ToInt16(buffer.ToArray(), 2);
@@ -52,14 +51,6 @@ namespace D2NG.BNCS
             return buffer.ToArray();
         }
 
-        internal override void WritePacket(byte[] packet)
-        {
-            _stream.Write(packet, 0, packet.Length);
-            PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
-        }
-
-        public void WritePacket(BncsPacket packet) => this.WritePacket(packet.Raw);
-
         private void ReadUpTo(ref List<byte> bncsBuffer, int count)
         {
             while (bncsBuffer.Count < count)
@@ -68,5 +59,13 @@ namespace D2NG.BNCS
                 bncsBuffer.Add(temp);
             }
         }
+
+        internal override void WritePacket(byte[] packet)
+        {
+            _stream.Write(packet, 0, packet.Length);
+            PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
+        }
+
+        public void WritePacket(BncsPacket packet) => this.WritePacket(packet.Raw);
     }
 }
