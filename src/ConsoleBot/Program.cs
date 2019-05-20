@@ -37,7 +37,6 @@ namespace ConsoleBot
             Client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
-
                 var realm = Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Red);
 
                 Client.Bncs.ConnectTo(realm, Config.ClassicKey, Config.ExpansionKey);
@@ -58,7 +57,6 @@ namespace ConsoleBot
                 Log.Error(e, "Unhandled Exception");
             }
         }
-
 
         private string SelectMcpRealm()
         {

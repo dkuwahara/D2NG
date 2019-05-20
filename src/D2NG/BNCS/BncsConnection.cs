@@ -41,9 +41,9 @@ namespace D2NG.BNCS
                 short packetLength = BitConverter.ToInt16(buffer.ToArray(), 2);
 
                 // Read the rest of the packet and return it
-                ReadUpTo(ref buffer, packetLength);
-
+                ReadUpTo(ref buffer, packetLength)
             } while (buffer[1] == 0x00);
+
             var packet = new BncsPacket(buffer.ToArray());
             PacketReceived?.Invoke(this, new BncsPacketReceivedEvent(packet));
             return buffer.ToArray();

@@ -20,7 +20,6 @@ namespace D2NG.BNCS
 
         private BncsConnection Connection { get; } = new BncsConnection();
 
-
         protected ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>>();
 
         protected ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>>();
@@ -125,8 +124,6 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.QUERYREALMS2, obj => OnReceivedQueryRealmsResponse(new QueryRealmsResponsePacket(obj.Packet.Raw)));
             OnReceivedPacketEvent(Sid.LOGONREALMEX, obj => OnReceivedRealmLogonResponse(new RealmLogonResponsePacket(obj.Packet.Raw)));
         }
-
-
 
         public void ConnectTo(string realm, string classicKey, string expansionKey)
         {
@@ -246,7 +243,6 @@ namespace D2NG.BNCS
                 Context.ExpansionKey));
 
             _ = new AuthCheckResponsePacket(WaitForPacket(Sid.AUTH_CHECK));
-
         }
 
         public void OnReceivedPacketEvent(Sid type, Action<BncsPacketReceivedEvent> handler)
