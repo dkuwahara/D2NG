@@ -66,6 +66,5 @@ namespace D2NG.BNCS
             PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
         }
 
-
     }
 }

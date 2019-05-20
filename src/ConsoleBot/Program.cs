@@ -33,9 +33,14 @@ namespace ConsoleBot
 
             client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
-            try { 
-            
-                client.Bncs.ConnectTo(config.Realm, config.ClassicKey, config.ExpansionKey);
+            try {
+                
+                var bncsRealmPrompt = client.BncsRealms.Select((r, index) => $"{index + 1}. {r}")
+                    .Aggregate((i, j) => i + "\n" + j);
+
+                var bncsRealmSelection = Prompt.GetInt($"Select Realm:\n{bncsRealmPrompt}\n", 1, ConsoleColor.Red) - 1;
+
+                client.Bncs.ConnectTo(client.BncsRealms[bncsRealmSelection], config.ClassicKey, config.ExpansionKey);
 
                 var username = Prompt.GetString("Username: ", null, ConsoleColor.Red);
                 var password = Prompt.GetPassword("Password: ", ConsoleColor.Red);
@@ -43,22 +48,20 @@ namespace ConsoleBot
                 client.Bncs.Login(username, password);
                 client.Bncs.EnterChat();
 
-                var realms = client.ListRealms();
+                var realms = client.ListMcpRealms();
                 var realmPrompt = realms.Select((r, index) => $"{index + 1}. {r.Name} - {r.Description}")
                     .Aggregate((i, j) => i + "\n" + j);
 
-                var realmSelection = Prompt.GetInt($"Select Realm:\n{realmPrompt}", 1, ConsoleColor.Red) - 1;
+                var realmSelection = Prompt.GetInt($"Select Realm:\n{realmPrompt}\n", 1, ConsoleColor.Red) - 1;
 
                 Log.Information($"Selected {realms[realmSelection]}");
 
-                client.RealmLogon(realms[realmSelection].Name);
+                client.McpLogon(realms[realmSelection].Name);
             }
             catch (Exception e)
             {
                 Log.Error(e, "Unhandled Exception");
             }
-            Log.Debug("Waiting for input");
-            Console.ReadKey(false);
         }
 
         private static void HandleChatEvent(BncsPacketReceivedEvent obj)

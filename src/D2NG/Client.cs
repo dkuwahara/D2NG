@@ -1,4 +1,5 @@
 ﻿using D2NG.BNCS;
+using D2NG.MCP;
 using Serilog;
 using System.Collections.Generic;
 
@@ -6,21 +7,26 @@ namespace D2NG
 {
     public class Client
     {
-        public BattleNetChatServer Bncs { get; }
+        public BattleNetChatServer Bncs { get; } = new BattleNetChatServer();
+        public RealmServer Mcp { get; } = new RealmServer();
 
-        public Client()
+        public List<string> BncsRealms { get; } = new List<string>()
         {
-            Bncs = new BattleNetChatServer();
-        }
+            "useast.battle.net",
+            "uswest.battle.net",
+            "europe.battle.net",
+            "asia.battle.net"
+        };
+        
+        public List<(string Name, string Description)> ListMcpRealms() => this.Bncs.ListMcpRealms();
 
-        public List<(string Name, string Description)> ListRealms() => this.Bncs.ListRealms();
-
-
-        public void RealmLogon(string name)
+        public void McpLogon(string name)
         {
             var packet = Bncs.RealmLogon(name);
             Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
-            Log.Information($"Battle.net Unique Name: {packet.McpUniqueName}");
+            Mcp.Connect(packet.McpIp, packet.McpPort);
+            Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
+            Log.Information($"Connected to {packet.McpIp}:{packet.McpPort}");
         }
     }
 }

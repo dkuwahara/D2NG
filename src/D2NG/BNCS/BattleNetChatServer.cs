@@ -61,7 +61,6 @@ namespace D2NG.BNCS
 
         internal BattleNetChatServer()
         {
-
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
 
             _loginTrigger = _machine.SetTriggerParameters<String, String>(Trigger.Login);
@@ -275,7 +274,7 @@ namespace D2NG.BNCS
             }
         }
 
-        internal List<(string Name, string Description)> ListRealms()
+        internal List<(string Name, string Description)> ListMcpRealms()
         {
             Connection.WritePacket(new QueryRealmsRequestPacket());
             ListRealmsEvent.Event.WaitOne();
