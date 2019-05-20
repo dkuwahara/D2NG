@@ -12,9 +12,9 @@ namespace D2NG.MCP.Packet
 
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {
-            List<byte> packet = new List<byte>();
+            var packet = new List<byte>();
 
-            List<byte> packetArray = new List<byte>();
+            var packetArray = new List<byte>();
             foreach (IEnumerable<byte> a in args)
             {
                 packetArray.AddRange(a);
@@ -25,9 +25,7 @@ namespace D2NG.MCP.Packet
             packet.Add((byte)command);
             packet.AddRange(packetArray);
 
-            byte[] bytes = new byte[arrayCount];
-            packet.CopyTo(bytes);
-            return bytes;
+            return packet.ToArray();
         }
     }
 }

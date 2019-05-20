@@ -23,8 +23,12 @@ namespace D2NG.MCP
         {
             var packet = new McpStartupRequestPacket(mcpCookie, mcpStatus, mcpChunk, mcpUniqueName);
             Connection.WritePacket(packet);
+            _ = new McpStartupResponsePacket(Connection.ReadPacket());
+        }
 
-            var response = new McpStartupResponsePacket(Connection.ReadPacket());
+        public List<McpCharacter> ListCharacters()
+        {
+            return null;
         }
     }
 }
