@@ -1,6 +1,5 @@
 ﻿using D2NG.BNCS.Login;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace D2NG.BNCS.Packet

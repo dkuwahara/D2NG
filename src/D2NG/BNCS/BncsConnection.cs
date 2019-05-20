@@ -1,11 +1,9 @@
 ﻿using D2NG.BNCS.Packet;
 using Serilog;
-using Stateless;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using D2NG.BNCS.Event;
 
 namespace D2NG.BNCS

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using D2NG.MCP.Packet;
-using Serilog;
 
 namespace D2NG.MCP
 {
@@ -34,7 +33,7 @@ namespace D2NG.MCP
             OnReceivedPacketEvent(0x19, obj => EventSet(ref ListCharactersEvent, obj));
         }
 
-        private void EventSet(ref (AutoResetEvent Event, McpPacket Packet) evt, McpPacket obj)
+        private static void EventSet(ref (AutoResetEvent Event, McpPacket Packet) evt, McpPacket obj)
         {
             evt.Packet = obj;
             evt.Event.Set();

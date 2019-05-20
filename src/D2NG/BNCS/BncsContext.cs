@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using D2NG.BNCS.Login;
+﻿using D2NG.BNCS.Login;
 
 namespace D2NG
 {

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace D2NG.MCP.Packet
 {
     [Serializable]
-    internal class McpPacketException : Exception
+    public class McpPacketException : Exception
     {
         public McpPacketException()
         {

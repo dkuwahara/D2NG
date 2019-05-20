@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace D2NG.MCP.Packet
@@ -9,9 +7,12 @@ namespace D2NG.MCP.Packet
     {
         public McpStartupResponsePacket(byte[] packet) : base(packet)
         {
-            BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
-            var packetSize = reader.ReadUInt16();
-            if(0x01 != reader.ReadByte())
+            var reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
+            if (packet.Length != reader.ReadUInt16())
+            {
+                throw new McpPacketException("Packet length does not match");
+            }
+            if (0x01 != reader.ReadByte())
             {
                 throw new McpPacketException("Expected Packet Type Not Found");
             }
@@ -30,8 +31,6 @@ namespace D2NG.MCP.Packet
                     throw new McpStartUpException("CDKey banned from Realm Play");
                 case 0x7F:
                     throw new McpStartUpException("IP banned temporarily");
-                default:
-                    break;
             }
         }
     }

@@ -8,7 +8,6 @@ using D2NG.BNCS.Event;
 using D2NG.BNCS.Login;
 using System.Threading;
 using Polly;
-using D2NG.BNCS;
 
 namespace D2NG.BNCS
 {
