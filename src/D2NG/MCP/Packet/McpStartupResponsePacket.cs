@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Serilog;
+using System.IO;
 using System.Text;
 
 namespace D2NG.MCP.Packet
@@ -31,6 +32,9 @@ namespace D2NG.MCP.Packet
                     throw new McpStartUpException("CDKey banned from Realm Play");
                 case 0x7F:
                     throw new McpStartUpException("IP banned temporarily");
+                default:
+                    Log.Debug("MCP Startup successful");
+                    break;
             }
         }
     }
