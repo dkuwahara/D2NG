@@ -78,7 +78,6 @@ namespace D2NG
 
         public bool Connected => _machine.IsInState(State.Connected);
 
-
         public void Terminate() => _machine.Fire(Trigger.Terminate);
 
         protected void OnTerminate()
@@ -86,6 +85,8 @@ namespace D2NG
             _tcpClient.Close();
             _stream.Close();
         }
+
+        public void WritePacket(Packet packet) => this.WritePacket(packet.Raw);
 
     }
 }

@@ -66,6 +66,6 @@ namespace D2NG.BNCS
             PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
         }
 
-        public void WritePacket(BncsPacket packet) => this.WritePacket(packet.Raw);
+
     }
 }
