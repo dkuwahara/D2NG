@@ -16,7 +16,7 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
       - restore_cache:
-          keys: 
+          keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: dotnet build
       - save_cache:
@@ -28,10 +28,10 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
       - restore_cache:
-          keys: 
+          keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: dotnet test
- 
+
 workflows:
   version: 2
   build-test-and-docker:
@@ -41,5 +41,5 @@ workflows:
           requires:
             - checkout_code
       - test:
-          requires: 
+          requires:
             - build
