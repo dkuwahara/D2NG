@@ -17,6 +17,10 @@ namespace ConsoleBot
         [Required]
         public String ConfigFile { get; }
 
+        private Client Client = new Client();
+
+        private Config Config;
+
         private void OnExecute()
         {
             Log.Logger = new LoggerConfiguration()
@@ -27,45 +31,27 @@ namespace ConsoleBot
                 .CreateLogger();
 
             Log.Debug("Starting bot");
-            Client client = new Client();
+            
+            Config = Config.FromFile(this.ConfigFile);
 
-            Config config = Config.FromFile(this.ConfigFile);
-
-            client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
+            Client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
-                
-                var bncsRealmPrompt = client.BncsRealms.Select((r, index) => $"{index + 1}. {r}")
-                    .Aggregate((i, j) => i + "\n" + j);
 
-                var bncsRealmSelection = Prompt.GetInt($"Select Realm:\n{bncsRealmPrompt}\n", 1, ConsoleColor.Red) - 1;
+                var realm = Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Red);
 
-                client.Bncs.ConnectTo(client.BncsRealms[bncsRealmSelection], config.ClassicKey, config.ExpansionKey);
+                Client.Bncs.ConnectTo(realm, Config.ClassicKey, Config.ExpansionKey);
 
-                var username = Prompt.GetString("Username: ", null, ConsoleColor.Red);
+                var username = Prompt.GetString("Username: ", Config.Username, ConsoleColor.Red);
                 var password = Prompt.GetPassword("Password: ", ConsoleColor.Red);
                 
-                client.Bncs.Login(username, password);
-                client.Bncs.EnterChat();
+                Client.Bncs.Login(username, password);
+                Client.Bncs.EnterChat();
 
-                var realms = client.ListMcpRealms();
-                var realmPrompt = realms.Select((r, index) => $"{index + 1}. {r.Name} - {r.Description}")
-                    .Aggregate((i, j) => i + "\n" + j);
+                var mcpRealm = SelectMcpRealm();
+                Client.McpLogon(mcpRealm);
 
-                var realmSelection = Prompt.GetInt($"Select Realm:\n{realmPrompt}\n", 1, ConsoleColor.Red) - 1;
-
-                Log.Information($"Selected {realms[realmSelection]}");
-
-                client.McpLogon(realms[realmSelection].Name);
-
-                var characters = client.Mcp.ListCharacters();
-
-                var charsPrompt = characters.Select((r, index) => $"{index + 1}. {r.Name} - {r.Statstring}")
-                    .Aggregate((i, j) => i + "\n" + j);
-
-                var charSelection = Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Red) - 1;
-
-                Log.Information($"Selected {characters[charSelection]}");
+                _ = SelectCharacter();
             }
             catch (Exception e)
             {
@@ -73,6 +59,32 @@ namespace ConsoleBot
             }
         }
 
+
+        private string SelectMcpRealm()
+        {
+            var realms = Client.ListMcpRealms();
+            var realmPrompt = realms.Select((r, index) => $"{index + 1}. {r.Name} - {r.Description}")
+                .Aggregate((i, j) => i + "\n" + j);
+
+            var realmSelection = Prompt.GetInt($"Select MCP Realm:\n{realmPrompt}\n", 1, ConsoleColor.Red) - 1;
+            var selection = realms[realmSelection];
+            Log.Information($"Selected {selection}");
+            return selection.Name;
+        }
+
+        private string SelectCharacter()
+        {
+            var characters = Client.Mcp.ListCharacters();
+
+            var charsPrompt = characters.Select((r, index) => $"{index + 1}. {r.Name} - {r.Statstring}")
+                .Aggregate((i, j) => i + "\n" + j);
+
+            var charSelection = Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Red) - 1;
+
+            Log.Information($"Selected {characters[charSelection].Name}");
+            return characters[charSelection].Name;
+        }
+             
         private static void HandleChatEvent(BncsPacketReceivedEvent obj)
         {
             _ = new ChatEventPacket(obj.Packet.Raw);

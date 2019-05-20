@@ -10,14 +10,6 @@ namespace D2NG
         public BattleNetChatServer Bncs { get; } = new BattleNetChatServer();
         public RealmServer Mcp { get; } = new RealmServer();
 
-        public List<string> BncsRealms { get; } = new List<string>()
-        {
-            "useast.battle.net",
-            "uswest.battle.net",
-            "europe.battle.net",
-            "asia.battle.net"
-        };
-        
         public List<(string Name, string Description)> ListMcpRealms() => this.Bncs.ListMcpRealms();
 
         public void McpLogon(string name)
