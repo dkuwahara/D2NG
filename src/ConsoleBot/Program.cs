@@ -17,7 +17,7 @@ namespace ConsoleBot
         [Required]
         public String ConfigFile { get; }
 
-        private Client Client = new Client();
+        private readonly Client Client = new Client();
 
         private Config Config;
 
