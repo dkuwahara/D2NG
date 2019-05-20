@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace D2NG.MCP.Packet
 {
@@ -9,6 +8,8 @@ namespace D2NG.MCP.Packet
         public McpPacket(byte[] packet) : base(packet)
         {
         }
+
+        public byte Type { get => Raw[2]; }
 
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {
@@ -22,7 +23,7 @@ namespace D2NG.MCP.Packet
 
             UInt16 arrayCount = (UInt16)(packetArray.Count + 3);
             packet.AddRange(BitConverter.GetBytes(arrayCount));
-            packet.Add((byte)command);
+            packet.Add(command);
             packet.AddRange(packetArray);
 
             return packet.ToArray();

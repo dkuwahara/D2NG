@@ -1,4 +1,5 @@
-﻿using System;
+﻿using D2NG.MCP.Packet;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -8,6 +9,9 @@ namespace D2NG.MCP
 {
     class McpConnection : Connection
     {
+        public event EventHandler<McpPacket> PacketReceived;
+
+        public event EventHandler<McpPacket> PacketSent;
 
         internal override byte[] ReadPacket()
         {
@@ -23,7 +27,7 @@ namespace D2NG.MCP
                 ReadUpTo(ref buffer, packetLength);
 
             } while (buffer[2] == 0x00);
-            
+            PacketReceived?.Invoke(this, new McpPacket(buffer.ToArray()));
             return buffer.ToArray();
         }
 
@@ -39,6 +43,7 @@ namespace D2NG.MCP
         internal override void WritePacket(byte[] packet)
         {
             _stream.Write(packet, 0, packet.Length);
+            PacketSent?.Invoke(this, new McpPacket(packet));
         }
     }
 }

@@ -57,6 +57,15 @@ namespace ConsoleBot
                 Log.Information($"Selected {realms[realmSelection]}");
 
                 client.McpLogon(realms[realmSelection].Name);
+
+                var characters = client.Mcp.ListCharacters();
+
+                var charsPrompt = characters.Select((r, index) => $"{index + 1}. {r.Name} - {r.Statstring}")
+                    .Aggregate((i, j) => i + "\n" + j);
+
+                var charSelection = Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Red) - 1;
+
+                Log.Information($"Selected {characters[charSelection]}");
             }
             catch (Exception e)
             {
