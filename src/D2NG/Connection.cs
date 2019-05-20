@@ -37,7 +37,7 @@ namespace D2NG
         protected TcpClient _tcpClient;
 
 
-        public Connection()
+        protected Connection()
         {
             _machine = new StateMachine<State, Trigger>(State.NotConnected);
             _connectTrigger = _machine.SetTriggerParameters<IPAddress, int>(Trigger.ConnectSocket);
