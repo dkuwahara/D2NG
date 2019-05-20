@@ -30,20 +30,14 @@ namespace D2NG.MCP
                 PacketSentEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
             };
 
-            OnReceivedPacketEvent(0x01, OnStartupResponse);
-            OnReceivedPacketEvent(0x19, OnListCharactersResponse);
+            OnReceivedPacketEvent(0x01, obj => EventSet(ref StartupEvent, obj));
+            OnReceivedPacketEvent(0x19, obj => EventSet(ref ListCharactersEvent, obj));
         }
 
-        private void OnListCharactersResponse(McpPacket obj)
+        private void EventSet(ref (AutoResetEvent Event, McpPacket Packet) evt, McpPacket obj)
         {
-            ListCharactersEvent.Packet = obj;
-            ListCharactersEvent.Event.Set();
-        }
-
-        private void OnStartupResponse(McpPacket obj)
-        {
-            StartupEvent.Packet = obj;
-            StartupEvent.Event.Set();
+            evt.Packet = obj;
+            evt.Event.Set();
         }
 
         internal void Connect(IPAddress ip, short port)
