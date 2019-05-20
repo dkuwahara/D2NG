@@ -1,7 +1,6 @@
 ﻿using D2NG.BNCS.Packet;
 using Serilog;
 using Stateless;
-using Stateless.Graph;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,33 +8,18 @@ using System.Net;
 using System.Net.Sockets;
 using D2NG.BNCS.Event;
 
-namespace D2NG
+namespace D2NG.BNCS
 {
-    class BncsConnection
+    class BncsConnection : Connection
     {
         /**
          * Default port used to connected to BNCS
          */
         public static readonly int DefaultPort = 6112;
 
-        private enum State
-        {
-            NotConnected,
-            Connected
-        }
-
-        private enum Trigger
-        {
-            ConnectSocket,
-            KillSocket,
-            Write,
-            Read
-        }
-
         /**
          * State Machine for the connection
          */
-        private readonly StateMachine<State, Trigger> _machine;
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
 
@@ -50,24 +34,14 @@ namespace D2NG
 
         public event EventHandler<BncsPacketSentEvent> PacketSent;
 
-        /**
-         * The actual TCP Connection
-         */
-        private NetworkStream _stream;
-
-        private TcpClient _tcpClient;
-
-
         public BncsConnection()
         {
-            _machine = new StateMachine<State, Trigger>(State.NotConnected);
             _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.ConnectSocket);
             _writeTrigger = _machine.SetTriggerParameters<byte[]>(Trigger.Write);
             _readTrigger = _machine.SetTriggerParameters<BncsPacket>(Trigger.Read);
 
             _machine.Configure(State.NotConnected)
                 .OnEntryFrom(Trigger.KillSocket, t => OnTerminate())
-                .Permit(Trigger.ConnectSocket, State.Connected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.NotConnected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.NotConnected));
 
@@ -75,7 +49,6 @@ namespace D2NG
                 .OnEntryFrom<String>(_connectTrigger, realm => OnConnect(realm), "Realm to connect to")
                 .InternalTransition(_writeTrigger, (data, t) => OnWritePacket(data))
                 .InternalTransition(_readTrigger, (packet, t) => OnGetPacket(packet))
-                .Permit(Trigger.KillSocket, State.NotConnected)
                 .OnEntry(() => Log.Debug("[{0}] Entered State: {1}", GetType(), State.Connected))
                 .OnExit(() => Log.Debug("[{0}] Exited State: {1}", GetType(), State.Connected));
 
