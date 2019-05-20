@@ -28,14 +28,12 @@ namespace D2NG
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<IPAddress, int> _connectTrigger;
 
-
         /**
         * The actual TCP Connection
         */
         protected NetworkStream _stream;
 
         protected TcpClient _tcpClient;
-
 
         protected Connection()
         {
@@ -84,6 +82,5 @@ namespace D2NG
         }
 
         public void WritePacket(Packet packet) => this.WritePacket(packet.Raw);
-
     }
 }

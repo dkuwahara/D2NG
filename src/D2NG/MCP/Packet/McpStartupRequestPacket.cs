@@ -17,7 +17,6 @@ namespace D2NG.MCP.Packet
                 )
             )
         {
-            
         }
     }
 }

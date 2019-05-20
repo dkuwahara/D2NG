@@ -51,6 +51,5 @@ namespace D2NG.BNCS.Packet
 
             McpUniqueName = ReadString(reader);
         }
-
     }
 }

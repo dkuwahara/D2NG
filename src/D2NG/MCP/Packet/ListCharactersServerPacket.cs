@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -14,7 +13,7 @@ namespace D2NG.MCP.Packet
             {
                 throw new McpPacketException("Packet length does not match");
             }
-            if (0x19 != reader.ReadByte())
+            if (reader.ReadByte() != 0x19)
             {
                 throw new McpPacketException("Expected Packet Type Not Found");
             }
@@ -32,7 +31,6 @@ namespace D2NG.MCP.Packet
                     ReadString(reader)
                     ));
             }
-
         }
 
         public List<McpCharacter> Characters { get; }

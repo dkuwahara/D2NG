@@ -22,8 +22,8 @@ namespace D2NG.MCP
 
                 // Read the rest of the packet and return it
                 ReadUpTo(ref buffer, packetLength);
-
             } while (buffer[2] == 0x00);
+
             PacketReceived?.Invoke(this, new McpPacket(buffer.ToArray()));
             return buffer.ToArray();
         }

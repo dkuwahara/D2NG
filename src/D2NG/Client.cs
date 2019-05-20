@@ -20,6 +20,5 @@ namespace D2NG
             Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
             Log.Information($"Connected to {packet.McpIp}:{packet.McpPort}");
         }
-
     }
 }

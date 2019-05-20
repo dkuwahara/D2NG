@@ -13,7 +13,6 @@ namespace D2NG.BNCS.Packet
             base(packet)
         { }
 
-
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {
             var packet = new List<byte> { 0xFF, command };
