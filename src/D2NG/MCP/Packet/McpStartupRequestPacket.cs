@@ -6,7 +6,6 @@ namespace D2NG.MCP.Packet
 {
     internal class McpStartupRequestPacket : McpPacket
     {
-        
         public McpStartupRequestPacket(uint mcpCookie, uint mcpStatus, List<byte> mcpChunk, string mcpUniqueName)
             : base(BuildPacket(
                 0x01,
