@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace D2NG.MCP
 {
-    class McpConnection : Connection
+    internal class McpConnection : Connection
     {
-        public event EventHandler<McpPacket> PacketReceived;
+        internal event EventHandler<McpPacket> PacketReceived;
 
-        public event EventHandler<McpPacket> PacketSent;
+        internal event EventHandler<McpPacket> PacketSent;
 
         internal override byte[] ReadPacket()
         {

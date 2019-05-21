@@ -13,7 +13,7 @@ namespace D2NG.MCP.Packet
             {
                 throw new McpPacketException("Packet length does not match");
             }
-            if (reader.ReadByte() != 0x01)
+            if (Mcp.STARTUP != (Mcp)reader.ReadByte())
             {
                 throw new McpPacketException("Expected Packet Type Not Found");
             }

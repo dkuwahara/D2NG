@@ -18,9 +18,9 @@ namespace D2NG.BNCS
         /**
          * Events on send and receive
          */
-        public event EventHandler<BncsPacketReceivedEvent> PacketReceived;
+        internal event EventHandler<BncsPacketReceivedEvent> PacketReceived;
 
-        public event EventHandler<BncsPacketSentEvent> PacketSent;
+        internal event EventHandler<BncsPacketSentEvent> PacketSent;
 
         public void Connect(String realm)
         {
