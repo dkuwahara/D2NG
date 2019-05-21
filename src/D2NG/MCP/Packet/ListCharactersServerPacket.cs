@@ -22,10 +22,10 @@ namespace D2NG.MCP.Packet
             _ = reader.ReadUInt32();
             var totalReturned = reader.ReadUInt16();
 
-            Characters = new List<McpCharacter>();
+            Characters = new List<Character>();
             for(int x = 0; x < totalReturned; x++)
             {
-                Characters.Add(new McpCharacter(
+                Characters.Add(new Character(
                     reader.ReadUInt32(),
                     ReadString(reader),
                     ReadString(reader)
@@ -33,6 +33,6 @@ namespace D2NG.MCP.Packet
             }
         }
 
-        public List<McpCharacter> Characters { get; }
+        public List<Character> Characters { get; }
     }
 }

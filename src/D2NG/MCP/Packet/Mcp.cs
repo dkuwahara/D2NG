@@ -1,6 +1,6 @@
 ﻿namespace D2NG.MCP.Packet
 {
-    enum Mcp : byte
+    public enum Mcp : byte
     {
         STARTUP = 0x01,
         CHARCREATE = 0x02,

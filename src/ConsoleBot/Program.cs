@@ -60,21 +60,16 @@ namespace ConsoleBot
 
         private string SelectMcpRealm()
         {
-            var realms = Client.ListMcpRealms();
-            var realmPrompt = realms.Select((r, index) => $"{index + 1}. {r.Name} - {r.Description}")
-                .Aggregate((i, j) => i + "\n" + j);
-
-            var realmSelection = Prompt.GetInt($"Select MCP Realm:\n{realmPrompt}\n", 1, ConsoleColor.Red) - 1;
-            var selection = realms[realmSelection];
-            Log.Information($"Selected {selection}");
-            return selection.Name;
+            return Client.ListMcpRealms()
+                .First()
+                .Name;
         }
 
         private string SelectCharacter()
         {
             var characters = Client.Mcp.ListCharacters();
 
-            var charsPrompt = characters.Select((r, index) => $"{index + 1}. {r.Name} - {r.Statstring}")
+            var charsPrompt = characters.Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {(CharacterClass)c.CharacterClass}")
                 .Aggregate((i, j) => i + "\n" + j);
 
             var charSelection = Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Red) - 1;

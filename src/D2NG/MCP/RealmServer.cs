@@ -62,7 +62,7 @@ namespace D2NG.MCP
             _ = new McpStartupResponsePacket(StartupEvent.Packet.Raw);
         }
 
-        public List<McpCharacter> ListCharacters()
+        public List<Character> ListCharacters()
         {
             Connection.WritePacket(new ListCharactersClientPacket());
             ListCharactersEvent.Event.WaitOne();
