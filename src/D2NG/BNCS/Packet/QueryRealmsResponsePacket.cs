@@ -6,7 +6,7 @@ namespace D2NG.BNCS.Packet
 {
     public class QueryRealmsResponsePacket : BncsPacket
     {
-        public List<(string Name, string Description)> Realms = new List<(string, string)>();
+        public List<Realm> Realms = new List<Realm>();
         public QueryRealmsResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
@@ -14,7 +14,7 @@ namespace D2NG.BNCS.Packet
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
             }
-            if ((byte)Sid.QUERYREALMS2 != reader.ReadByte())
+            if (Sid.QUERYREALMS2 != (Sid)reader.ReadByte())
             {
                 throw new BncsPacketException("Expected type was not found");
             }
@@ -29,10 +29,34 @@ namespace D2NG.BNCS.Packet
             for (int i = 0; i < count; i++)
             {
                 reader.ReadUInt32();
-                Realms.Add((ReadString(reader), ReadString(reader)));
+                Realms.Add(new Realm(ReadString(reader), ReadString(reader)));
             }
 
             reader.Close();
+        }
+    }
+
+    public struct Realm
+    {
+        public string Name;
+        public string Description;
+
+        public Realm(string name, string description)
+        {
+            this.Name = name;
+            this.Description = description;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Realm other &&
+                   this.Name == other.Name &&
+                   this.Description == other.Description;
+        }
+
+        public override int GetHashCode()
+        {
+            return System.HashCode.Combine(this.Name, this.Description);
         }
     }
 }

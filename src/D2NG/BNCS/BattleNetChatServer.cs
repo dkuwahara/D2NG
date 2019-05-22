@@ -54,7 +54,7 @@ namespace D2NG.BNCS
 
         public BncsContext Context { get; set; }
 
-        private (AutoResetEvent Event, List<(string Name, string Description)>  Realms) ListRealmsEvent = (new AutoResetEvent(false), null);
+        private (AutoResetEvent Event, List<Realm>  Realms) ListRealmsEvent = (new AutoResetEvent(false), null);
         private (AutoResetEvent Event, RealmLogonResponsePacket Packet) RealmLogonEvent = (new AutoResetEvent(false), null);
 
         internal BattleNetChatServer()
@@ -269,7 +269,7 @@ namespace D2NG.BNCS
             }
         }
 
-        internal List<(string Name, string Description)> ListMcpRealms()
+        internal List<Realm> ListMcpRealms()
         {
             Connection.WritePacket(new QueryRealmsRequestPacket());
             ListRealmsEvent.Event.WaitOne();
