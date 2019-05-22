@@ -43,6 +43,7 @@ namespace D2NG.MCP
 
         internal void Logon(uint mcpCookie, uint mcpStatus, List<byte> mcpChunk, string mcpUniqueName)
         {
+            StartupEvent.Reset();
             var packet = new McpStartupRequestPacket(mcpCookie, mcpStatus, mcpChunk, mcpUniqueName);
             Connection.WritePacket(packet);
             var response = StartupEvent.WaitForPacket();
@@ -51,6 +52,7 @@ namespace D2NG.MCP
 
         public List<Character> ListCharacters()
         {
+            ListCharactersEvent.Reset();
             Connection.WritePacket(new ListCharactersClientPacket());
             var packet = ListCharactersEvent.WaitForPacket();
             var response = new ListCharactersServerPacket(packet.Raw);

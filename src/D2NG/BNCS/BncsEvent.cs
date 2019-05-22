@@ -1,26 +1,29 @@
 ﻿using D2NG.BNCS.Packet;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace D2NG.BNCS
 {
     class BncsEvent
     {
-        private readonly AutoResetEvent _event = new AutoResetEvent(false);
+        private readonly ManualResetEvent _event = new ManualResetEvent(false);
 
-        public BncsPacket Packet { get; private set; }
+        private BncsPacket _packet;
+
+        public void Reset()
+        {
+            _event.Reset();
+            _packet = null;
+        }
 
         public BncsPacket WaitForPacket()
         {
             _event.WaitOne();
-            return Packet;
+            return _packet;
         }
 
         public void Set(BncsPacket packet)
         {
-            Packet = packet;
+            _packet = packet;
             _event.Set();
         }
 

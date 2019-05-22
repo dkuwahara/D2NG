@@ -171,9 +171,8 @@ namespace D2NG.BNCS
                 })
                 .Execute(() => CheckForPacket(sid));
 
-            BncsPacket packet;
             if (!ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
-                    .TryDequeue(out packet))
+                    .TryDequeue(out BncsPacket packet))
             {
                 throw new PacketNotFoundException();
             }
@@ -267,6 +266,7 @@ namespace D2NG.BNCS
 
         internal List<Realm> ListMcpRealms()
         {
+            ListRealmsEvent.Reset();
             Connection.WritePacket(new QueryRealmsRequestPacket());
             var packet = ListRealmsEvent.WaitForPacket();
             return new QueryRealmsResponsePacket(packet.Raw).Realms;
@@ -274,6 +274,7 @@ namespace D2NG.BNCS
 
         internal RealmLogonResponsePacket RealmLogon(string realmName)
         {
+            RealmLogonEvent.Reset();
             Connection.WritePacket(new RealmLogonRequestPacket(Context.ClientToken, Context.ServerToken, realmName, "password"));
             var packet = RealmLogonEvent.WaitForPacket();
             return new RealmLogonResponsePacket(packet.Raw);
