@@ -14,8 +14,8 @@ namespace D2NG.MCP
         protected ConcurrentDictionary<byte, Action<McpPacket>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<McpPacket>>();
         protected ConcurrentDictionary<byte, Action<McpPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<McpPacket>>();
 
-        private (AutoResetEvent Event, McpPacket Packet) ListCharactersEvent = (new AutoResetEvent(false), null);
-        private (AutoResetEvent Event, McpPacket Packet) StartupEvent = (new AutoResetEvent(false), null);
+        private McpEvent ListCharactersEvent = new McpEvent();
+        private McpEvent StartupEvent = new McpEvent();
 
         internal RealmServer()
         {
@@ -29,14 +29,8 @@ namespace D2NG.MCP
                 PacketSentEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
             };
 
-            OnReceivedPacketEvent(0x01, obj => EventSet(ref StartupEvent, obj));
-            OnReceivedPacketEvent(0x19, obj => EventSet(ref ListCharactersEvent, obj));
-        }
-
-        private static void EventSet(ref (AutoResetEvent Event, McpPacket Packet) evt, McpPacket obj)
-        {
-            evt.Packet = obj;
-            evt.Event.Set();
+            OnReceivedPacketEvent(0x01, obj => StartupEvent.Set(obj));
+            OnReceivedPacketEvent(0x19, obj => ListCharactersEvent.Set(obj));
         }
 
         internal void Connect(IPAddress ip, short port)
@@ -58,15 +52,15 @@ namespace D2NG.MCP
         {
             var packet = new McpStartupRequestPacket(mcpCookie, mcpStatus, mcpChunk, mcpUniqueName);
             Connection.WritePacket(packet);
-            StartupEvent.Event.WaitOne();
-            _ = new McpStartupResponsePacket(StartupEvent.Packet.Raw);
+            var response = StartupEvent.WaitForPacket();
+            _ = new McpStartupResponsePacket(response.Raw);
         }
 
         public List<Character> ListCharacters()
         {
             Connection.WritePacket(new ListCharactersClientPacket());
-            ListCharactersEvent.Event.WaitOne();
-            var response = new ListCharactersServerPacket(ListCharactersEvent.Packet.Raw);
+            var packet = ListCharactersEvent.WaitForPacket();
+            var response = new ListCharactersServerPacket(packet.Raw);
             return response.Characters;
         }
 

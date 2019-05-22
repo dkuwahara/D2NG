@@ -9,9 +9,9 @@ namespace D2NG.BNCS.Packet
 
         public byte Type { get => Raw[1]; }
 
-        public BncsPacket(byte[] packet) :
-            base(packet)
-        { }
+        public BncsPacket(byte[] packet) : base(packet)
+        {
+        }
 
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {
