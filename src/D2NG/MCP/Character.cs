@@ -15,10 +15,6 @@ namespace D2NG.MCP
 
         public byte Level { get => Statstring[25]; }
 
-        public bool Hardcore { get => (Statstring[26] & 0x04) != 0; }
-
-        public bool Expansion { get => (Statstring[26] & 0x20) != 0; }
-
         public uint Expiry { get; }
         public string Name { get; }
         public byte[] Statstring { get; }

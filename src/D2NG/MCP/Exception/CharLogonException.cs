@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace D2NG.MCP
 {
     [Serializable]
-    internal class CharLogonException : Exception
+    public class CharLogonException : Exception
     {
         public CharLogonException()
         {
