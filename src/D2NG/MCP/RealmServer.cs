@@ -14,20 +14,13 @@ namespace D2NG.MCP
         protected ConcurrentDictionary<byte, Action<McpPacket>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<McpPacket>>();
         protected ConcurrentDictionary<byte, Action<McpPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<McpPacket>>();
 
-        private McpEvent ListCharactersEvent = new McpEvent();
-        private McpEvent StartupEvent = new McpEvent();
+        private readonly McpEvent ListCharactersEvent = new McpEvent();
+        private readonly McpEvent StartupEvent = new McpEvent();
 
         internal RealmServer()
         {
-            Connection.PacketReceived += (obj, eventArgs) => {
-                var sid = eventArgs.Type;
-                PacketReceivedEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
-            };
-
-            Connection.PacketSent += (obj, eventArgs) => {
-                var sid = eventArgs.Type;
-                PacketSentEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
-            };
+            Connection.PacketReceived += (obj, eventArgs) => PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
+            Connection.PacketSent += (obj, eventArgs) => PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null).Invoke(eventArgs);
 
             OnReceivedPacketEvent(0x01, obj => StartupEvent.Set(obj));
             OnReceivedPacketEvent(0x19, obj => ListCharactersEvent.Set(obj));
