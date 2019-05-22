@@ -1,4 +1,6 @@
-﻿namespace D2NG.MCP
+﻿using System.Text;
+
+namespace D2NG.MCP
 {
     public class Character
     {
@@ -6,15 +8,19 @@
         {
             Expiry = expiry;
             Name = name;
-            Statstring = statstring;
+            Statstring = Encoding.ASCII.GetBytes(statstring);
         }
 
-        public byte CharacterClass { get => (byte) ((Statstring[13] - 0x01) & 0xFF); }
+        public byte CharacterClass { get => (byte)((Statstring[13] - 0x01) & 0xFF); }
 
-        public byte Level { get => (byte)((Statstring[25]) & 0xFF); }
+        public byte Level { get => Statstring[25]; }
+
+        public bool Hardcore { get => (Statstring[26] & 0x04) != 0; }
+
+        public bool Expansion { get => (Statstring[26] & 0x20) != 0; }
 
         public uint Expiry { get; }
         public string Name { get; }
-        public string Statstring { get; }
+        public byte[] Statstring { get; }
     }
 }
