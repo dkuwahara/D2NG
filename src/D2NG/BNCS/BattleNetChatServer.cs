@@ -4,7 +4,6 @@ using Stateless;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using D2NG.BNCS.Event;
 using D2NG.BNCS.Login;
 using System.Threading;
 using Polly;
@@ -20,9 +19,9 @@ namespace D2NG.BNCS
 
         private BncsConnection Connection { get; } = new BncsConnection();
 
-        protected ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketReceivedEvent>>();
+        protected ConcurrentDictionary<Sid, Action<BncsPacket>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacket>>();
 
-        protected ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacketSentEvent>>();
+        protected ConcurrentDictionary<Sid, Action<BncsPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacket>>();
 
         protected ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
 
@@ -54,8 +53,8 @@ namespace D2NG.BNCS
 
         public BncsContext Context { get; set; }
 
-        private (AutoResetEvent Event, List<Realm>  Realms) ListRealmsEvent = (new AutoResetEvent(false), null);
-        private (AutoResetEvent Event, RealmLogonResponsePacket Packet) RealmLogonEvent = (new AutoResetEvent(false), null);
+        private readonly BncsEvent ListRealmsEvent = new BncsEvent();
+        private readonly BncsEvent RealmLogonEvent = new BncsEvent();
 
         internal BattleNetChatServer()
         {
@@ -101,13 +100,13 @@ namespace D2NG.BNCS
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
             Connection.PacketReceived += (obj, eventArgs) => {
-                var sid = (Sid)eventArgs.Packet.Type;
+                var sid = (Sid)eventArgs.Type;
                 var handler = PacketReceivedEventHandlers.GetValueOrDefault(sid, null);
 
                 if (handler is null)
                 {
                     ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
-                        .Enqueue(eventArgs.Packet);
+                        .Enqueue(eventArgs);
                 }
                 else
                 {
@@ -120,9 +119,10 @@ namespace D2NG.BNCS
                 PacketSentEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
             };
 
-            OnReceivedPacketEvent(Sid.PING, obj => Connection.WritePacket(obj.Packet.Raw));
-            OnReceivedPacketEvent(Sid.QUERYREALMS2, obj => OnReceivedQueryRealmsResponse(new QueryRealmsResponsePacket(obj.Packet.Raw)));
-            OnReceivedPacketEvent(Sid.LOGONREALMEX, obj => OnReceivedRealmLogonResponse(new RealmLogonResponsePacket(obj.Packet.Raw)));
+            OnReceivedPacketEvent(Sid.PING, obj => Connection.WritePacket(obj.Raw));
+
+            OnReceivedPacketEvent(Sid.QUERYREALMS2, obj => ListRealmsEvent.Set(obj));
+            OnReceivedPacketEvent(Sid.LOGONREALMEX, obj => RealmLogonEvent.Set(obj));
         }
 
         public void ConnectTo(string realm, string classicKey, string expansionKey)
@@ -245,7 +245,7 @@ namespace D2NG.BNCS
             _ = new AuthCheckResponsePacket(WaitForPacket(Sid.AUTH_CHECK));
         }
 
-        public void OnReceivedPacketEvent(Sid type, Action<BncsPacketReceivedEvent> handler)
+        public void OnReceivedPacketEvent(Sid type, Action<BncsPacket> handler)
         {
             if (PacketReceivedEventHandlers.ContainsKey(type))
             {
@@ -257,7 +257,7 @@ namespace D2NG.BNCS
             }
         }
 
-        public void OnSentPacketEvent(Sid type, Action<BncsPacketSentEvent> handler)
+        public void OnSentPacketEvent(Sid type, Action<BncsPacket> handler)
         {
             if (PacketSentEventHandlers.ContainsKey(type))
             {
@@ -272,27 +272,15 @@ namespace D2NG.BNCS
         internal List<Realm> ListMcpRealms()
         {
             Connection.WritePacket(new QueryRealmsRequestPacket());
-            ListRealmsEvent.Event.WaitOne();
-            return ListRealmsEvent.Realms;
-        }
-
-        private void OnReceivedQueryRealmsResponse(QueryRealmsResponsePacket packet)
-        {
-            ListRealmsEvent.Realms = packet.Realms;
-            ListRealmsEvent.Event.Set();
+            var packet = ListRealmsEvent.WaitForPacket();
+            return new QueryRealmsResponsePacket(packet.Raw).Realms;
         }
 
         internal RealmLogonResponsePacket RealmLogon(string realmName)
         {
             Connection.WritePacket(new RealmLogonRequestPacket(Context.ClientToken, Context.ServerToken, realmName, "password"));
-            RealmLogonEvent.Event.WaitOne();
-            return RealmLogonEvent.Packet;
-        }
-
-        private void OnReceivedRealmLogonResponse(RealmLogonResponsePacket packet)
-        {
-            RealmLogonEvent.Packet = packet;
-            RealmLogonEvent.Event.Set();
+            var packet = RealmLogonEvent.WaitForPacket();
+            return new RealmLogonResponsePacket(packet.Raw);
         }
     }
 }

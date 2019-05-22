@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using D2NG.BNCS.Event;
 
 namespace D2NG.BNCS
 {
@@ -18,9 +17,9 @@ namespace D2NG.BNCS
         /**
          * Events on send and receive
          */
-        internal event EventHandler<BncsPacketReceivedEvent> PacketReceived;
+        internal event EventHandler<BncsPacket> PacketReceived;
 
-        internal event EventHandler<BncsPacketSentEvent> PacketSent;
+        internal event EventHandler<BncsPacket> PacketSent;
 
         public void Connect(String realm)
         {
@@ -45,7 +44,7 @@ namespace D2NG.BNCS
             } while (buffer[1] == 0x00);
 
             var packet = new BncsPacket(buffer.ToArray());
-            PacketReceived?.Invoke(this, new BncsPacketReceivedEvent(packet));
+            PacketReceived?.Invoke(this, packet);
             return buffer.ToArray();
         }
 
@@ -61,7 +60,7 @@ namespace D2NG.BNCS
         internal override void WritePacket(byte[] packet)
         {
             _stream.Write(packet, 0, packet.Length);
-            PacketSent?.Invoke(this, new BncsPacketSentEvent(packet));
+            PacketSent?.Invoke(this, new BncsPacket(packet));
         }
     }
 }

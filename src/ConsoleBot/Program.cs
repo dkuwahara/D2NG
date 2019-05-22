@@ -76,9 +76,9 @@ namespace ConsoleBot
             return characters[charSelection].Name;
         }
              
-        private static void HandleChatEvent(BncsPacketReceivedEvent obj)
+        private static void HandleChatEvent(BncsPacket obj)
         {
-            _ = new ChatEventPacket(obj.Packet.Raw);
+            _ = new ChatEventPacket(obj.Raw);
         }
     }
 }
