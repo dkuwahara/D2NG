@@ -26,6 +26,7 @@ namespace D2NG
         }
 
         public List<Character> ListCharacters() => Mcp.ListCharacters();
+
         public void SelectCharacter(Character character)
         {
             Log.Information($"Selecting {character.Name}");

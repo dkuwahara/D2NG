@@ -38,21 +38,15 @@ namespace ConsoleBot
             Client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
-                var realm = Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Red);
+                Client.Connect(Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Green), Config.ClassicKey, Config.ExpansionKey);
 
-                Client.Connect(realm, Config.ClassicKey, Config.ExpansionKey);
+                Client.Login(
+                    Prompt.GetString("Username: ", Config.Username, ConsoleColor.Green), 
+                    Prompt.GetPassword("Password: ", ConsoleColor.Red));
 
-                var username = Prompt.GetString("Username: ", Config.Username, ConsoleColor.Red);
-                var password = Prompt.GetPassword("Password: ", ConsoleColor.Red);
-                
-                Client.Login(username, password);
+                Client.McpLogon(SelectMcpRealm());
 
-                var mcpRealm = SelectMcpRealm();
-                Client.McpLogon(mcpRealm);
-
-                var selectedChar = SelectCharacter();
-
-                Client.SelectCharacter(selectedChar);
+                Client.SelectCharacter(SelectCharacter());
 
             }
             catch (Exception e)
@@ -70,12 +64,11 @@ namespace ConsoleBot
         {
             var characters = Client.ListCharacters();
 
-            var charsPrompt = characters.Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {(CharacterClass)c.CharacterClass}")
+            var charsPrompt = characters
+                .Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {(CharacterClass)c.CharacterClass}")
                 .Aggregate((i, j) => i + "\n" + j);
 
-            var charSelection = Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Red) - 1;
-
-            return characters[charSelection];
+            return characters[Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Green) - 1];
         }
              
         private static void HandleChatEvent(BncsPacket obj)
