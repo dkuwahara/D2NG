@@ -36,27 +36,15 @@ namespace D2NG.BNCS.Packet
         }
     }
 
-    public struct Realm
+    public class Realm
     {
-        public string Name;
-        public string Description;
+        public string Name { get; }
+        public string Description { get; }
 
         public Realm(string name, string description)
         {
             this.Name = name;
             this.Description = description;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Realm other &&
-                   this.Name == other.Name &&
-                   this.Description == other.Description;
-        }
-
-        public override int GetHashCode()
-        {
-            return System.HashCode.Combine(this.Name, this.Description);
         }
     }
 }
