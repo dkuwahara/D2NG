@@ -6,7 +6,6 @@ namespace D2NG
 {
     internal class CharLogonResponsePacket : McpPacket
     {
-
         public CharLogonResponsePacket(McpPacket packet) : base(packet.Raw)
         {
             var reader = new BinaryReader(new MemoryStream(Raw), Encoding.ASCII);

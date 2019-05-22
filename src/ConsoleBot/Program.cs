@@ -47,7 +47,6 @@ namespace ConsoleBot
                 Client.McpLogon(SelectMcpRealm());
 
                 Client.SelectCharacter(SelectCharacter());
-
             }
             catch (Exception e)
             {

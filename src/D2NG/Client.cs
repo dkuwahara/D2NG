@@ -35,6 +35,5 @@ namespace D2NG
             Bncs.EnterChat();
             Log.Information($"Entered Chat");
         }
-
     }
 }
