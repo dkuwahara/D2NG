@@ -6,7 +6,8 @@ namespace D2NG.BNCS.Packet
 {
     public class QueryRealmsResponsePacket : BncsPacket
     {
-        public List<Realm> Realms = new List<Realm>();
+        public List<Realm> Realms { get; } = new List<Realm>();
+
         public QueryRealmsResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
@@ -33,18 +34,6 @@ namespace D2NG.BNCS.Packet
             }
 
             reader.Close();
-        }
-    }
-
-    public class Realm
-    {
-        public string Name { get; }
-        public string Description { get; }
-
-        public Realm(string name, string description)
-        {
-            this.Name = name;
-            this.Description = description;
         }
     }
 }
