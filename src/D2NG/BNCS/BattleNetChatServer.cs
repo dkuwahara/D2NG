@@ -99,30 +99,26 @@ namespace D2NG.BNCS
                 .OnEntryFrom(Trigger.EnterChat, OnEnterChat)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
-            Connection.PacketReceived += (obj, eventArgs) => {
-                var sid = (Sid)eventArgs.Type;
+            Connection.PacketReceived += (obj, packet) => {
+                var sid = (Sid)packet.Type;
                 var handler = PacketReceivedEventHandlers.GetValueOrDefault(sid, null);
 
                 if (handler is null)
                 {
                     ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
-                        .Enqueue(eventArgs);
+                        .Enqueue(packet);
                 }
                 else
                 {
-                    handler.Invoke(eventArgs);
+                    handler.Invoke(packet);
                 }
             };
 
-            Connection.PacketSent += (obj, eventArgs) => {
-                var sid = (Sid)eventArgs.Type;
-                PacketSentEventHandlers.GetValueOrDefault(sid, null)?.Invoke(eventArgs);
-            };
+            Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault((Sid)packet.Type, null)?.Invoke(packet);
 
-            OnReceivedPacketEvent(Sid.PING, obj => Connection.WritePacket(obj.Raw));
-
-            OnReceivedPacketEvent(Sid.QUERYREALMS2, obj => ListRealmsEvent.Set(obj));
-            OnReceivedPacketEvent(Sid.LOGONREALMEX, obj => RealmLogonEvent.Set(obj));
+            OnReceivedPacketEvent(Sid.PING, packet => Connection.WritePacket(packet.Raw));
+            OnReceivedPacketEvent(Sid.QUERYREALMS2, packet => ListRealmsEvent.Set(packet));
+            OnReceivedPacketEvent(Sid.LOGONREALMEX, packet => RealmLogonEvent.Set(packet));
         }
 
         public void ConnectTo(string realm, string classicKey, string expansionKey)
