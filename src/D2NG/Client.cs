@@ -20,5 +20,12 @@ namespace D2NG
             Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
             Log.Information($"Connected to {packet.McpIp}:{packet.McpPort}");
         }
+
+        public void SelectCharacter(Character character)
+        {
+            Log.Information($"Selecting {character.Name}");
+            Mcp.CharLogon(character);
+            Log.Information($"Selected {character.Name}");
+        }
     }
 }

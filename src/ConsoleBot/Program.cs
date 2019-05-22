@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using McMaster.Extensions.CommandLineUtils;
 using D2NG.BNCS.Packet;
 using System.Linq;
+using D2NG.MCP;
 
 namespace ConsoleBot
 {
@@ -50,7 +51,10 @@ namespace ConsoleBot
                 var mcpRealm = SelectMcpRealm();
                 Client.McpLogon(mcpRealm);
 
-                _ = SelectCharacter();
+                var selectedChar = SelectCharacter();
+
+                Client.SelectCharacter(selectedChar);
+
             }
             catch (Exception e)
             {
@@ -63,7 +67,7 @@ namespace ConsoleBot
             return Client.ListMcpRealms().First().Name;
         }
 
-        private string SelectCharacter()
+        private Character SelectCharacter()
         {
             var characters = Client.Mcp.ListCharacters();
 
@@ -72,8 +76,7 @@ namespace ConsoleBot
 
             var charSelection = Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Red) - 1;
 
-            Log.Information($"Selected {characters[charSelection].Name}");
-            return characters[charSelection].Name;
+            return characters[charSelection];
         }
              
         private static void HandleChatEvent(BncsPacket obj)

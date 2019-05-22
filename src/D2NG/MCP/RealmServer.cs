@@ -14,6 +14,7 @@ namespace D2NG.MCP
         protected ConcurrentDictionary<Mcp, Action<McpPacket>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Mcp, Action<McpPacket>>();
         protected ConcurrentDictionary<Mcp, Action<McpPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Mcp, Action<McpPacket>>();
 
+        private readonly McpEvent CharLogonEvent = new McpEvent();
         private readonly McpEvent ListCharactersEvent = new McpEvent();
         private readonly McpEvent StartupEvent = new McpEvent();
 
@@ -22,8 +23,9 @@ namespace D2NG.MCP
             Connection.PacketReceived += (obj, eventArgs) => PacketReceivedEventHandlers.GetValueOrDefault((Mcp)eventArgs.Type, null)?.Invoke(eventArgs);
             Connection.PacketSent += (obj, eventArgs) => PacketSentEventHandlers.GetValueOrDefault((Mcp)eventArgs.Type, null)?.Invoke(eventArgs);
 
-            OnReceivedPacketEvent(Mcp.STARTUP, obj => StartupEvent.Set(obj));
-            OnReceivedPacketEvent(Mcp.CHARLIST2, obj => ListCharactersEvent.Set(obj));
+            OnReceivedPacketEvent(Mcp.STARTUP, packet => StartupEvent.Set(packet));
+            OnReceivedPacketEvent(Mcp.CHARLIST2, packet => ListCharactersEvent.Set(packet));
+            OnReceivedPacketEvent(Mcp.CHARLOGON, packet => CharLogonEvent.Set(packet));
         }
 
         internal void Connect(IPAddress ip, short port)
@@ -38,6 +40,18 @@ namespace D2NG.MCP
             while (Connection.Connected)
             {
                 _ = Connection.ReadPacket();
+            }
+        }
+
+        internal void CharLogon(Character character)
+        {
+            CharLogonEvent.Reset();
+            var packet = new CharLogonRequestPacket(character.Name);
+            Connection.WritePacket(packet);
+            var response = new CharLogonResponsePacket(CharLogonEvent.WaitForPacket());
+            if ( response.Result != 0x00)
+            {
+                throw new CharLogonException($"Failed to log on as {character.Name} - {response.Result}");
             }
         }
 
