@@ -1,9 +1,10 @@
 ﻿using D2NG.BNCS.Packet;
+using System;
 using System.Threading;
 
 namespace D2NG.BNCS
 {
-    class BncsEvent
+    class BncsEvent : IDisposable
     {
         private readonly ManualResetEvent _event = new ManualResetEvent(false);
 
