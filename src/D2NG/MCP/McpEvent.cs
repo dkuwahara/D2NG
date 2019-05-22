@@ -6,9 +6,9 @@ using System.Threading;
 
 namespace D2NG.MCP
 {
-    internal class McpEvent
+    internal class McpEvent : IDisposable
     {
-        private AutoResetEvent _event = new AutoResetEvent(false);
+        private readonly AutoResetEvent _event = new AutoResetEvent(false);
 
         public McpPacket Packet { get; private set; }
 
@@ -22,6 +22,11 @@ namespace D2NG.MCP
         {
             Packet = packet;
             _event.Set();
+        }
+
+        public void Dispose()
+        {
+            _event.Dispose();
         }
     }
 }
