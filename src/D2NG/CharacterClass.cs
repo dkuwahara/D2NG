@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace D2NG
+﻿namespace D2NG
 {
     public enum CharacterClass : byte
     {
