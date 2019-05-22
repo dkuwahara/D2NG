@@ -121,7 +121,7 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.LOGONREALMEX, packet => RealmLogonEvent.Set(packet));
         }
 
-        public void ConnectTo(string realm, string classicKey, string expansionKey)
+        internal void ConnectTo(string realm, string classicKey, string expansionKey)
         {
             Log.Information($"Connecting to {realm}");
             _machine.Fire(_connectTrigger, realm);
@@ -141,7 +141,7 @@ namespace D2NG.BNCS
             Log.Information($"Connected to {realm}");
         }
 
-        public void EnterChat()
+        internal void EnterChat()
         {
             _machine.Fire(Trigger.EnterChat);
         }
@@ -154,7 +154,7 @@ namespace D2NG.BNCS
             }
         }
 
-        public void Login(string username, string password)
+        internal void Login(string username, string password)
         {
             Log.Information($"Logging in as {username}");
             _machine.Fire(_loginTrigger, username, password);

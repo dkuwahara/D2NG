@@ -40,13 +40,12 @@ namespace ConsoleBot
             try {
                 var realm = Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Red);
 
-                Client.Bncs.ConnectTo(realm, Config.ClassicKey, Config.ExpansionKey);
+                Client.Connect(realm, Config.ClassicKey, Config.ExpansionKey);
 
                 var username = Prompt.GetString("Username: ", Config.Username, ConsoleColor.Red);
                 var password = Prompt.GetPassword("Password: ", ConsoleColor.Red);
                 
-                Client.Bncs.Login(username, password);
-                Client.Bncs.EnterChat();
+                Client.Login(username, password);
 
                 var mcpRealm = SelectMcpRealm();
                 Client.McpLogon(mcpRealm);
@@ -69,7 +68,7 @@ namespace ConsoleBot
 
         private Character SelectCharacter()
         {
-            var characters = Client.Mcp.ListCharacters();
+            var characters = Client.ListCharacters();
 
             var charsPrompt = characters.Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {(CharacterClass)c.CharacterClass}")
                 .Aggregate((i, j) => i + "\n" + j);
