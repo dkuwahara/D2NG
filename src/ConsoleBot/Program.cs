@@ -60,9 +60,7 @@ namespace ConsoleBot
 
         private string SelectMcpRealm()
         {
-            return Client.ListMcpRealms()
-                .First()
-                .Name;
+            return Client.ListMcpRealms().First().Name;
         }
 
         private string SelectCharacter()
