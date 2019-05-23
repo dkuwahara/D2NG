@@ -8,7 +8,7 @@ namespace D2NG.MCP.Packet
             base(
                 BuildPacket(
                     (byte)Mcp.CHARLOGON,
-                    Encoding.ASCII.GetBytes(name + '\0')
+                    Encoding.ASCII.GetBytes($"{name}\0")
                 )
             )
         {
