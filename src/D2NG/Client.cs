@@ -20,6 +20,12 @@ namespace D2NG
         public void OnSentPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnSentPacketEvent(sid, action);
         public void OnSentPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnSentPacketEvent(mcp, action);
 
+        /// <summary>
+        /// Connect to a Battle.net Realm
+        /// </summary>
+        /// <param name="realm">Realm to connect to. e.g. useast.battle.net </param>
+        /// <param name="classicKey">26-character Diablo II Classic CD Key</param>
+        /// <param name="expansionKey">26-character Diablo II: Lord of Destruction CD Key</param>
         public void Connect(string realm, string classicKey, string expansionKey) => Bncs.ConnectTo(realm, classicKey, expansionKey);
 
         public List<Character> Login(string username, string password)
