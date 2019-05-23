@@ -38,9 +38,9 @@ namespace ConsoleBot
 
             try {
                 Client.Connect(
-                    Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Green), 
-                    Config.ClassicKey, 
-                    Config.ExpansionKey);
+                    Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Green),
+                    Prompt.GetString($"Classic Key:", Config.ClassicKey, ConsoleColor.Blue),
+                    Prompt.GetString($"Expansion Key:", Config.ExpansionKey, ConsoleColor.Blue));
 
                 var characters = Client.Login(
                     Prompt.GetString("Username: ", Config.Username, ConsoleColor.Green), 
@@ -65,7 +65,8 @@ namespace ConsoleBot
              
         private static void HandleChatEvent(BncsPacket obj)
         {
-            _ = new ChatEventPacket(obj.Raw);
+            var packet = new ChatEventPacket(obj.Raw);
+            Log.Debug(packet.RenderText());
         }
     }
 }
