@@ -30,7 +30,6 @@ namespace ConsoleBot
                 .MinimumLevel.Information()
                 .WriteTo.Console()
                 .CreateLogger();
-
             
             Config = Config.FromFile(this.ConfigFile);
 
