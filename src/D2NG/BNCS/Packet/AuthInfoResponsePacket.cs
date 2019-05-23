@@ -5,6 +5,10 @@ namespace D2NG.BNCS.Packet
 {
     public class AuthInfoResponsePacket : BncsPacket
     {
+        public AuthInfoResponsePacket(BncsPacket bncsPacket) : this(bncsPacket.Raw)
+        {
+        }
+
         public AuthInfoResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
