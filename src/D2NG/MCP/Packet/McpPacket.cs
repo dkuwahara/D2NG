@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace D2NG.MCP.Packet
 {
@@ -11,21 +12,13 @@ namespace D2NG.MCP.Packet
 
         public byte Type { get => Raw[2]; }
 
-        protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
+        protected static byte[] BuildPacket(Mcp command, params IEnumerable<byte>[] args)
         {
             var packet = new List<byte>();
-
-            var packetArray = new List<byte>();
-            foreach (IEnumerable<byte> a in args)
-            {
-                packetArray.AddRange(a);
-            }
-
-            UInt16 arrayCount = (UInt16)(packetArray.Count + 3);
-            packet.AddRange(BitConverter.GetBytes(arrayCount));
-            packet.Add(command);
+            var packetArray = args.SelectMany(a => a);
+            packet.AddRange(BitConverter.GetBytes((UInt16)(packetArray.Count() + 3)));
+            packet.Add((byte)command);
             packet.AddRange(packetArray);
-
             return packet.ToArray();
         }
     }

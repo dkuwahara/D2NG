@@ -7,7 +7,7 @@ namespace D2NG.MCP.Packet
         public CharLogonRequestPacket(string name) :
             base(
                 BuildPacket(
-                    (byte)Mcp.CHARLOGON,
+                    Mcp.CHARLOGON,
                     Encoding.ASCII.GetBytes($"{name}\0")
                 )
             )

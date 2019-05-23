@@ -8,7 +8,7 @@ namespace D2NG.MCP.Packet
     {
         public McpStartupRequestPacket(uint mcpCookie, uint mcpStatus, List<byte> mcpChunk, string mcpUniqueName)
             : base(BuildPacket(
-                (byte)Mcp.STARTUP,
+                Mcp.STARTUP,
                 BitConverter.GetBytes(mcpCookie),
                 BitConverter.GetBytes(mcpStatus),
                 mcpChunk,
