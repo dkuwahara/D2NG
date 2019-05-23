@@ -12,8 +12,7 @@ namespace ConsoleBot
 {
     class Program
     {
-        static int Main(string[] args)
-            => CommandLineApplication.Execute<Program>(args);
+        static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         [Option(Description = "Config File", LongName = "config", ShortName = "c")]
         [Required]
@@ -39,7 +38,10 @@ namespace ConsoleBot
             Client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
-                Client.Connect(Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Green), Config.ClassicKey, Config.ExpansionKey);
+                Client.Connect(
+                    Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Green), 
+                    Config.ClassicKey, 
+                    Config.ExpansionKey);
 
                 var characters = Client.Login(
                     Prompt.GetString("Username: ", Config.Username, ConsoleColor.Green), 

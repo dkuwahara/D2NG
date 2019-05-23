@@ -17,7 +17,7 @@ namespace D2NG
         {
             Bncs.Login(username, password);
             Log.Information($"Logged in as {username}");
-            var packet = Bncs.RealmLogon(Bncs.ListMcpRealms().First().Name)
+            var packet = Bncs.RealmLogon(Bncs.ListMcpRealms().First().Name);
             Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
             Mcp.Connect(packet.McpIp, packet.McpPort);
             Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
