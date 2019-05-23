@@ -33,7 +33,7 @@ namespace D2NG.MCP.Packet
                 case 0x7F:
                     throw new McpStartUpException("IP banned temporarily");
                 default:
-                    Log.Debug("MCP Startup successful");
+                    Log.Verbose("MCP Startup successful");
                     break;
             }
         }

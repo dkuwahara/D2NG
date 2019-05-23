@@ -172,10 +172,10 @@ namespace D2NG.BNCS
             Connection.WritePacket(new AuthInfoRequestPacket());
             var packet = new AuthInfoResponsePacket(AuthInfoEvent.WaitForPacket());
             Context.ServerToken = packet.ServerToken;
-            Log.Debug("[{0}] Server token: {1} Logon Type: {2}", GetType(), Context.ServerToken, packet.LogonType);
+            Log.Verbose("[{0}] Server token: {1} Logon Type: {2}", GetType(), Context.ServerToken, packet.LogonType);
 
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
-            Log.Debug("[{0}] CheckRevision: {1}", GetType(), result);
+            Log.Verbose("[{0}] CheckRevision: {1}", GetType(), result);
 
             AuthCheckEvent.Reset();
             Connection.WritePacket(new AuthCheckRequestPacket(

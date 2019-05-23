@@ -31,7 +31,6 @@ namespace ConsoleBot
                 .WriteTo.Console()
                 .CreateLogger();
 
-            Log.Debug("Starting bot");
             
             Config = Config.FromFile(this.ConfigFile);
 

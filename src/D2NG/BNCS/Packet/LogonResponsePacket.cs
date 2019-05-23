@@ -33,7 +33,7 @@ namespace D2NG.BNCS.Packet
             switch (Status)
             {
                 case 0x00:
-                    Log.Debug("Logon success");
+                    Log.Verbose("Logon success");
                     break;
                 case 0x01:
                     throw new LogonFailedException("Account does not exist");

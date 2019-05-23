@@ -41,7 +41,7 @@ namespace D2NG.BNCS.Packet
             switch (_result)
             {
                 case 0x000:
-                    Log.Debug("Auth Check OK");
+                    Log.Verbose("Auth Check OK");
                     break;
                 case 0x100:
                     throw new AuthCheckResponseException($" Old game version: {_info}");

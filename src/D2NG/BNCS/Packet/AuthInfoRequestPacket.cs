@@ -31,7 +31,6 @@ namespace D2NG.BNCS.Packet
         public AuthInfoRequestPacket()
             : this(0x0E)
         {
-            Log.Debug("VERSION BYTE: {0}",  BitConverter.ToString(BitConverter.GetBytes(0x0E)));
         }
 
         public AuthInfoRequestPacket(int version)

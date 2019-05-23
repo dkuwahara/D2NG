@@ -23,9 +23,7 @@ namespace D2NG.BNCS
 
         public void Connect(String realm)
         {
-             Log.Debug("[{0}] Resolving {1}", GetType(), realm);
              var server = Dns.GetHostAddresses(realm).First();
-
             Connect(server, DefaultPort);
         }
 

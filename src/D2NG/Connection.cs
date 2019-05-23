@@ -57,18 +57,18 @@ namespace D2NG
 
         protected void OnConnect(IPAddress ip, int port)
         {
-            Log.Debug("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
+            Log.Verbose("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
             _tcpClient = new TcpClient();
             _tcpClient.Connect(ip, port);
             _stream = _tcpClient.GetStream();
             if (!_stream.CanWrite)
             {
-                Log.Debug("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
+                Log.Error("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
                 Terminate();
                 throw new UnableToConnectException($"Unable to establish {GetType()}");
             }
             _stream.WriteByte(0x01);
-            Log.Debug("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
+            Log.Verbose("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
 
         public bool Connected => _machine.IsInState(State.Connected);
