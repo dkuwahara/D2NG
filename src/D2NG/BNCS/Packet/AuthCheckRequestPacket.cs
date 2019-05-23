@@ -13,30 +13,29 @@ namespace D2NG.BNCS.Packet
         public AuthCheckRequestPacket(
             uint clientToken,
             uint serverToken,
-            CheckRevisionResult crResult,
+            int version,
+            byte[] checksum,
+            byte[] info,
             CdKey classic,
             CdKey expansion
             ) : base(BuildPacket(
                     (byte)Sid.AUTH_CHECK,
                     BitConverter.GetBytes(clientToken),
-                    BitConverter.GetBytes(crResult.Version),
-                    crResult.Checksum,
+                    BitConverter.GetBytes(version),
+                    checksum,
                     KeyCount,
                     IsSpawn,
-
                     BitConverter.GetBytes(classic.KeyLength),
                     BitConverter.GetBytes(classic.Product),
                     classic.Public,
                     BitConverter.GetBytes(0x00),
                     classic.ComputeHash(clientToken, serverToken),
-
                     BitConverter.GetBytes(expansion.KeyLength),
                     BitConverter.GetBytes(expansion.Product),
                     expansion.Public,
                     BitConverter.GetBytes(0x00),
                     expansion.ComputeHash(clientToken, serverToken),
-
-                    crResult.Info,
+                    info,
                     Encoding.ASCII.GetBytes("D2NG\0")
                 )
             )

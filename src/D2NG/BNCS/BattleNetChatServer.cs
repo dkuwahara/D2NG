@@ -220,7 +220,9 @@ namespace D2NG.BNCS
             Connection.WritePacket(new AuthCheckRequestPacket(
                 Context.ClientToken,
                 Context.ServerToken,
-                result,
+                result.Version,
+                result.Checksum,
+                result.Info,
                 Context.ClassicKey,
                 Context.ExpansionKey));
 
