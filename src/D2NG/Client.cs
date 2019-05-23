@@ -29,7 +29,7 @@ namespace D2NG
         {
             Log.Information($"Selecting {character.Name}");
             Mcp.CharLogon(character);
-            Log.Information($"Entering Chat");
+            Log.Information("Entering Chat");
             Bncs.EnterChat();
         }
     }

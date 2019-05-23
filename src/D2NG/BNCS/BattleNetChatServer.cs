@@ -126,16 +126,8 @@ namespace D2NG.BNCS
             Log.Information($"Connecting to {realm}");
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.VerifyClient);
-            if (classicKey.Length == 16)
-            {
-                Context.ClassicKey = new CdKeyBsha1(classicKey);
-                Context.ExpansionKey = new CdKeyBsha1(expansionKey);
-            }
-            else
-            {
-                Context.ClassicKey = new CdKeySha1(classicKey);
-                Context.ExpansionKey = new CdKeySha1(expansionKey);
-            }
+            Context.ClassicKey = new CdKeySha1(classicKey);
+            Context.ExpansionKey = new CdKeySha1(expansionKey);
 
             _machine.Fire(Trigger.AuthorizeKeys);
             Log.Information($"Connected to {realm}");
