@@ -8,9 +8,13 @@ namespace D2NG.BNCS.Packet
     {
         public uint Status { get; }
 
+        public LogonResponsePacket(BncsPacket packet) : this(packet.Raw)
+        {
+        }
+
         public LogonResponsePacket(byte[] packet) : base(packet)
         {
-            BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
+            var reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
@@ -41,6 +45,8 @@ namespace D2NG.BNCS.Packet
                 default:
                     throw new LogonFailedException($"Unknown login error {Status:X}");
             }
+
+            reader.Close();
         }
 
     }

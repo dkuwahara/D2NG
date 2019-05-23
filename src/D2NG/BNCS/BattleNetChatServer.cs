@@ -53,6 +53,10 @@ namespace D2NG.BNCS
 
         public BncsContext Context { get; private set; }
 
+        private readonly BncsEvent AuthCheckEvent = new BncsEvent();
+        private readonly BncsEvent AuthInfoEvent = new BncsEvent();
+        private readonly BncsEvent EnterChatEvent = new BncsEvent();
+        private readonly BncsEvent LogonEvent = new BncsEvent();
         private readonly BncsEvent ListRealmsEvent = new BncsEvent();
         private readonly BncsEvent RealmLogonEvent = new BncsEvent();
 
@@ -68,24 +72,17 @@ namespace D2NG.BNCS
             _machine.Configure(State.Connected)
                 .OnEntryFrom<String>(_connectTrigger, OnConnect)
                 .Permit(Trigger.VerifyClient, State.Verified)
-                .Permit(Trigger.Disconnect, State.NotConnected);
-
-            _machine.Configure(State.Verified)
-                .SubstateOf(State.Connected)
-                .OnEntryFrom(Trigger.VerifyClient, OnVerifyClient)
                 .Permit(Trigger.AuthorizeKeys, State.KeysAuthorized)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
             _machine.Configure(State.KeysAuthorized)
                 .SubstateOf(State.Connected)
-                .SubstateOf(State.Verified)
                 .OnEntryFrom(Trigger.AuthorizeKeys, OnAuthorizeKeys)
                 .Permit(Trigger.Login, State.UserAuthenticated)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
             _machine.Configure(State.UserAuthenticated)
                 .SubstateOf(State.Connected)
-                .SubstateOf(State.Verified)
                 .SubstateOf(State.KeysAuthorized)
                 .OnEntryFrom(_loginTrigger, (username, password) => OnLogin(username, password))
                 .Permit(Trigger.EnterChat, State.InChat)
@@ -93,32 +90,21 @@ namespace D2NG.BNCS
 
             _machine.Configure(State.InChat)
                 .SubstateOf(State.Connected)
-                .SubstateOf(State.Verified)
                 .SubstateOf(State.KeysAuthorized)
                 .SubstateOf(State.UserAuthenticated)
                 .OnEntryFrom(Trigger.EnterChat, OnEnterChat)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
-            Connection.PacketReceived += (obj, packet) => {
-                var sid = packet.Type;
-                var handler = PacketReceivedEventHandlers.GetValueOrDefault(sid, null);
-
-                if (handler is null)
-                {
-                    ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
-                        .Enqueue(packet);
-                }
-                else
-                {
-                    handler.Invoke(packet);
-                }
-            };
-
-            Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault((Sid)packet.Type, null)?.Invoke(packet);
+            Connection.PacketReceived += (obj, packet) => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
+            Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
 
             OnReceivedPacketEvent(Sid.PING, packet => Connection.WritePacket(packet.Raw));
-            OnReceivedPacketEvent(Sid.QUERYREALMS2, packet => ListRealmsEvent.Set(packet));
-            OnReceivedPacketEvent(Sid.LOGONREALMEX, packet => RealmLogonEvent.Set(packet));
+            OnReceivedPacketEvent(Sid.QUERYREALMS2, ListRealmsEvent.Set);
+            OnReceivedPacketEvent(Sid.LOGONREALMEX, RealmLogonEvent.Set);
+            OnReceivedPacketEvent(Sid.AUTH_CHECK, AuthCheckEvent.Set);
+            OnReceivedPacketEvent(Sid.AUTH_INFO, AuthInfoEvent.Set);
+            OnReceivedPacketEvent(Sid.ENTERCHAT, EnterChatEvent.Set);
+            OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
         }
 
         internal void ConnectTo(string realm, string classicKey, string expansionKey)
@@ -133,7 +119,6 @@ namespace D2NG.BNCS
             };
 
             _machine.Fire(_connectTrigger, realm);
-            _machine.Fire(Trigger.VerifyClient);
             _machine.Fire(Trigger.AuthorizeKeys);
             Log.Information($"Connected to {realm}");
         }
@@ -153,33 +138,6 @@ namespace D2NG.BNCS
 
         internal void Login(string username, string password) => _machine.Fire(_loginTrigger, username, password);
 
-        private byte[] WaitForPacket(Sid sid)
-        {
-            Policy.Handle<PacketNotFoundException>()
-                .WaitAndRetry(new[] {
-                    TimeSpan.FromMilliseconds(100),
-                    TimeSpan.FromMilliseconds(1000),
-                    TimeSpan.FromMilliseconds(2000)
-                })
-                .Execute(() => CheckForPacket(sid));
-
-            if (!ReceivedQueue.GetOrAdd(sid, new ConcurrentQueue<BncsPacket>())
-                    .TryDequeue(out BncsPacket packet))
-            {
-                throw new PacketNotFoundException();
-            }
-
-            return packet.Raw;
-        }
-
-        private void CheckForPacket(Sid sid)
-        {
-            if (!ReceivedQueue.ContainsKey(sid) || ReceivedQueue[sid].IsEmpty)
-            {
-                throw new PacketNotFoundException("No packet in queue");
-            }
-        }
-
         private void OnConnect(String realm)
         {
             ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
@@ -191,35 +149,35 @@ namespace D2NG.BNCS
 
         private void OnEnterChat()
         {
+            EnterChatEvent.Reset();
             Connection.WritePacket(new EnterChatRequestPacket(Context.Username));
             Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
-            _ = WaitForPacket(Sid.ENTERCHAT);
+            _ = EnterChatEvent.WaitForPacket();
         }
 
         private void OnLogin(string username, string password)
         {
             Context.Username = username;
-            var packet = new LogonRequestPacket(Context.ClientToken, Context.ServerToken, Context.Username, password);
-            Connection.WritePacket(packet);
 
-            var response = WaitForPacket(Sid.LOGONRESPONSE2);
+            LogonEvent.Reset();
+            Connection.WritePacket(new LogonRequestPacket(Context.ClientToken, Context.ServerToken, Context.Username, password));
+
+            var response = LogonEvent.WaitForPacket();
             _ = new LogonResponsePacket(response);
-        }
-
-        private void OnVerifyClient()
-        {
-            Connection.WritePacket(new AuthInfoRequestPacket());
         }
 
         private void OnAuthorizeKeys()
         {
-            var packet = new AuthInfoResponsePacket(WaitForPacket(Sid.AUTH_INFO));
+            AuthInfoEvent.Reset();
+            Connection.WritePacket(new AuthInfoRequestPacket());
+            var packet = new AuthInfoResponsePacket(AuthInfoEvent.WaitForPacket());
             Context.ServerToken = packet.ServerToken;
-            
             Log.Debug("[{0}] Server token: {1} Logon Type: {2}", GetType(), Context.ServerToken, packet.LogonType);
 
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
             Log.Debug("[{0}] CheckRevision: {1}", GetType(), result);
+
+            AuthCheckEvent.Reset();
             Connection.WritePacket(new AuthCheckRequestPacket(
                 Context.ClientToken,
                 Context.ServerToken,
@@ -228,8 +186,8 @@ namespace D2NG.BNCS
                 result.Info,
                 Context.ClassicKey,
                 Context.ExpansionKey));
-
-            _ = new AuthCheckResponsePacket(WaitForPacket(Sid.AUTH_CHECK));
+            
+            _ = new AuthCheckResponsePacket(AuthCheckEvent.WaitForPacket());
         }
 
         public void OnReceivedPacketEvent(Sid type, Action<BncsPacket> handler)

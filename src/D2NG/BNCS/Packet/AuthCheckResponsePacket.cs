@@ -9,10 +9,13 @@ namespace D2NG.BNCS.Packet
         private readonly uint _result;
 
         private readonly string _info;
+        public AuthCheckResponsePacket(BncsPacket bncsPacket) : this(bncsPacket.Raw)
+        {
+        }
 
         public AuthCheckResponsePacket(byte[] packet) : base(packet)
         {
-            BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
+            var reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");

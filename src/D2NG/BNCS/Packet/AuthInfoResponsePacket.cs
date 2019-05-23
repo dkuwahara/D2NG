@@ -5,6 +5,10 @@ namespace D2NG.BNCS.Packet
 {
     public class AuthInfoResponsePacket : BncsPacket
     {
+        public AuthInfoResponsePacket(BncsPacket bncsPacket) : this(bncsPacket.Raw)
+        {
+        }
+
         public AuthInfoResponsePacket(byte[] packet) : base(packet)
         {
             BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
@@ -32,6 +36,8 @@ namespace D2NG.BNCS.Packet
             MpqFileName = ReadNullTerminatedString(Encoding.ASCII.GetString(Raw), ref offset);
             FormulaString = ReadNullTerminatedString(Encoding.GetEncoding("ISO-8859-1").GetString(Raw), ref offset);
         }
+
+        
 
         public uint LogonType { get; }
         public uint ServerToken { get; }
