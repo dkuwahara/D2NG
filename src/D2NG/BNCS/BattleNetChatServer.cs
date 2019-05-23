@@ -154,12 +154,7 @@ namespace D2NG.BNCS
             }
         }
 
-        internal void Login(string username, string password)
-        {
-            Log.Information($"Logging in as {username}");
-            _machine.Fire(_loginTrigger, username, password);
-            Log.Information($"Logged in as {username}");
-        }
+        internal void Login(string username, string password) => _machine.Fire(_loginTrigger, username, password);
 
         private byte[] WaitForPacket(Sid sid)
         {

@@ -6,6 +6,7 @@ using McMaster.Extensions.CommandLineUtils;
 using D2NG.BNCS.Packet;
 using System.Linq;
 using D2NG.MCP;
+using System.Collections.Generic;
 
 namespace ConsoleBot
 {
@@ -40,13 +41,11 @@ namespace ConsoleBot
             try {
                 Client.Connect(Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Green), Config.ClassicKey, Config.ExpansionKey);
 
-                Client.Login(
+                var characters = Client.Login(
                     Prompt.GetString("Username: ", Config.Username, ConsoleColor.Green), 
                     Prompt.GetPassword("Password: ", ConsoleColor.Red));
 
-                Client.McpLogon(SelectMcpRealm());
-
-                Client.SelectCharacter(SelectCharacter());
+                Client.SelectCharacter(SelectCharacter(characters));
             }
             catch (Exception e)
             {
@@ -54,15 +53,8 @@ namespace ConsoleBot
             }
         }
 
-        private string SelectMcpRealm()
+        private Character SelectCharacter(List<Character> characters)
         {
-            return Client.ListMcpRealms().First().Name;
-        }
-
-        private Character SelectCharacter()
-        {
-            var characters = Client.ListCharacters();
-
             var charsPrompt = characters
                 .Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {(CharacterClass)c.CharacterClass}")
                 .Aggregate((i, j) => i + "\n" + j);

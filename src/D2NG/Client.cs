@@ -2,6 +2,7 @@
 using D2NG.MCP;
 using Serilog;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace D2NG
 {
@@ -12,20 +13,17 @@ namespace D2NG
 
         public void Connect(string realm, string classicKey, string expansionKey) => Bncs.ConnectTo(realm, classicKey, expansionKey);
 
-        public void Login(string username, string password) => Bncs.Login(username, password);
-
-        public List<BNCS.Packet.Realm> ListMcpRealms() => this.Bncs.ListMcpRealms();
-
-        public void McpLogon(string name)
+        public List<Character> Login(string username, string password)
         {
-            var packet = Bncs.RealmLogon(name);
+            Bncs.Login(username, password);
+            Log.Information($"Logged in as {username}");
+            var packet = Bncs.RealmLogon(Bncs.ListMcpRealms().First().Name)
             Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
             Mcp.Connect(packet.McpIp, packet.McpPort);
             Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
             Log.Information($"Connected to {packet.McpIp}:{packet.McpPort}");
+            return Mcp.ListCharacters();
         }
-
-        public List<Character> ListCharacters() => Mcp.ListCharacters();
 
         public void SelectCharacter(Character character)
         {
@@ -33,7 +31,6 @@ namespace D2NG
             Mcp.CharLogon(character);
             Log.Information($"Entering Chat");
             Bncs.EnterChat();
-            Log.Information($"Entered Chat");
         }
     }
 }
