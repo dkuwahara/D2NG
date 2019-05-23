@@ -51,7 +51,7 @@ namespace D2NG.BNCS
             EnterChat
         }
 
-        public BncsContext Context { get; set; }
+        public BncsContext Context { get; private set; }
 
         private readonly BncsEvent ListRealmsEvent = new BncsEvent();
         private readonly BncsEvent RealmLogonEvent = new BncsEvent();
@@ -179,8 +179,8 @@ namespace D2NG.BNCS
         {
             ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
             Connection.Connect(realm);
-            this.Context = new BncsContext();
-            this.Context.ClientToken = (uint)Environment.TickCount;
+            Context = new BncsContext();
+            Context.ClientToken = (uint)Environment.TickCount;
 
             var listener = new Thread(Listen);
             listener.Start();
