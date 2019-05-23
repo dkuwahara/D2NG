@@ -100,7 +100,7 @@ namespace D2NG.BNCS
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
             Connection.PacketReceived += (obj, packet) => {
-                var sid = (Sid)packet.Type;
+                var sid = packet.Type;
                 var handler = PacketReceivedEventHandlers.GetValueOrDefault(sid, null);
 
                 if (handler is null)
