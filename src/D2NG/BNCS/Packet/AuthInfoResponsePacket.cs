@@ -37,8 +37,6 @@ namespace D2NG.BNCS.Packet
             FormulaString = ReadNullTerminatedString(Encoding.GetEncoding("ISO-8859-1").GetString(Raw), ref offset);
         }
 
-        
-
         public uint LogonType { get; }
         public uint ServerToken { get; }
         public ulong MpqFileTime { get; }
