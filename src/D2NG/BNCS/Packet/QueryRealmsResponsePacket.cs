@@ -6,7 +6,7 @@ namespace D2NG.BNCS.Packet
 {
     public class QueryRealmsResponsePacket : BncsPacket
     {
-        public List<Realm> Realms { get; } = new List<Realm>();
+        public List<string> Realms { get; } = new List<string>();
 
         public QueryRealmsResponsePacket(byte[] packet) : base(packet)
         {
@@ -30,7 +30,8 @@ namespace D2NG.BNCS.Packet
             for (int i = 0; i < count; i++)
             {
                 reader.ReadUInt32();
-                Realms.Add(new Realm(ReadString(reader), ReadString(reader)));
+                Realms.Add(ReadString(reader));
+                ReadString(reader);
             }
 
             reader.Close();

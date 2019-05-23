@@ -253,7 +253,7 @@ namespace D2NG.BNCS
             }
         }
 
-        internal List<Realm> ListMcpRealms()
+        internal List<string> ListMcpRealms()
         {
             ListRealmsEvent.Reset();
             Connection.WritePacket(new QueryRealmsRequestPacket());
