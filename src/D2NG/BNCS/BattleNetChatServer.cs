@@ -124,11 +124,16 @@ namespace D2NG.BNCS
         internal void ConnectTo(string realm, string classicKey, string expansionKey)
         {
             Log.Information($"Connecting to {realm}");
+
+            Context = new BncsContext
+            {
+                ClientToken = (uint)Environment.TickCount,
+                ClassicKey = new CdKeySha1(classicKey),
+                ExpansionKey = new CdKeySha1(expansionKey)
+            };
+
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.VerifyClient);
-            Context.ClassicKey = new CdKeySha1(classicKey);
-            Context.ExpansionKey = new CdKeySha1(expansionKey);
-
             _machine.Fire(Trigger.AuthorizeKeys);
             Log.Information($"Connected to {realm}");
         }
@@ -179,8 +184,6 @@ namespace D2NG.BNCS
         {
             ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
             Connection.Connect(realm);
-            Context = new BncsContext();
-            Context.ClientToken = (uint)Environment.TickCount;
 
             var listener = new Thread(Listen);
             listener.Start();
