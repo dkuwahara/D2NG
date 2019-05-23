@@ -35,7 +35,7 @@ namespace ConsoleBot
             
             Config = Config.FromFile(this.ConfigFile);
 
-            Client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
+            Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
                 Client.Connect(

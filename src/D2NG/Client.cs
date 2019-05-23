@@ -1,6 +1,9 @@
 ﻿using D2NG.BNCS;
+using D2NG.BNCS.Packet;
 using D2NG.MCP;
+using D2NG.MCP.Packet;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,8 +11,14 @@ namespace D2NG
 {
     public class Client
     {
-        public BattleNetChatServer Bncs { get; } = new BattleNetChatServer();
-        public RealmServer Mcp { get; } = new RealmServer();
+        internal BattleNetChatServer Bncs { get; } = new BattleNetChatServer();
+        internal RealmServer Mcp { get; } = new RealmServer();
+
+        public void OnReceivedPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnReceivedPacketEvent(sid, action);
+        public void OnReceivedPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnReceivedPacketEvent(mcp, action);
+
+        public void OnSentPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnSentPacketEvent(sid, action);
+        public void OnSentPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnSentPacketEvent(mcp, action);
 
         public void Connect(string realm, string classicKey, string expansionKey) => Bncs.ConnectTo(realm, classicKey, expansionKey);
 
