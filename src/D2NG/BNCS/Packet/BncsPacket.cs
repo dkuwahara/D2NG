@@ -3,17 +3,14 @@ using System.Collections.Generic;
 
 namespace D2NG.BNCS.Packet
 {
-    public class BncsPacket
+    public class BncsPacket : D2NG.Packet
     {
         protected readonly byte PrefixByte = 0xFF;
 
         public byte Type { get => Raw[1]; }
 
-        public byte[] Raw { get; }
-
-        public BncsPacket(byte[] packet)
+        public BncsPacket(byte[] packet) : base(packet)
         {
-            Raw = packet;
         }
 
         protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)

@@ -4,6 +4,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using McMaster.Extensions.CommandLineUtils;
 using D2NG.BNCS.Packet;
+using System.Linq;
+using D2NG.MCP;
 
 namespace ConsoleBot
 {
@@ -16,6 +18,10 @@ namespace ConsoleBot
         [Required]
         public String ConfigFile { get; }
 
+        private readonly Client Client = new Client();
+
+        private Config Config;
+
         private void OnExecute()
         {
             Log.Logger = new LoggerConfiguration()
@@ -26,29 +32,47 @@ namespace ConsoleBot
                 .CreateLogger();
 
             Log.Debug("Starting bot");
-            Client client = new Client();
+            
+            Config = Config.FromFile(this.ConfigFile);
 
-            Config config = Config.FromFile(this.ConfigFile);
+            Client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
-            try
-            {
-                client.Bncs.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
-                client.Bncs.ConnectTo(config.Realm, config.ClassicKey, config.ExpansionKey);
-                client.Bncs.Login(config.Username, config.Password);
-                client.Bncs.EnterChat();
+            try {
+                Client.Connect(Prompt.GetString($"Realm:", Config.Realm, ConsoleColor.Green), Config.ClassicKey, Config.ExpansionKey);
+
+                Client.Login(
+                    Prompt.GetString("Username: ", Config.Username, ConsoleColor.Green), 
+                    Prompt.GetPassword("Password: ", ConsoleColor.Red));
+
+                Client.McpLogon(SelectMcpRealm());
+
+                Client.SelectCharacter(SelectCharacter());
             }
             catch (Exception e)
             {
                 Log.Error(e, "Unhandled Exception");
             }
-            Log.Debug("Waiting for input");
-            Console.ReadKey(false);
         }
 
-        private static void HandleChatEvent(BncsPacketReceivedEvent obj)
+        private string SelectMcpRealm()
         {
-            var chatEvent = new ChatEventPacket(obj.Packet.Raw);
-            Console.WriteLine(chatEvent.RenderText());
+            return Client.ListMcpRealms().First().Name;
+        }
+
+        private Character SelectCharacter()
+        {
+            var characters = Client.ListCharacters();
+
+            var charsPrompt = characters
+                .Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {(CharacterClass)c.CharacterClass}")
+                .Aggregate((i, j) => i + "\n" + j);
+
+            return characters[Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Green) - 1];
+        }
+             
+        private static void HandleChatEvent(BncsPacket obj)
+        {
+            _ = new ChatEventPacket(obj.Raw);
         }
     }
 }

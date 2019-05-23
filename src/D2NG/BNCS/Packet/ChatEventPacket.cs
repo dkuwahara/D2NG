@@ -33,23 +33,9 @@ namespace D2NG.BNCS.Packet
             _ = reader.ReadUInt32();
             _ = reader.ReadUInt32();
 
-            var username = new StringBuilder();
-            while (reader.PeekChar() != 0)
-            {
-                username.Append(reader.ReadChar());
-            }
-            Username = username.ToString();
+            Username = ReadString(reader);
+            Text = ReadString(reader);
 
-            reader.ReadChar();
-
-            var text = new StringBuilder();
-            while (reader.PeekChar() != 0)
-            {
-                text.Append(reader.ReadChar());
-            }
-            Text = text.ToString();
-
-            reader.ReadChar();
             reader.Close();
         }
 
