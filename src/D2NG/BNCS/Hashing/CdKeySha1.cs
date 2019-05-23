@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using Serilog;
 
 namespace D2NG.BNCS.Login
 {

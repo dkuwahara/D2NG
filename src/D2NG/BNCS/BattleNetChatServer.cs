@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using D2NG.BNCS.Login;
 using System.Threading;
-using Polly;
 
 namespace D2NG.BNCS
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Serilog;
 
 namespace D2NG.BNCS.Packet
 {
