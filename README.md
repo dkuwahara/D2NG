@@ -1,5 +1,5 @@
 # D2NG
-![CircleCI branch](https://img.shields.io/circleci/project/github/dkuwahara/D2NG/master.svg)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/dkuwahara/D2NG/master.svg)](https://circleci.com/gh/dkuwahara/D2NG/tree/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0b90f6cdc4b0445296de25748e066738)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dkuwahara/D2NG&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/dkuwahara/d2ng/badge)](https://www.codefactor.io/repository/github/dkuwahara/d2ng)
 ![GitHub](https://img.shields.io/github/license/dkuwahara/D2NG.svg)
