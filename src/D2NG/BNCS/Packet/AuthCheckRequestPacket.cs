@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using D2NG.BNCS.Login;
+using D2NG.BNCS.Hashing;
 
 namespace D2NG.BNCS.Packet
 {

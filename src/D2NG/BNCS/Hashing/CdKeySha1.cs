@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace D2NG.BNCS.Login
+namespace D2NG.BNCS.Hashing
 {
     public class CdKeySha1 : CdKey
     {

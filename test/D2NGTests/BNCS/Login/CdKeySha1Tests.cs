@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using D2NG.BNCS.Login;
+using D2NG.BNCS.Hashing;
 using Xunit;
 
 namespace D2NGTests.BNCS.Login

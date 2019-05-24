@@ -1,4 +1,4 @@
-﻿using D2NG.BNCS.Login;
+﻿using D2NG.BNCS.Hashing;
 using System;
 using System.Text;
 

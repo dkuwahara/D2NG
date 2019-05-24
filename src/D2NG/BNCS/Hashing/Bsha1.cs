@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace D2NG.BNCS.Login
+namespace D2NG.BNCS.Hashing
 {
     internal static class Bsha1
     {

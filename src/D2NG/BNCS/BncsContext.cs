@@ -1,4 +1,4 @@
-﻿using D2NG.BNCS.Login;
+﻿using D2NG.BNCS.Hashing;
 
 namespace D2NG
 {

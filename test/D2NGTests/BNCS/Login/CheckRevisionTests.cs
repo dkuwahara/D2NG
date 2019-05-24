@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using Xunit;
 
-namespace D2NG.BNCS.Login
+namespace D2NG.BNCS.Hashing
 {
     public static class CheckRevisionTests
     {

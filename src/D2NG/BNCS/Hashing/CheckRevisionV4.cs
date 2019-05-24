@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace D2NG.BNCS.Login
+namespace D2NG.BNCS.Hashing
 {
     public static class CheckRevisionV4
     {
