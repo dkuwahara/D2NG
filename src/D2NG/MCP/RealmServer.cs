@@ -23,9 +23,9 @@ namespace D2NG.MCP
             Connection.PacketReceived += (obj, eventArgs) => PacketReceivedEventHandlers.GetValueOrDefault((Mcp)eventArgs.Type, null)?.Invoke(eventArgs);
             Connection.PacketSent += (obj, eventArgs) => PacketSentEventHandlers.GetValueOrDefault((Mcp)eventArgs.Type, null)?.Invoke(eventArgs);
 
-            OnReceivedPacketEvent(Mcp.STARTUP, packet => StartupEvent.Set(packet));
-            OnReceivedPacketEvent(Mcp.CHARLIST2, packet => ListCharactersEvent.Set(packet));
-            OnReceivedPacketEvent(Mcp.CHARLOGON, packet => CharLogonEvent.Set(packet));
+            OnReceivedPacketEvent(Mcp.STARTUP, StartupEvent.Set);
+            OnReceivedPacketEvent(Mcp.CHARLIST2, ListCharactersEvent.Set);
+            OnReceivedPacketEvent(Mcp.CHARLOGON, CharLogonEvent.Set);
         }
 
         internal void Connect(IPAddress ip, short port)
@@ -49,7 +49,7 @@ namespace D2NG.MCP
             var packet = new CharLogonRequestPacket(character.Name);
             Connection.WritePacket(packet);
             var response = new CharLogonResponsePacket(CharLogonEvent.WaitForPacket());
-            if ( response.Result != 0x00)
+            if (response.Result != 0x00)
             {
                 throw new CharLogonException($"Failed to log on as {character.Name} - {response.Result}");
             }
@@ -64,7 +64,7 @@ namespace D2NG.MCP
             _ = new McpStartupResponsePacket(response.Raw);
         }
 
-        public List<Character> ListCharacters()
+        internal List<Character> ListCharacters()
         {
             ListCharactersEvent.Reset();
             Connection.WritePacket(new ListCharactersClientPacket());
@@ -73,28 +73,10 @@ namespace D2NG.MCP
             return response.Characters;
         }
 
-        public void OnReceivedPacketEvent(Mcp type, Action<McpPacket> handler)
-        {
-            if (PacketReceivedEventHandlers.ContainsKey(type))
-            {
-                PacketReceivedEventHandlers[type] += handler;
-            }
-            else
-            {
-                PacketReceivedEventHandlers.GetOrAdd(type, handler);
-            }
-        }
+        internal void OnReceivedPacketEvent(Mcp type, Action<McpPacket> handler) 
+            => PacketReceivedEventHandlers.AddOrUpdate(type, handler, (t, h) => h += handler);
 
-        public void OnSentPacketEvent(Mcp type, Action<McpPacket> handler)
-        {
-            if (PacketSentEventHandlers.ContainsKey(type))
-            {
-                PacketSentEventHandlers[type] += handler;
-            }
-            else
-            {
-                PacketSentEventHandlers.GetOrAdd(type, handler);
-            }
-        }
+        internal void OnSentPacketEvent(Mcp type, Action<McpPacket> handler) 
+            => PacketSentEventHandlers.AddOrUpdate(type, handler, (t, h) => h += handler);
     }
 }

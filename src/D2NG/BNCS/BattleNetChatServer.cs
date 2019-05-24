@@ -189,29 +189,11 @@ namespace D2NG.BNCS
             _ = new AuthCheckResponsePacket(AuthCheckEvent.WaitForPacket());
         }
 
-        public void OnReceivedPacketEvent(Sid type, Action<BncsPacket> handler)
-        {
-            if (PacketReceivedEventHandlers.ContainsKey(type))
-            {
-                PacketReceivedEventHandlers[type] += handler;
-            }
-            else
-            {
-                PacketReceivedEventHandlers.GetOrAdd(type, handler);
-            }
-        }
+        public void OnReceivedPacketEvent(Sid type, Action<BncsPacket> handler) 
+            => PacketReceivedEventHandlers.AddOrUpdate(type, handler, (t, h) => h += handler);
 
-        public void OnSentPacketEvent(Sid type, Action<BncsPacket> handler)
-        {
-            if (PacketSentEventHandlers.ContainsKey(type))
-            {
-                PacketSentEventHandlers[type] += handler;
-            }
-            else
-            {
-                PacketSentEventHandlers.GetOrAdd(type, handler);
-            }
-        }
+        public void OnSentPacketEvent(Sid type, Action<BncsPacket> handler) 
+            => PacketSentEventHandlers.AddOrUpdate(type, handler, (t, h) => h += handler);
 
         internal List<string> ListMcpRealms()
         {
