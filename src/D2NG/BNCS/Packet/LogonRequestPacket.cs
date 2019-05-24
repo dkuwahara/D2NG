@@ -17,7 +17,7 @@ namespace D2NG.BNCS.Packet
                     (byte)Sid.LOGONRESPONSE2,
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(serverToken),
-                    DoubleHashPassword(clientToken, serverToken, password),
+                    DoubleHashPassword(clientToken, serverToken, password.ToLower()),
                     Encoding.ASCII.GetBytes(username + "\0")
                 )
             )
