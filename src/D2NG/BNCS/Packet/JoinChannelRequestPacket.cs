@@ -8,7 +8,7 @@ namespace D2NG.BNCS.Packet
         public JoinChannelRequestPacket(uint flags, string channel) :
             base(
                 BuildPacket(
-                    (byte)Sid.JOINCHANNEL,
+                    Sid.JOINCHANNEL,
                     BitConverter.GetBytes(flags),
                     Encoding.ASCII.GetBytes(channel),
                     Encoding.ASCII.GetBytes("\0")

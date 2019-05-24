@@ -27,6 +27,7 @@ namespace D2NG.BNCS
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string, string> _loginTrigger;
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<uint, string> _joinChannelTrigger;
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _chatCommandTrigger;
 
         enum State
         {
@@ -46,7 +47,8 @@ namespace D2NG.BNCS
             AuthorizeKeys,
             Login,
             EnterChat,
-            JoinChannel
+            JoinChannel,
+            ChatCommand
         }
 
         public BncsContext Context { get; private set; }
@@ -64,6 +66,8 @@ namespace D2NG.BNCS
 
             _loginTrigger = _machine.SetTriggerParameters<string, string>(Trigger.Login);
             _joinChannelTrigger = _machine.SetTriggerParameters<uint, string>(Trigger.JoinChannel);
+            _chatCommandTrigger = _machine.SetTriggerParameters<string>(Trigger.ChatCommand);
+
 
             _machine.Configure(State.NotConnected)
                 .Permit(Trigger.Connect, State.Connected);
@@ -93,8 +97,8 @@ namespace D2NG.BNCS
                 .SubstateOf(State.UserAuthenticated)
                 .OnEntryFrom(Trigger.EnterChat, OnEnterChat)
                 .InternalTransition(_joinChannelTrigger, (flags, channel, t) => OnJoinChannel(flags, channel))
+                .InternalTransition(_chatCommandTrigger, (message, t) => OnChatCommand(message))
                 .Permit(Trigger.Disconnect, State.NotConnected);
-
 
             Connection.PacketReceived += (obj, packet) => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
             Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
@@ -111,6 +115,16 @@ namespace D2NG.BNCS
         internal void JoinChannel(string channel)
         {
             _machine.Fire(_joinChannelTrigger, 0x02U, channel);
+        }
+
+        internal void ChatCommand(string message)
+        {
+            _machine.Fire(_chatCommandTrigger, message);
+        }
+
+        private void OnChatCommand(string message)
+        {
+            Connection.WritePacket(new ChatCommandPacket(message));
         }
 
         internal void ConnectTo(string realm, string classicKey, string expansionKey)

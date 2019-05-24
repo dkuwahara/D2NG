@@ -14,6 +14,13 @@ namespace D2NG
         internal BattleNetChatServer Bncs { get; } = new BattleNetChatServer();
         internal RealmServer Mcp { get; } = new RealmServer();
 
+        public Chat Chat { get; }
+
+        public Client()
+        {
+            Chat = new Chat(Bncs);
+        }
+
         public void OnReceivedPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnReceivedPacketEvent(sid, action);
         public void OnReceivedPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnReceivedPacketEvent(mcp, action);
 
@@ -56,11 +63,6 @@ namespace D2NG
             Mcp.CharLogon(character);
             Log.Information("Entering Chat");
             Bncs.EnterChat();
-        }
-
-        public void JoinChannel(string channel)
-        {
-            Bncs.JoinChannel(channel);
         }
     }
 }

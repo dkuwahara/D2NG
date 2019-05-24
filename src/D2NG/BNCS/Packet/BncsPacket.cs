@@ -14,9 +14,9 @@ namespace D2NG.BNCS.Packet
         {
         }
 
-        protected static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
+        protected static byte[] BuildPacket(Sid command, params IEnumerable<byte>[] args)
         {
-            var packet = new List<byte> { PrefixByte, command };
+            var packet = new List<byte> { PrefixByte, (byte)command };
             var packetArray = args.SelectMany(a => a);
             packet.AddRange(BitConverter.GetBytes((ushort)(packetArray.Count() + 4)));
             packet.AddRange(packetArray);

@@ -15,7 +15,6 @@ namespace ConsoleBot
         static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         [Option(Description = "Config File", LongName = "config", ShortName = "c")]
-        [Required]
         public string ConfigFile { get; }
 
         private readonly Client Client = new Client();
@@ -27,7 +26,7 @@ namespace ConsoleBot
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File("log.txt")
-                .MinimumLevel.Information()
+                .MinimumLevel.Verbose()
                 .WriteTo.Console()
                 .CreateLogger();
             
@@ -47,7 +46,7 @@ namespace ConsoleBot
 
                 Client.SelectCharacter(SelectCharacter(characters));
 
-                Client.JoinChannel("D2NG");
+                Client.Chat.JoinChannel("D2NG");
             }
             catch (Exception e)
             {

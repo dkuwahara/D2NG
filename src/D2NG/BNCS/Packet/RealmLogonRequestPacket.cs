@@ -13,7 +13,7 @@ namespace D2NG.BNCS.Packet
             string password) :
             base(
                 BuildPacket(
-                    (byte)Sid.LOGONREALMEX,
+                    Sid.LOGONREALMEX,
                     BitConverter.GetBytes(clientToken),
                     Bsha1.DoubleHash(clientToken, serverToken, password),
                     Encoding.ASCII.GetBytes(realmTitle + "\0")

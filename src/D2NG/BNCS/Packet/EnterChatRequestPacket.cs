@@ -6,7 +6,7 @@ namespace D2NG.BNCS.Packet
     {
         public EnterChatRequestPacket(string username) : base(
             BuildPacket(
-                (byte)Sid.ENTERCHAT,
+                Sid.ENTERCHAT,
                 Encoding.ASCII.GetBytes(username),
                 Encoding.ASCII.GetBytes("\0\0")
                 ))
