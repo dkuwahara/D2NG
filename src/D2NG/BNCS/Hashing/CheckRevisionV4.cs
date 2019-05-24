@@ -8,7 +8,7 @@ namespace D2NG.BNCS.Login
 {
     public static class CheckRevisionV4
     {
-        private const String Version = "1.14.3.71";
+        private const string Version = "1.14.3.71";
 
         public static (int Version, byte[] Checksum, byte[] Info) CheckRevision(string value)
         {

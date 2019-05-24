@@ -6,7 +6,7 @@ namespace ConfigTests
 {
     public class ConfigTest
     {
-        private readonly String yaml =
+        private readonly string yaml =
             @"classicKey: 1234567890ABCDEF
 expansionKey: FEDCBA0987654321";
 

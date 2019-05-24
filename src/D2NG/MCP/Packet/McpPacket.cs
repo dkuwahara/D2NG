@@ -16,7 +16,7 @@ namespace D2NG.MCP.Packet
         {
             var packet = new List<byte>();
             var packetArray = args.SelectMany(a => a);
-            packet.AddRange(BitConverter.GetBytes((UInt16)(packetArray.Count() + 3)));
+            packet.AddRange(BitConverter.GetBytes((ushort)(packetArray.Count() + 3)));
             packet.Add((byte)command);
             packet.AddRange(packetArray);
             return packet.ToArray();

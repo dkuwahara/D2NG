@@ -14,7 +14,7 @@ namespace D2NG.BNCS
         /***
          * Constants
          */
-        private readonly String DefaultChannel = "Diablo II";
+        private readonly string DefaultChannel = "Diablo II";
 
         private BncsConnection Connection { get; } = new BncsConnection();
 
@@ -61,9 +61,9 @@ namespace D2NG.BNCS
 
         internal BattleNetChatServer()
         {
-            _connectTrigger = _machine.SetTriggerParameters<String>(Trigger.Connect);
+            _connectTrigger = _machine.SetTriggerParameters<string>(Trigger.Connect);
 
-            _loginTrigger = _machine.SetTriggerParameters<String, String>(Trigger.Login);
+            _loginTrigger = _machine.SetTriggerParameters<string, string>(Trigger.Login);
 
             _machine.Configure(State.NotConnected)
                 .Permit(Trigger.Connect, State.Connected);
@@ -137,7 +137,7 @@ namespace D2NG.BNCS
 
         internal void Login(string username, string password) => _machine.Fire(_loginTrigger, username, password);
 
-        private void OnConnect(String realm)
+        private void OnConnect(string realm)
         {
             ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
             Connection.Connect(realm);

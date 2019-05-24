@@ -13,7 +13,7 @@ namespace D2NG
             Raw = packet;
         }
 
-        public static String ReadString(BinaryReader reader)
+        public static string ReadString(BinaryReader reader)
         {
             var text = new StringBuilder();
             while (reader.PeekChar() != 0)

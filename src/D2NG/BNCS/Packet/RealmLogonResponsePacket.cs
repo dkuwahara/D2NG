@@ -40,7 +40,7 @@ namespace D2NG.BNCS.Packet
                 McpChunk.AddRange(reader.ReadBytes(4));
             }
 
-            UInt32 ip = (uint)IPAddress.NetworkToHostOrder((int)reader.ReadUInt32());
+            uint ip = (uint)IPAddress.NetworkToHostOrder((int)reader.ReadUInt32());
             McpIp = IPAddress.Parse(ip.ToString());
             McpPort = IPAddress.NetworkToHostOrder((short) reader.ReadInt32());
 

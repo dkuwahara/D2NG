@@ -9,11 +9,11 @@ namespace D2NG.BNCS.Packet
     {
         private static readonly byte[] ProtocolId = BitConverter.GetBytes(0x00);
 
-        private const String PlatformCode = "IX86";
+        private const string PlatformCode = "IX86";
 
-        private const String ProductCode = "D2XP";
+        private const string ProductCode = "D2XP";
 
-        private const String LanguageCode = "enUS";
+        private const string LanguageCode = "enUS";
 
         private static readonly byte[] LocalIp = BitConverter.GetBytes(0x00);
 
@@ -23,9 +23,9 @@ namespace D2NG.BNCS.Packet
 
         private static readonly byte[] UserLangId = BitConverter.GetBytes(1033);
 
-        private const String CountryAbbr = "USA\0";
+        private const string CountryAbbr = "USA\0";
 
-        private const String Country = "United States\0";
+        private const string Country = "United States\0";
 
         public AuthInfoRequestPacket()
             : this(0x0E)

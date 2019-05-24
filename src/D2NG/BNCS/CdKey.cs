@@ -10,7 +10,7 @@ namespace D2NG.BNCS.Login
         public byte[] Private { get; set; }
         public int KeyLength { get; set; }
 
-        protected CdKey(String key)
+        protected CdKey(string key)
         {
             Key = key;
         }

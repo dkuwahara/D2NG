@@ -18,7 +18,7 @@ namespace D2NG.BNCS.Packet
         {
             var packet = new List<byte> { PrefixByte, command };
             var packetArray = args.SelectMany(a => a);
-            packet.AddRange(BitConverter.GetBytes((UInt16)(packetArray.Count() + 4)));
+            packet.AddRange(BitConverter.GetBytes((ushort)(packetArray.Count() + 4)));
             packet.AddRange(packetArray);
             return packet.ToArray();
         }

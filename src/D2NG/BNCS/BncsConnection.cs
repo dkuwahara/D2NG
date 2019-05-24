@@ -20,7 +20,7 @@ namespace D2NG.BNCS
 
         internal event EventHandler<BncsPacket> PacketSent;
 
-        public void Connect(String realm)
+        public void Connect(string realm)
         {
              var server = Dns.GetHostAddresses(realm).First();
             Connect(server, DefaultPort);

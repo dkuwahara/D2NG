@@ -82,7 +82,7 @@ namespace D2NG.BNCS.Login
             KeyLength = key.Length;
             Decode();
         }
-        protected static int[] BuildTableFromKey(String cdKey)
+        protected static int[] BuildTableFromKey(string cdKey)
         {
             var table = new int[52];
 

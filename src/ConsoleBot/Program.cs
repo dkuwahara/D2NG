@@ -16,7 +16,7 @@ namespace ConsoleBot
 
         [Option(Description = "Config File", LongName = "config", ShortName = "c")]
         [Required]
-        public String ConfigFile { get; }
+        public string ConfigFile { get; }
 
         private readonly Client Client = new Client();
 

@@ -6,29 +6,29 @@ namespace ConsoleBot
 {
     public class Config
     {
-        public static Config FromFile(String file)
+        public static Config FromFile(string file)
         {
             return FromString(File.ReadAllText(file));
         }
 
-        public static Config FromString(String file)
+        public static Config FromString(string file)
         {
             return new Deserializer().Deserialize<Config>(file);
         }
 
         [YamlMember(Alias = "classicKey")]
-        public String ClassicKey { get; set; }
+        public string ClassicKey { get; set; }
 
         [YamlMember(Alias = "expansionKey")]
-        public String ExpansionKey { get; set; }
+        public string ExpansionKey { get; set; }
 
         [YamlMember(Alias = "realm")]
-        public String Realm { get; set; }
+        public string Realm { get; set; }
 
         [YamlMember(Alias = "username")]
-        public String Username { get; set; }
+        public string Username { get; set; }
 
         [YamlMember(Alias = "password")]
-        public String Password { get; set; }
+        public string Password { get; set; }
     }
 }
