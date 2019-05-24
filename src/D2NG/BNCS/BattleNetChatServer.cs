@@ -106,6 +106,11 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
         }
 
+        internal void JoinChannel(string channel)
+        {
+            OnJoinChannel(0x02, channel);
+        }
+
         internal void ConnectTo(string realm, string classicKey, string expansionKey)
         {
             Log.Information($"Connecting to {realm}");
@@ -125,6 +130,11 @@ namespace D2NG.BNCS
         internal void EnterChat()
         {
             _machine.Fire(Trigger.EnterChat);
+        }
+
+        private void OnJoinChannel(uint flags, string channel)
+        {
+            Connection.WritePacket(new JoinChannelRequestPacket(flags, channel));
         }
 
         private void Listen()
@@ -150,7 +160,7 @@ namespace D2NG.BNCS
         {
             EnterChatEvent.Reset();
             Connection.WritePacket(new EnterChatRequestPacket(Context.Username));
-            Connection.WritePacket(new JoinChannelRequestPacket(DefaultChannel));
+            OnJoinChannel(0x05, DefaultChannel);
             _ = EnterChatEvent.WaitForPacket();
         }
 

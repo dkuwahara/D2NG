@@ -46,6 +46,8 @@ namespace ConsoleBot
                     Prompt.GetPassword("Password: ", ConsoleColor.Red));
 
                 Client.SelectCharacter(SelectCharacter(characters));
+
+                Client.JoinChannel("D2NG");
             }
             catch (Exception e)
             {
@@ -61,11 +63,11 @@ namespace ConsoleBot
 
             return characters[Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Green) - 1];
         }
-             
+
         private static void HandleChatEvent(BncsPacket obj)
         {
             var packet = new ChatEventPacket(obj.Raw);
-            Log.Debug(packet.RenderText());
+            Log.Information(packet.RenderText());
         }
     }
 }

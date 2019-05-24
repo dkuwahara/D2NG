@@ -57,5 +57,10 @@ namespace D2NG
             Log.Information("Entering Chat");
             Bncs.EnterChat();
         }
+
+        public void JoinChannel(string channel)
+        {
+            Bncs.JoinChannel(channel);
+        }
     }
 }
