@@ -96,7 +96,6 @@ namespace D2NG.BNCS.Login
             buffer[4] += e;
         }
 
-
         public static List<byte> GetHash(List<byte> input)
         {
             var buffer = new uint[21];

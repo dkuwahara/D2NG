@@ -11,7 +11,7 @@ namespace D2NG.BNCS.Packet
 
         public AuthInfoResponsePacket(byte[] packet) : base(packet)
         {
-            BinaryReader reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
+            var reader = new BinaryReader(new MemoryStream(packet), Encoding.ASCII);
             if (PrefixByte != reader.ReadByte())
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
@@ -69,6 +69,5 @@ namespace D2NG.BNCS.Packet
                    $"{nameof(FormulaString)}: {FormulaString},\n" +
                    $"{nameof(MpqFileName)}: {MpqFileName}\n";
         }
-
     }
 }

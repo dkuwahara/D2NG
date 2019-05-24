@@ -48,6 +48,5 @@ namespace D2NG.BNCS.Packet
 
             reader.Close();
         }
-
     }
 }

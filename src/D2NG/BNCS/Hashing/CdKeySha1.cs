@@ -152,7 +152,6 @@ namespace D2NG.BNCS.Login
                 var index = 3 - var4;
                 var ebx = (Translate[varC + i] & 0x0FL) << esi;
                 values[index] = (ebx | ~(0x0FL << esi) & values[index]);
-
             }
 
             return values.Select(v => (int)v).ToArray();
@@ -221,6 +220,5 @@ namespace D2NG.BNCS.Login
             SHA1 sha = new SHA1CryptoServiceProvider();
             return sha.ComputeHash(buffer.ToArray());
         }
-
     }
 }
