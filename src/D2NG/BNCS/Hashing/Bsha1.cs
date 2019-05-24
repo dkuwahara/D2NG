@@ -144,21 +144,17 @@ namespace D2NG.BNCS.Login
                 }
             }
 
-            return new List<byte>(op.GetRange(0, 20));
+            return op.GetRange(0, 20);
         }
 
         public static List<byte> DoubleHash(uint clientToken, uint serverToken, string password)
         {
             var pv = Encoding.UTF8.GetBytes(password);
-            var passwordHash = GetHash(new List<byte>(pv));
-
             var finalInput = new List<byte>(BitConverter.GetBytes(clientToken));
             finalInput.AddRange(BitConverter.GetBytes(serverToken));
-            finalInput.AddRange(passwordHash);
+            finalInput.AddRange(GetHash(new List<byte>(pv)));
 
-            var output = GetHash(finalInput);
-
-            return output;
+            return GetHash(finalInput);
         }
     }
 }
