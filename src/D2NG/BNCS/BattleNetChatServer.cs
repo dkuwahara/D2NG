@@ -1,10 +1,10 @@
-﻿using D2NG.BNCS.Packet;
+﻿using D2NG.BNCS.Login;
+using D2NG.BNCS.Packet;
 using Serilog;
 using Stateless;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using D2NG.BNCS.Login;
 using System.Threading;
 
 namespace D2NG.BNCS
@@ -22,13 +22,11 @@ namespace D2NG.BNCS
 
         protected ConcurrentDictionary<Sid, Action<BncsPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Sid, Action<BncsPacket>>();
 
-        protected ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>> ReceivedQueue { get; set; }
-
         private readonly StateMachine<State, Trigger> _machine = new StateMachine<State, Trigger>(State.NotConnected);
 
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string> _connectTrigger;
-
         private readonly StateMachine<State, Trigger>.TriggerWithParameters<string, string> _loginTrigger;
+        private readonly StateMachine<State, Trigger>.TriggerWithParameters<uint, string> _joinChannelTrigger;
 
         enum State
         {
@@ -47,7 +45,8 @@ namespace D2NG.BNCS
             VerifyClient,
             AuthorizeKeys,
             Login,
-            EnterChat
+            EnterChat,
+            JoinChannel
         }
 
         public BncsContext Context { get; private set; }
@@ -64,6 +63,7 @@ namespace D2NG.BNCS
             _connectTrigger = _machine.SetTriggerParameters<string>(Trigger.Connect);
 
             _loginTrigger = _machine.SetTriggerParameters<string, string>(Trigger.Login);
+            _joinChannelTrigger = _machine.SetTriggerParameters<uint, string>(Trigger.JoinChannel);
 
             _machine.Configure(State.NotConnected)
                 .Permit(Trigger.Connect, State.Connected);
@@ -92,7 +92,9 @@ namespace D2NG.BNCS
                 .SubstateOf(State.KeysAuthorized)
                 .SubstateOf(State.UserAuthenticated)
                 .OnEntryFrom(Trigger.EnterChat, OnEnterChat)
+                .InternalTransition(_joinChannelTrigger, (flags, channel, t) => OnJoinChannel(flags, channel))
                 .Permit(Trigger.Disconnect, State.NotConnected);
+
 
             Connection.PacketReceived += (obj, packet) => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
             Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
@@ -108,7 +110,7 @@ namespace D2NG.BNCS
 
         internal void JoinChannel(string channel)
         {
-            OnJoinChannel(0x02, channel);
+            _machine.Fire(_joinChannelTrigger, 0x02U, channel);
         }
 
         internal void ConnectTo(string realm, string classicKey, string expansionKey)
@@ -149,7 +151,6 @@ namespace D2NG.BNCS
 
         private void OnConnect(string realm)
         {
-            ReceivedQueue = new ConcurrentDictionary<Sid, ConcurrentQueue<BncsPacket>>();
             Connection.Connect(realm);
 
             var listener = new Thread(Listen);
@@ -195,14 +196,14 @@ namespace D2NG.BNCS
                 result.Info,
                 Context.ClassicKey,
                 Context.ExpansionKey));
-            
+
             _ = new AuthCheckResponsePacket(AuthCheckEvent.WaitForPacket());
         }
 
-        public void OnReceivedPacketEvent(Sid type, Action<BncsPacket> handler) 
+        public void OnReceivedPacketEvent(Sid type, Action<BncsPacket> handler)
             => PacketReceivedEventHandlers.AddOrUpdate(type, handler, (t, h) => h += handler);
 
-        public void OnSentPacketEvent(Sid type, Action<BncsPacket> handler) 
+        public void OnSentPacketEvent(Sid type, Action<BncsPacket> handler)
             => PacketSentEventHandlers.AddOrUpdate(type, handler, (t, h) => h += handler);
 
         internal List<string> ListMcpRealms()
