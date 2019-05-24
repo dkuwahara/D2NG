@@ -1,6 +1,5 @@
 ﻿using D2NG.BNCS.Login;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace D2NG.BNCS.Packet
@@ -17,16 +16,11 @@ namespace D2NG.BNCS.Packet
                     (byte)Sid.LOGONRESPONSE2,
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(serverToken),
-                    DoubleHashPassword(clientToken, serverToken, password.ToLower()),
+                    Bsha1.DoubleHash(clientToken, serverToken, password.ToLower()),
                     Encoding.ASCII.GetBytes(username + "\0")
                 )
             )
         {
-        }
-
-        private static IEnumerable<byte> DoubleHashPassword(uint clientToken, uint serverToken, string password)
-        {
-            return Bsha1.DoubleHash(clientToken, serverToken, password);
         }
     }
 }
