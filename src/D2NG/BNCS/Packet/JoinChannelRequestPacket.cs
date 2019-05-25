@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Text;
 
 namespace D2NG.BNCS.Packet
@@ -15,6 +16,10 @@ namespace D2NG.BNCS.Packet
                 )
             )
         {
+            Log.Verbose($"JoinChannelRequestPacket\n" +
+                $"\tType: {Type}\n" +
+                $"\tFlags: 0x{flags:2X}\n" +
+                $"\tChannel: {channel}\n");
         }
     }
 }

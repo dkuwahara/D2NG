@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace D2NG.BNCS
 {
-    public class BattleNetChatServer
+    internal class BattleNetChatServer
     {
         /***
          * Constants
@@ -68,7 +68,6 @@ namespace D2NG.BNCS
             _joinChannelTrigger = _machine.SetTriggerParameters<uint, string>(Trigger.JoinChannel);
             _chatCommandTrigger = _machine.SetTriggerParameters<string>(Trigger.ChatCommand);
 
-
             _machine.Configure(State.NotConnected)
                 .Permit(Trigger.Connect, State.Connected);
 
@@ -103,6 +102,8 @@ namespace D2NG.BNCS
             Connection.PacketReceived += (obj, packet) => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
             Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
 
+            Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received packet of type: {packet.Type}");
+
             OnReceivedPacketEvent(Sid.PING, packet => Connection.WritePacket(packet.Raw));
             OnReceivedPacketEvent(Sid.QUERYREALMS2, ListRealmsEvent.Set);
             OnReceivedPacketEvent(Sid.LOGONREALMEX, RealmLogonEvent.Set);
@@ -112,12 +113,12 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
         }
 
-        internal void JoinChannel(string channel)
+        public void JoinChannel(string channel)
         {
             _machine.Fire(_joinChannelTrigger, 0x02U, channel);
         }
 
-        internal void ChatCommand(string message)
+        public void ChatCommand(string message)
         {
             _machine.Fire(_chatCommandTrigger, message);
         }
@@ -127,7 +128,7 @@ namespace D2NG.BNCS
             Connection.WritePacket(new ChatCommandPacket(message));
         }
 
-        internal void ConnectTo(string realm, string classicKey, string expansionKey)
+        public void ConnectTo(string realm, string classicKey, string expansionKey)
         {
             Log.Information($"Connecting to {realm}");
 
@@ -143,7 +144,7 @@ namespace D2NG.BNCS
             Log.Information($"Connected to {realm}");
         }
 
-        internal void EnterChat()
+        public void EnterChat()
         {
             _machine.Fire(Trigger.EnterChat);
         }
@@ -161,7 +162,7 @@ namespace D2NG.BNCS
             }
         }
 
-        internal void Login(string username, string password) => _machine.Fire(_loginTrigger, username, password);
+        public void Login(string username, string password) => _machine.Fire(_loginTrigger, username, password);
 
         private void OnConnect(string realm)
         {
@@ -185,7 +186,6 @@ namespace D2NG.BNCS
 
             LogonEvent.Reset();
             Connection.WritePacket(new LogonRequestPacket(Context.ClientToken, Context.ServerToken, Context.Username, password));
-
             var response = LogonEvent.WaitForPacket();
             _ = new LogonResponsePacket(response);
         }
@@ -196,11 +196,9 @@ namespace D2NG.BNCS
             Connection.WritePacket(new AuthInfoRequestPacket());
             var packet = new AuthInfoResponsePacket(AuthInfoEvent.WaitForPacket());
             Context.ServerToken = packet.ServerToken;
-            Log.Verbose("[{0}] Server token: {1} Logon Type: {2}", GetType(), Context.ServerToken, packet.LogonType);
 
             var result = CheckRevisionV4.CheckRevision(packet.FormulaString);
-            Log.Verbose("[{0}] CheckRevision: {1}", GetType(), result);
-
+            
             AuthCheckEvent.Reset();
             Connection.WritePacket(new AuthCheckRequestPacket(
                 Context.ClientToken,
@@ -220,7 +218,7 @@ namespace D2NG.BNCS
         public void OnSentPacketEvent(Sid type, Action<BncsPacket> handler)
             => PacketSentEventHandlers.AddOrUpdate(type, handler, (t, h) => h += handler);
 
-        internal List<string> ListMcpRealms()
+        public List<string> ListMcpRealms()
         {
             ListRealmsEvent.Reset();
             Connection.WritePacket(new QueryRealmsRequestPacket());
@@ -228,7 +226,7 @@ namespace D2NG.BNCS
             return new QueryRealmsResponsePacket(packet.Raw).Realms;
         }
 
-        internal RealmLogonResponsePacket RealmLogon(string realmName)
+        public RealmLogonResponsePacket RealmLogon(string realmName)
         {
             RealmLogonEvent.Reset();
             Connection.WritePacket(new RealmLogonRequestPacket(Context.ClientToken, Context.ServerToken, realmName, "password"));

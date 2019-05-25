@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Serilog;
+using System.Text;
 
 namespace D2NG.BNCS.Packet
 {
@@ -11,6 +12,8 @@ namespace D2NG.BNCS.Packet
                 Encoding.ASCII.GetBytes("\0\0")
                 ))
         {
+            Log.Verbose($"EnterChatRequestPacket:\n" +
+                $"\tUsername: {username}");
         }
     }
 }
