@@ -11,9 +11,6 @@ namespace D2NG.BNCS
 {
     internal class BattleNetChatServer
     {
-        /***
-         * Constants
-         */
         private readonly string DefaultChannel = "Diablo II";
 
         private BncsConnection Connection { get; } = new BncsConnection();
