@@ -25,6 +25,25 @@ namespace D2NG
         }
 
         /// <summary>
+        /// Send a message as an emote
+        /// </summary>
+        /// <param name="emote">Message to be sent as an emote</param>
+        public void Emote(string emote)
+        {
+            Send($"/me {emote}");
+        }
+
+        /// <summary>
+        /// Whisper a message to an individual
+        /// </summary>
+        /// <param name="recipient">User to message, prefix with '*' if it's the account name</param>
+        /// <param name="message">Message to send the recipient</param>
+        public void Whisper(string recipient, string message)
+        {
+            Send($"/w {recipient} {message}");
+        }
+
+        /// <summary>
         /// Send a chat message or a command to Battle.net
         /// </summary>
         /// <param name="message">
