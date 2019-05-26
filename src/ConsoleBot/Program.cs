@@ -1,7 +1,6 @@
 ﻿using D2NG;
 using Serilog;
 using System;
-using System.ComponentModel.DataAnnotations;
 using McMaster.Extensions.CommandLineUtils;
 using D2NG.BNCS.Packet;
 using System.Linq;
@@ -34,7 +33,10 @@ namespace ConsoleBot
                 .MinimumLevel.Is(LogLevel())
                 .CreateLogger();
 
-            Config = Config.FromFile(this.ConfigFile);
+            if (ConfigFile != null)
+            {
+                Config = Config.FromFile(this.ConfigFile);
+            }
 
             Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
@@ -50,7 +52,12 @@ namespace ConsoleBot
 
                 Client.SelectCharacter(SelectCharacter(characters));
 
+                Client.Chat.EnterChat();
+
                 Client.Chat.JoinChannel("D2NG");
+
+                Client.Chat.Send("Hello World!");
+                Client.Chat.Emote("is alive");
             }
             catch (Exception e)
             {
