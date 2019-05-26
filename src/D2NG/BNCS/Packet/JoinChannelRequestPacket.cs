@@ -18,7 +18,7 @@ namespace D2NG.BNCS.Packet
         {
             Log.Verbose($"JoinChannelRequestPacket\n" +
                 $"\tType: {Type}\n" +
-                $"\tFlags: 0x{flags:2X}\n" +
+                $"\tFlags: 0x{flags,2:2X}\n" +
                 $"\tChannel: {channel}\n");
         }
     }
