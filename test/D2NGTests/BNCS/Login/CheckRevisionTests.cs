@@ -49,6 +49,5 @@ namespace D2NG.BNCS.Hashing
             Assert.Equal(BitConverter.ToInt32(checksum), BitConverter.ToInt32(result.Checksum));
             Assert.Equal("Kyl+7a6yKVGWEj7rzhB+Q40=\0", Encoding.ASCII.GetString(result.Info));
         }
-
     }
 }

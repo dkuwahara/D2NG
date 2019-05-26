@@ -1,4 +1,5 @@
 ﻿using D2NG.BNCS.Hashing;
+using Serilog;
 using System;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace D2NG.BNCS.Packet
             string password) :
             base(
                 BuildPacket(
-                    (byte)Sid.LOGONRESPONSE2,
+                    Sid.LOGONRESPONSE2,
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(serverToken),
                     Bsha1.DoubleHash(clientToken, serverToken, password.ToLowerInvariant()),
@@ -21,6 +22,10 @@ namespace D2NG.BNCS.Packet
                 )
             )
         {
+            Log.Verbose($"LogonRequestPacket:\n" +
+                $"\tClient Token: {clientToken}" +
+                $"\tServer Token: {serverToken}" +
+                $"\tUsername: {username}");
         }
     }
 }

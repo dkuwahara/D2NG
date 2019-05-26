@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using D2NG.BNCS.Hashing;
+using Serilog;
 
 namespace D2NG.BNCS.Packet
 {
@@ -19,7 +20,7 @@ namespace D2NG.BNCS.Packet
             CdKey classic,
             CdKey expansion
             ) : base(BuildPacket(
-                    (byte)Sid.AUTH_CHECK,
+                    Sid.AUTH_CHECK,
                     BitConverter.GetBytes(clientToken),
                     BitConverter.GetBytes(version),
                     checksum,
@@ -40,6 +41,13 @@ namespace D2NG.BNCS.Packet
                 )
             )
         {
+            Log.Verbose($"Writing AuthCheck\n" +
+                $"\tType: {Type}\n" +
+                $"\tClient Token: {clientToken}\n" +
+                $"\tServer Token: {serverToken}\n" +
+                $"\tVersion: {version}\n" +
+                $"\tChecksum: {BitConverter.ToString(checksum)}\n" +
+                $"\tInfo: {BitConverter.ToString(info)}\n");
         }
     }
 }

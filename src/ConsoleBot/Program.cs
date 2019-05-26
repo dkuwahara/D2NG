@@ -7,6 +7,7 @@ using D2NG.BNCS.Packet;
 using System.Linq;
 using D2NG.MCP;
 using System.Collections.Generic;
+using Serilog.Events;
 
 namespace ConsoleBot
 {
@@ -15,22 +16,24 @@ namespace ConsoleBot
         static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         [Option(Description = "Config File", LongName = "config", ShortName = "c")]
-        [Required]
         public string ConfigFile { get; }
+
+        [Option]
+        public bool Verbose { get; set; }
 
         private readonly Client Client = new Client();
 
         private Config Config;
 
+        private LogEventLevel LogLevel() => Verbose ? LogEventLevel.Verbose: LogEventLevel.Debug;
+
         private void OnExecute()
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.File("log.txt")
-                .MinimumLevel.Information()
                 .WriteTo.Console()
+                .MinimumLevel.Is(LogLevel())
                 .CreateLogger();
-            
+
             Config = Config.FromFile(this.ConfigFile);
 
             Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
@@ -47,7 +50,7 @@ namespace ConsoleBot
 
                 Client.SelectCharacter(SelectCharacter(characters));
 
-                Client.JoinChannel("D2NG");
+                Client.Chat.JoinChannel("D2NG");
             }
             catch (Exception e)
             {

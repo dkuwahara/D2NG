@@ -20,7 +20,7 @@ namespace D2NG.BNCS.Packet
             {
                 throw new BncsPacketException("Not a valid BNCS Packet");
             }
-            if ((byte)Sid.AUTH_CHECK != reader.ReadByte())
+            if (Sid.AUTH_CHECK != (Sid)reader.ReadByte())
             {
                 throw new BncsPacketException("Expected type was not found");
             }

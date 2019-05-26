@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Serilog;
+using System.IO;
 using System.Text;
 
 namespace D2NG.BNCS.Packet
@@ -35,6 +36,8 @@ namespace D2NG.BNCS.Packet
 
             MpqFileName = ReadNullTerminatedString(Encoding.ASCII.GetString(Raw), ref offset);
             FormulaString = ReadNullTerminatedString(Encoding.GetEncoding("ISO-8859-1").GetString(Raw), ref offset);
+
+            Log.Verbose($"{this.ToString()}");
         }
 
         public uint LogonType { get; }
@@ -63,11 +66,13 @@ namespace D2NG.BNCS.Packet
 
         public override string ToString()
         {
-            return $"{nameof(LogonType)}: {LogonType},\n" +
-                   $"{nameof(ServerToken)}: {ServerToken},\n" +
-                   $"{nameof(MpqFileTime)}: {MpqFileTime},\n" +
-                   $"{nameof(FormulaString)}: {FormulaString},\n" +
-                   $"{nameof(MpqFileName)}: {MpqFileName}\n";
+            return $"{GetType()}:\n" +
+                   $"\tType: {Type}\n" +
+                   $"\t{nameof(LogonType)}: {LogonType},\n" +
+                   $"\t{nameof(ServerToken)}: {ServerToken},\n" +
+                   $"\t{nameof(MpqFileTime)}: {MpqFileTime},\n" +
+                   $"\t{nameof(FormulaString)}: {FormulaString},\n" +
+                   $"\t{nameof(MpqFileName)}: {MpqFileName}\n";
         }
     }
 }
