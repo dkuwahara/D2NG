@@ -1,5 +1,4 @@
 ﻿using D2NG.BNCS.Packet;
-using Serilog;
 using System;
 using System.Threading;
 
@@ -19,7 +18,6 @@ namespace D2NG.BNCS
 
         public BncsPacket WaitForPacket()
         {
-            Log.Verbose("Waiting for packet");
             _event.WaitOne();
             return _packet;
         }

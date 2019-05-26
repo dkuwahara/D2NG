@@ -8,7 +8,7 @@ namespace D2NG
     /// </summary>
     public class Chat
     {
-        private BattleNetChatServer _bncs;
+        private readonly BattleNetChatServer _bncs;
 
         internal Chat(BattleNetChatServer bncs)
         {
@@ -27,10 +27,10 @@ namespace D2NG
         /// <summary>
         /// Send a message as an emote
         /// </summary>
-        /// <param name="emote">Message to be sent as an emote</param>
-        public void Emote(string emote)
+        /// <param name="emoteMessage">Message to be sent as an emote</param>
+        public void Emote(string emoteMessage)
         {
-            Send($"/me {emote}");
+            Send($"/me {emoteMessage}");
         }
 
         /// <summary>
