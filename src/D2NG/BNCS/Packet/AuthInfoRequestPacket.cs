@@ -4,7 +4,6 @@ using System.Text;
 
 namespace D2NG.BNCS.Packet
 {
-
     public class AuthInfoRequestPacket : BncsPacket
     {
         private static readonly byte[] ProtocolId = BitConverter.GetBytes(0x00);
