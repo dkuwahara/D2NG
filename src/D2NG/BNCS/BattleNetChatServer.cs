@@ -46,7 +46,8 @@ namespace D2NG.BNCS
             Login,
             EnterChat,
             JoinChannel,
-            ChatCommand
+            ChatCommand,
+            LeaveChat
         }
 
         public BncsContext Context { get; private set; }
@@ -85,6 +86,7 @@ namespace D2NG.BNCS
                 .SubstateOf(State.Connected)
                 .SubstateOf(State.KeysAuthorized)
                 .OnEntryFrom(_loginTrigger, (username, password) => OnLogin(username, password))
+                .OnEntryFrom(Trigger.LeaveChat, OnLeaveChat)
                 .Permit(Trigger.EnterChat, State.InChat)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
@@ -95,6 +97,7 @@ namespace D2NG.BNCS
                 .OnEntryFrom(Trigger.EnterChat, OnEnterChat)
                 .InternalTransition(_joinChannelTrigger, (flags, channel, t) => OnJoinChannel(flags, channel))
                 .InternalTransition(_chatCommandTrigger, (message, t) => OnChatCommand(message))
+                .Permit(Trigger.LeaveChat, State.UserAuthenticated)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
             Connection.PacketReceived += (obj, packet) => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
@@ -111,20 +114,23 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
         }
 
-        public void JoinChannel(string channel)
+        public void EnterChat() => _machine.Fire(Trigger.EnterChat);
+        private void OnEnterChat()
         {
-            _machine.Fire(_joinChannelTrigger, 0x02U, channel);
+            EnterChatEvent.Reset();
+            Connection.WritePacket(new EnterChatRequestPacket(Context.Username));
+            OnJoinChannel(0x05, DefaultChannel);
+            _ = EnterChatEvent.WaitForPacket();
         }
 
-        public void ChatCommand(string message)
-        {
-            _machine.Fire(_chatCommandTrigger, message);
-        }
+        public void LeaveChat() => _machine.Fire(Trigger.LeaveChat);
+        private void OnLeaveChat() => Connection.WritePacket(new LeaveChatPacket());
 
-        private void OnChatCommand(string message)
-        {
-            Connection.WritePacket(new ChatCommandPacket(message));
-        }
+        public void JoinChannel(string channel) => _machine.Fire(_joinChannelTrigger, 0x02U, channel);
+        private void OnJoinChannel(uint flags, string channel) => Connection.WritePacket(new JoinChannelRequestPacket(flags, channel));
+
+        public void ChatCommand(string message) => _machine.Fire(_chatCommandTrigger, message);
+        private void OnChatCommand(string message) => Connection.WritePacket(new ChatCommandPacket(message));
 
         public void ConnectTo(string realm, string classicKey, string expansionKey)
         {
@@ -140,16 +146,6 @@ namespace D2NG.BNCS
             _machine.Fire(_connectTrigger, realm);
             _machine.Fire(Trigger.AuthorizeKeys);
             Log.Information($"Connected to {realm}");
-        }
-
-        public void EnterChat()
-        {
-            _machine.Fire(Trigger.EnterChat);
-        }
-
-        private void OnJoinChannel(uint flags, string channel)
-        {
-            Connection.WritePacket(new JoinChannelRequestPacket(flags, channel));
         }
 
         private void Listen()
@@ -168,14 +164,6 @@ namespace D2NG.BNCS
 
             var listener = new Thread(Listen);
             listener.Start();
-        }
-
-        private void OnEnterChat()
-        {
-            EnterChatEvent.Reset();
-            Connection.WritePacket(new EnterChatRequestPacket(Context.Username));
-            OnJoinChannel(0x05, DefaultChannel);
-            _ = EnterChatEvent.WaitForPacket();
         }
 
         private void OnLogin(string username, string password)

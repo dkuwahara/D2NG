@@ -1,4 +1,5 @@
 ﻿using D2NG.BNCS;
+using Serilog;
 using System.Linq;
 
 namespace D2NG
@@ -13,6 +14,24 @@ namespace D2NG
         internal Chat(BattleNetChatServer bncs)
         {
             this._bncs = bncs;
+        }
+
+        /// <summary>
+        /// Enter the chat
+        /// </summary>
+        public void EnterChat()
+        {
+            Log.Information("Entering Chat");
+            _bncs.EnterChat();
+        }
+
+        /// <summary>
+        /// Leave the chat but do not disconnect from BNCS.
+        /// </summary>
+        public void LeaveChat()
+        {
+            Log.Information("Exiting Chat");
+            _bncs.LeaveChat();
         }
 
         /// <summary>
