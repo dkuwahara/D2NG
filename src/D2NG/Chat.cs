@@ -19,29 +19,20 @@ namespace D2NG
         /// Join a channel
         /// </summary>
         /// <param name="channel">Name of the channel to join. Maximum 31 characters</param>
-        public void JoinChannel(string channel)
-        {
-            _bncs.JoinChannel(channel);
-        }
+        public void JoinChannel(string channel) => _bncs.JoinChannel(channel);
 
         /// <summary>
         /// Send a message as an emote
         /// </summary>
         /// <param name="emoteMessage">Message to be sent as an emote</param>
-        public void Emote(string emoteMessage)
-        {
-            Send($"/me {emoteMessage}");
-        }
+        public void Emote(string emoteMessage) => Send($"/me {emoteMessage}");
 
         /// <summary>
         /// Whisper a message to an individual
         /// </summary>
-        /// <param name="recipient">User to message, prefix with '*' if it's the account name</param>
+        /// <param name="recipient">User receiving the private message (whisper). Prefix with '*' if whispering an account name</param>
         /// <param name="message">Message to send the recipient</param>
-        public void Whisper(string recipient, string message)
-        {
-            Send($"/w {recipient} {message}");
-        }
+        public void Whisper(string recipient, string message) => Send($"/w {recipient} {message}");
 
         /// <summary>
         /// Send a chat message or a command to Battle.net
