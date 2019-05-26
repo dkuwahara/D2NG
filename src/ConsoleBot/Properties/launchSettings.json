@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "ConsoleBot": {
-      "commandName": "Project",
-      "commandLineArgs": "--config config/config.yml",
-      "workingDirectory": "C:\\Users\\DKuwa\\source\\repos\\d2ng"
-    }
-  }
-}
