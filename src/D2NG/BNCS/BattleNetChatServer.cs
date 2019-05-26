@@ -5,6 +5,7 @@ using Stateless;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace D2NG.BNCS
@@ -222,6 +223,8 @@ namespace D2NG.BNCS
             var packet = ListRealmsEvent.WaitForPacket();
             return new QueryRealmsResponsePacket(packet.Raw).Realms;
         }
+
+        public RealmLogonResponsePacket RealmLogon() => RealmLogon(ListMcpRealms().First());
 
         public RealmLogonResponsePacket RealmLogon(string realmName)
         {
