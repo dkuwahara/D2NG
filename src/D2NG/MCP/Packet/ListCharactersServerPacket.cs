@@ -25,8 +25,8 @@ namespace D2NG.MCP.Packet
             Characters = new List<Character>();
             for(int x = 0; x < totalReturned; x++)
             {
+                reader.ReadUInt32();
                 Characters.Add(new Character(
-                    reader.ReadUInt32(),
                     ReadString(reader),
                     ReadString(reader)
                     ));

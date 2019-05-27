@@ -4,19 +4,18 @@ namespace D2NG.MCP
 {
     public class Character
     {
-        public Character(uint expiry, string name, string statstring)
+        private readonly byte[] _stats;
+
+        public string Name { get; }
+
+        public Character(string name, string statstring)
         {
-            Expiry = expiry;
             Name = name;
-            Statstring = Encoding.ASCII.GetBytes(statstring);
+            _stats = Encoding.ASCII.GetBytes(statstring);
         }
 
-        public byte CharacterClass { get => (byte)((Statstring[13] - 0x01) & 0xFF); }
+        public CharacterClass CharacterClass { get => (CharacterClass)((_stats[13] - 0x01) & 0xFF); }
 
-        public byte Level { get => Statstring[25]; }
-
-        public uint Expiry { get; }
-        public string Name { get; }
-        public byte[] Statstring { get; }
+        public uint Level { get => _stats[25]; }
     }
 }
