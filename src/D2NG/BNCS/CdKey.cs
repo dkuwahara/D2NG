@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace D2NG.BNCS.Hashing
+﻿namespace D2NG.BNCS.Hashing
 {
     public abstract class CdKey
     {
