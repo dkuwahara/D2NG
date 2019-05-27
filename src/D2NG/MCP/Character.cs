@@ -14,7 +14,7 @@ namespace D2NG.MCP
             _stats = Encoding.ASCII.GetBytes(statstring);
         }
 
-        public CharacterClass CharacterClass { get => (CharacterClass)((_stats[13] - 0x01) & 0xFF); }
+        public CharacterClass Class { get => (CharacterClass)((_stats[13] - 0x01) & 0xFF); }
 
         public uint Level { get => _stats[25]; }
     }
