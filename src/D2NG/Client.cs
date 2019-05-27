@@ -67,5 +67,19 @@ namespace D2NG
             Log.Information($"Selecting {character.Name}");
             Mcp.CharLogon(character);
         }
+
+        public void CreateGame(Difficulty difficulty, string name, string password)
+        {
+            Log.Information($"Creating {difficulty} game: {name}");
+            Mcp.CreateGame(difficulty, name, password);
+            Log.Debug($"Game {name} created");
+            JoinGame(name, password);
+        }
+
+        public void JoinGame(string name, string password)
+        {
+            Log.Information($"Joining game: {name}");
+            var packet = Mcp.JoinGame(name, password);
+        }
     }
 }
