@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Text;
 
 namespace D2NG.MCP.Packet
@@ -15,6 +16,10 @@ namespace D2NG.MCP.Packet
                 )
             )
         {
+            Log.Verbose($"JoinGameRequestPacket\n" +
+                $"\tRequest Id {id}\n" +
+                $"\tGame Name {name}\n" +
+                $"\tPassword {password}");
         }
     }
 }
