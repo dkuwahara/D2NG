@@ -15,7 +15,7 @@ namespace D2NG.MCP.Packet
                     new byte[] { 0x01, 0xFF, 0x08 },
                     Encoding.ASCII.GetBytes($"{name}\0"),
                     Encoding.ASCII.GetBytes($"{password}\0"),
-                    Encoding.ASCII.GetBytes($"D2NG\0")
+                    Encoding.ASCII.GetBytes($"\0")
                 )
             )
         {
