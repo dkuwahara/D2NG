@@ -221,5 +221,10 @@ namespace D2NG.BNCS
             var packet = RealmLogonEvent.WaitForPacket();
             return new RealmLogonResponsePacket(packet.Raw);
         }
+
+        internal void NotifyJoin(string name, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

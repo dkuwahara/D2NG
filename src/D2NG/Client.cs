@@ -80,6 +80,8 @@ namespace D2NG
         {
             Log.Information($"Joining game: {name}");
             var packet = Mcp.JoinGame(name, password);
+
+            Bncs.NotifyJoin(name, password);
         }
     }
 }
