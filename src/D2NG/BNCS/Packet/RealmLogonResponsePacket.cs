@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -40,8 +39,7 @@ namespace D2NG.BNCS.Packet
                 McpChunk.AddRange(reader.ReadBytes(4));
             }
 
-            uint ip = (uint)IPAddress.NetworkToHostOrder((int)reader.ReadUInt32());
-            McpIp = IPAddress.Parse(ip.ToString());
+            McpIp = new IPAddress(reader.ReadUInt32());
             McpPort = IPAddress.NetworkToHostOrder((short) reader.ReadInt32());
 
             for (int i = 0; i < 12; i++)

@@ -1,5 +1,4 @@
 ﻿using ConsoleBot;
-using System;
 using Xunit;
 
 namespace ConfigTests

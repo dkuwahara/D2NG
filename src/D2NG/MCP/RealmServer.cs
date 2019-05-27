@@ -13,10 +13,13 @@ namespace D2NG.MCP
 
         protected ConcurrentDictionary<Mcp, Action<McpPacket>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<Mcp, Action<McpPacket>>();
         protected ConcurrentDictionary<Mcp, Action<McpPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<Mcp, Action<McpPacket>>();
+        public ushort RequestId { get; private set; } = 0x02;
 
         private readonly McpEvent CharLogonEvent = new McpEvent();
+        private readonly McpEvent CreateGameEvent = new McpEvent();
         private readonly McpEvent ListCharactersEvent = new McpEvent();
         private readonly McpEvent StartupEvent = new McpEvent();
+        private readonly McpEvent JoinGameEvent = new McpEvent();
 
         internal RealmServer()
         {
@@ -26,6 +29,8 @@ namespace D2NG.MCP
             OnReceivedPacketEvent(Mcp.STARTUP, StartupEvent.Set);
             OnReceivedPacketEvent(Mcp.CHARLIST2, ListCharactersEvent.Set);
             OnReceivedPacketEvent(Mcp.CHARLOGON, CharLogonEvent.Set);
+            OnReceivedPacketEvent(Mcp.CREATEGAME, CreateGameEvent.Set);
+            OnReceivedPacketEvent(Mcp.JOINGAME, JoinGameEvent.Set);
         }
 
         internal void Connect(IPAddress ip, short port)
@@ -71,6 +76,20 @@ namespace D2NG.MCP
             var packet = ListCharactersEvent.WaitForPacket();
             var response = new ListCharactersServerPacket(packet.Raw);
             return response.Characters;
+        }
+
+        internal void CreateGame(Difficulty difficulty, string gameName, string password)
+        {
+            CreateGameEvent.Reset();
+            Connection.WritePacket(new CreateGameRequestPacket(RequestId++, difficulty, gameName, password));
+            _ = new CreateGameResponsePacket(CreateGameEvent.WaitForPacket().Raw);
+        }
+
+        internal JoinGameResponsePacket JoinGame(string name, string password)
+        {
+            JoinGameEvent.Reset();
+            Connection.WritePacket(new JoinGameRequestPacket(RequestId++, name, password));
+            return new JoinGameResponsePacket(JoinGameEvent.WaitForPacket().Raw);
         }
 
         internal void OnReceivedPacketEvent(Mcp type, Action<McpPacket> handler) 

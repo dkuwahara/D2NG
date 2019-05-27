@@ -38,7 +38,7 @@ namespace ConsoleBot
                 Config = Config.FromFile(this.ConfigFile);
             }
 
-            Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
+            //Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
                 Client.Connect(
@@ -58,6 +58,8 @@ namespace ConsoleBot
 
                 Client.Chat.Send("Hello World!");
                 Client.Chat.Emote("is alive");
+
+                Client.CreateGame(Difficulty.Normal, "d2ng", "d2ng");
             }
             catch (Exception e)
             {
@@ -68,7 +70,7 @@ namespace ConsoleBot
         private Character SelectCharacter(List<Character> characters)
         {
             var charsPrompt = characters
-                .Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {(CharacterClass)c.CharacterClass}")
+                .Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {c.Class}")
                 .Aggregate((i, j) => i + "\n" + j);
 
             return characters[Prompt.GetInt($"Select Character:\n{charsPrompt}\n", 1, ConsoleColor.Green) - 1];

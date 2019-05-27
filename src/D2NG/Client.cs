@@ -16,6 +16,8 @@ namespace D2NG
 
         public Chat Chat { get; }
 
+        private string _mcpRealm = null;
+
         public Client()
         {
             Chat = new Chat(Bncs);
@@ -51,7 +53,11 @@ namespace D2NG
 
         private void RealmLogon()
         {
-            var packet = Bncs.RealmLogon();
+            if (_mcpRealm is null)
+            {
+                _mcpRealm = Bncs.ListMcpRealms().First();
+            }
+            var packet = Bncs.RealmLogon(_mcpRealm);
             Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
             Mcp.Connect(packet.McpIp, packet.McpPort);
             Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
@@ -66,6 +72,34 @@ namespace D2NG
         {
             Log.Information($"Selecting {character.Name}");
             Mcp.CharLogon(character);
+        }
+
+        /// <summary>
+        /// Create a new game 
+        /// </summary>
+        /// <param name="difficulty">One of Normal, Nightmare or Hell</param>
+        /// <param name="name">Name of the game to be created</param>
+        /// <param name="password">Password used to protect the game</param>
+        public void CreateGame(Difficulty difficulty, string name, string password)
+        {
+            Log.Information($"Creating {difficulty} game: {name}");
+            Mcp.CreateGame(difficulty, name, password);
+            Log.Debug($"Game {name} created");
+            JoinGame(name, password);
+        }
+
+        /// <summary>
+        /// Join a game
+        /// </summary>
+        /// <param name="name">Name of the game being joined</param>
+        /// <param name="password">Password used to protect the game</param>
+        public void JoinGame(string name, string password)
+        {
+            Log.Information($"Joining game: {name}");
+            var packet = Mcp.JoinGame(name, password);
+            //Mcp.Disconnect();
+            Log.Debug($"Connecting to D2GS Server {packet.D2gsIp}");
+            Bncs.NotifyJoin(name, password);
         }
     }
 }

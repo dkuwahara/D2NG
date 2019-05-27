@@ -212,8 +212,6 @@ namespace D2NG.BNCS
             return new QueryRealmsResponsePacket(packet.Raw).Realms;
         }
 
-        public RealmLogonResponsePacket RealmLogon() => RealmLogon(ListMcpRealms().First());
-
         public RealmLogonResponsePacket RealmLogon(string realmName)
         {
             RealmLogonEvent.Reset();
@@ -221,5 +219,7 @@ namespace D2NG.BNCS
             var packet = RealmLogonEvent.WaitForPacket();
             return new RealmLogonResponsePacket(packet.Raw);
         }
+
+        internal void NotifyJoin(string name, string password) => Connection.WritePacket(new NotifyJoinPacket(name, password));
     }
 }
