@@ -6,7 +6,6 @@ namespace D2NG.MCP.Packet
 {
     public class CreateGameRequestPacket : McpPacket
     {
-
         public CreateGameRequestPacket(ushort id, Difficulty difficulty, string name, string password) :
             base(
                 BuildPacket(

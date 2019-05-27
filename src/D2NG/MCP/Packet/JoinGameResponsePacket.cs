@@ -11,6 +11,7 @@ namespace D2NG.MCP.Packet
         public ushort GameToken { get; }
         public IPAddress D2gsIp { get; }
         public uint GameHash { get; }
+        public uint Result { get; }
 
         public JoinGameResponsePacket(byte[] packet) : base(packet)
         {
@@ -31,12 +32,15 @@ namespace D2NG.MCP.Packet
             D2gsIp = new IPAddress(reader.ReadUInt32());
 
             GameHash = reader.ReadUInt32();
-            var result = reader.ReadUInt32();
+            Result = reader.ReadUInt32();
+            Validate(Result);
+        }
 
+        private void Validate(uint result)
+        {
             switch (result)
             {
                 case 0x00:
-                    Log.Debug("Join game success");
                     break;
                 case 0x29:
                     throw new JoinGameException("Password incorrect");
