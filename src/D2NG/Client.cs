@@ -5,6 +5,7 @@ using D2NG.MCP.Packet;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace D2NG
 {
@@ -14,6 +15,8 @@ namespace D2NG
         internal RealmServer Mcp { get; } = new RealmServer();
 
         public Chat Chat { get; }
+
+        private string _mcpRealm = null;
 
         public Client()
         {
@@ -50,7 +53,11 @@ namespace D2NG
 
         private void RealmLogon()
         {
-            var packet = Bncs.RealmLogon();
+            if (_mcpRealm is null)
+            {
+                _mcpRealm = Bncs.ListMcpRealms().First();
+            }
+            var packet = Bncs.RealmLogon(_mcpRealm);
             Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
             Mcp.Connect(packet.McpIp, packet.McpPort);
             Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
