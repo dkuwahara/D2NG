@@ -8,10 +8,6 @@ namespace D2NG.BNCS.Packet
     {
         private static readonly byte[] ProtocolId = BitConverter.GetBytes(0x00);
 
-        private const string PlatformCode = "IX86";
-
-        private const string ProductCode = "D2XP";
-
         private const string LanguageCode = "enUS";
 
         private static readonly byte[] LocalIp = BitConverter.GetBytes(0x00);
@@ -27,7 +23,7 @@ namespace D2NG.BNCS.Packet
         private const string Country = "United States\0";
 
         public AuthInfoRequestPacket()
-            : this(0x0E)
+            : this(Version)
         {
         }
 

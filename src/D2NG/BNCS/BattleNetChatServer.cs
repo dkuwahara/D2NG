@@ -222,9 +222,6 @@ namespace D2NG.BNCS
             return new RealmLogonResponsePacket(packet.Raw);
         }
 
-        internal void NotifyJoin(string name, string password)
-        {
-            throw new NotImplementedException();
-        }
+        internal void NotifyJoin(string name, string password) => Connection.WritePacket(new NotifyJoinPacket(name, password));
     }
 }
