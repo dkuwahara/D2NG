@@ -68,6 +68,12 @@ namespace D2NG
             Mcp.CharLogon(character);
         }
 
+        /// <summary>
+        /// Create a new game 
+        /// </summary>
+        /// <param name="difficulty">One of Normal, Nightmare or Hell</param>
+        /// <param name="name">Name of the game to be created</param>
+        /// <param name="password">Password used to protect the game</param>
         public void CreateGame(Difficulty difficulty, string name, string password)
         {
             Log.Information($"Creating {difficulty} game: {name}");
@@ -76,6 +82,11 @@ namespace D2NG
             JoinGame(name, password);
         }
 
+        /// <summary>
+        /// Join a game
+        /// </summary>
+        /// <param name="name">Name of the game being joined</param>
+        /// <param name="password">Password used to protect the game</param>
         public void JoinGame(string name, string password)
         {
             Log.Information($"Joining game: {name}");
