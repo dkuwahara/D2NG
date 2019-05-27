@@ -23,6 +23,7 @@ namespace D2NG.MCP.Packet
             {
                 throw new McpPacketException("Expected Packet Type Not Found");
             }
+
             RequestId = reader.ReadUInt16();
             GameToken = reader.ReadUInt16();
             _ = reader.ReadUInt16();

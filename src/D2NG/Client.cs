@@ -91,7 +91,8 @@ namespace D2NG
         {
             Log.Information($"Joining game: {name}");
             var packet = Mcp.JoinGame(name, password);
-
+            //Mcp.Disconnect();
+            Log.Debug($"Connecting to D2GS Server {packet.D2gsIp}");
             Bncs.NotifyJoin(name, password);
         }
     }
