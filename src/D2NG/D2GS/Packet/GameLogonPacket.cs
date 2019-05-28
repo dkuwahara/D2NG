@@ -19,7 +19,7 @@ namespace D2NG.D2GS
                     D2gs.GAMELOGON,
                     BitConverter.GetBytes(gameHash),
                     BitConverter.GetBytes(gameToken),
-                    new byte[] { (byte)character.Class },
+                    new [] { (byte)character.Class },
                     BitConverter.GetBytes(Version),
                     Constant,
                     Locale,
