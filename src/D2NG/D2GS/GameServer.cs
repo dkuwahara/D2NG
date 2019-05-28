@@ -19,6 +19,7 @@ namespace D2NG.D2GS
         protected ConcurrentDictionary<byte, Action<D2gsPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<D2gsPacket>>();
 
         private ManualResetEvent LoadSuccessEvent = new ManualResetEvent(false);
+
         public GameServer()
         {
             Connection.PacketReceived += (obj, eventArgs) => PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);

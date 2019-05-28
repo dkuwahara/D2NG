@@ -113,7 +113,7 @@ namespace D2NG.D2GS
                     break;
                 case 0x94:
                     buffer.AddRange(ReadBytes(1));
-                    buffer.AddRange(ReadBytes((buffer[1] * 3 + 6) - 2));
+                    buffer.AddRange(ReadBytes((buffer[1] * 3) + 4));
                     break;
                 case 0xa8:
                 case 0xaa:
