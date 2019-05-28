@@ -35,8 +35,9 @@ namespace D2NG.BNCS
             KeysAuthorized,
             UserAuthenticated,
             Chatting,
-            InChat,
+            InChat
         }
+
         enum Trigger
         {
             Connect,
@@ -113,6 +114,8 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.ENTERCHAT, EnterChatEvent.Set);
             OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
         }
+
+        internal void LeaveGame() => Connection.WritePacket(new byte[] { 0x1F });
 
         public void EnterChat() => _machine.Fire(Trigger.EnterChat);
         private void OnEnterChat()

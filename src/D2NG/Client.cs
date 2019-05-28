@@ -18,8 +18,8 @@ namespace D2NG
 
         public Chat Chat { get; }
 
-        private Character _character = null;
-        private string _mcpRealm = null;
+        private Character _character;
+        private string _mcpRealm;
 
         public Client()
         {
@@ -106,6 +106,18 @@ namespace D2NG
             D2gs.Connect(packet.D2gsIp);
             D2gs.GameLogon(packet.GameHash, packet.GameToken, _character);
             Bncs.NotifyJoin(name, password);
+        }
+
+        /// <summary>
+        /// Leave a game
+        /// </summary>
+        public void LeaveGame()
+        {
+            Log.Information("Leaving game.");
+            D2gs.LeaveGame();
+            Bncs.LeaveGame();
+            RealmLogon();
+            Mcp.CharLogon(_character);
         }
     }
 }

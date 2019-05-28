@@ -9,7 +9,7 @@ using Serilog;
 
 namespace D2NG.D2GS
 {
-    internal class GameServer
+    internal class GameServer : IDisposable
     {
         private const ushort Port = 4000;
 
@@ -19,6 +19,8 @@ namespace D2NG.D2GS
         protected ConcurrentDictionary<byte, Action<D2gsPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<D2gsPacket>>();
 
         private ManualResetEvent LoadSuccessEvent = new ManualResetEvent(false);
+
+        private Thread _listener;
 
         public GameServer()
         {
@@ -40,8 +42,8 @@ namespace D2NG.D2GS
         public void Connect(IPAddress ip)
         {
             Connection.Connect(ip, Port);
-            var listener = new Thread(Listen);
-            listener.Start();
+            _listener = new Thread(Listen);
+            _listener.Start();
         }
 
         private void Listen()
@@ -52,12 +54,25 @@ namespace D2NG.D2GS
             }
         }
 
+        public void LeaveGame()
+        {
+            _listener.Abort();
+            Connection.WritePacket(new byte[] { 0x69 });
+            Connection.Terminate();
+            _listener.Join();
+        }
+
         internal void GameLogon(uint gameHash, ushort gameToken, Character character)
         {
             LoadSuccessEvent.Reset();
             Connection.WritePacket(new GameLogonPacket(gameHash, gameToken, character));
             LoadSuccessEvent.WaitOne();
             Connection.WritePacket(new byte[] { 0x6B });
+        }
+
+        public void Dispose()
+        {
+            LoadSuccessEvent.Dispose();
         }
     }
 }
