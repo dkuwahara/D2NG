@@ -2,13 +2,10 @@
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 
 namespace D2NG.D2GS
 {
-    internal class GameServerConnection
+    internal class GameServerConnection : Connection
     {
         private static readonly short[] PacketSizes =
         {
@@ -26,35 +23,17 @@ namespace D2NG.D2GS
             1
         };
 
-        protected NetworkStream _stream;
-
-        protected TcpClient _tcpClient;
-
-        public bool Connected { get; internal set; }
-
         internal event EventHandler<D2gsPacket> PacketReceived;
+
         internal event EventHandler<D2gsPacket> PacketSent;
 
-        internal void Connect(IPAddress ip, ushort port)
+        internal override void Initialize()
         {
-            Log.Verbose("[{0}] Connecting to {1}:{2}", GetType(), ip, port);
-            _tcpClient = new TcpClient();
-            _tcpClient.Connect(ip, port);
-            _stream = _tcpClient.GetStream();
-            if (!_stream.CanWrite)
-            {
-                Log.Error("[{0}] Unable to write to {1}:{2}, closing connection", GetType(), ip, port);
-                Terminate();
-                throw new UnableToConnectException($"Unable to establish {GetType()}");
-            }
-            Log.Verbose("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
-
-            var packet = ReadBytes(2);
-            if (D2gs.NEGOTIATECOMPRESSION != (D2gs)packet[0])
+            if (D2gs.NEGOTIATECOMPRESSION != (D2gs)_stream.ReadByte())
             {
                 throw new UnableToConnectException("Unexpected packet");
             }
-            switch (packet[1])
+            switch (_stream.ReadByte())
             {
                 case 0x00:
                     Log.Debug("No compression for D2GS");
@@ -65,41 +44,19 @@ namespace D2NG.D2GS
                 default:
                     throw new UnableToConnectException("Unknown compression mode, cannot continue");
             }
-            Connected = true;
         }
 
-        public void WritePacket(D2NG.Packet packet) => this.WritePacket(packet.Raw);
-
-        internal void WritePacket(byte[] packet)
+        internal override void WritePacket(byte[] packet)
         {
             _stream.Write(packet, 0, packet.Length);
             PacketSent?.Invoke(this, new D2gsPacket(packet));
         }
 
-        internal List<byte> ReadBytes(int count)
+        internal override byte[] ReadPacket()
         {
             var buffer = new List<byte>();
-            while (buffer.Count < count)
-            {
-                byte temp = (byte)_stream.ReadByte();
-                buffer.Add(temp);
-            }
-            return buffer;
-        }
+            buffer.Add((byte)_stream.ReadByte());
 
-        public void Terminate()
-        {
-            _tcpClient.Close();
-            _stream.Close();
-            Connected = false;
-        }
-
-        public byte[] ReadPacket()
-        {
-            var buffer = new List<byte>()
-            {
-                (byte)_stream.ReadByte()
-            };
             var identifier = buffer[0];
             switch(identifier)
             {
@@ -146,6 +103,17 @@ namespace D2NG.D2GS
             }
             PacketReceived?.Invoke(this, new D2gsPacket(buffer.ToArray()));
             return buffer.ToArray();
+        }
+
+        private List<byte> ReadBytes(int count)
+        {
+            var buffer = new List<byte>();
+            while (buffer.Count < count)
+            {
+                byte temp = (byte)_stream.ReadByte();
+                buffer.Add(temp);
+            }
+            return buffer;
         }
 
         private List<byte> GetChatPacket(List<byte> buffer)
