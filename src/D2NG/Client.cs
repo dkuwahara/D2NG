@@ -1,5 +1,6 @@
 ﻿using D2NG.BNCS;
 using D2NG.BNCS.Packet;
+using D2NG.D2GS;
 using D2NG.MCP;
 using D2NG.MCP.Packet;
 using Serilog;
@@ -13,9 +14,11 @@ namespace D2NG
     {
         internal BattleNetChatServer Bncs { get; } = new BattleNetChatServer();
         internal RealmServer Mcp { get; } = new RealmServer();
+        internal GameServer D2gs { get; } = new GameServer();
 
         public Chat Chat { get; }
 
+        private Character _character = null;
         private string _mcpRealm = null;
 
         public Client()
@@ -72,6 +75,7 @@ namespace D2NG
         {
             Log.Information($"Selecting {character.Name}");
             Mcp.CharLogon(character);
+            _character = character;
         }
 
         /// <summary>
@@ -99,6 +103,8 @@ namespace D2NG
             var packet = Mcp.JoinGame(name, password);
             //Mcp.Disconnect();
             Log.Debug($"Connecting to D2GS Server {packet.D2gsIp}");
+            D2gs.Connect(packet.D2gsIp);
+            D2gs.GameLogon(packet.GameHash, packet.GameToken, _character);
             Bncs.NotifyJoin(name, password);
         }
     }
