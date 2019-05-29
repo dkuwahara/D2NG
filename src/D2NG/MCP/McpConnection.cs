@@ -42,5 +42,10 @@ namespace D2NG.MCP
             _stream.Write(packet, 0, packet.Length);
             PacketSent?.Invoke(this, new McpPacket(packet));
         }
+
+        internal override void Initialize()
+        {
+            _stream.WriteByte(0x01);
+        }
     }
 }

@@ -51,6 +51,8 @@ namespace D2NG
 
         internal abstract byte[] ReadPacket();
 
+        public void WritePacket(Packet packet) => this.WritePacket(packet.Raw);
+
         internal abstract void WritePacket(byte[] packet);
 
         public void Connect(IPAddress ip, int port) => _machine.Fire(_connectTrigger, ip, port);
@@ -67,9 +69,11 @@ namespace D2NG
                 Terminate();
                 throw new UnableToConnectException($"Unable to establish {GetType()}");
             }
-            _stream.WriteByte(0x01);
+            Initialize();
             Log.Verbose("[{0}] Successfully connected to {1}:{2}", GetType(), ip, port);
         }
+
+        internal abstract void Initialize();
 
         public bool Connected => _machine.IsInState(State.Connected);
 
@@ -80,7 +84,5 @@ namespace D2NG
             _tcpClient.Close();
             _stream.Close();
         }
-
-        public void WritePacket(Packet packet) => this.WritePacket(packet.Raw);
     }
 }

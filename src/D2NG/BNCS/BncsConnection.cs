@@ -59,5 +59,10 @@ namespace D2NG.BNCS
             _stream.Write(packet, 0, packet.Length);
             PacketSent?.Invoke(this, new BncsPacket(packet));
         }
+
+        internal override void Initialize()
+        {
+            _stream.WriteByte(0x01);
+        }
     }
 }
