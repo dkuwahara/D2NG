@@ -113,7 +113,7 @@ namespace D2NG
         /// </summary>
         public void LeaveGame()
         {
-            Log.Information("Leaving game.");
+            Log.Information("Leaving game");
             D2gs.LeaveGame();
             Bncs.LeaveGame();
             RealmLogon();

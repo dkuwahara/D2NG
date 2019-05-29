@@ -86,9 +86,6 @@ namespace D2NG.D2GS
                     buffer.AddRange(ReadBytes(BitConverter.ToInt16(buffer.ToArray(), 1)));
                     break;
                 case 0x9c:
-                    buffer.AddRange(ReadBytes(2));
-                    buffer.AddRange(ReadBytes(buffer[2] - 3));
-                    break;
                 case 0x9d:
                     buffer.AddRange(ReadBytes(2));
                     buffer.AddRange(ReadBytes(buffer[2] - 3));
