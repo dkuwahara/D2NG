@@ -1,6 +1,7 @@
 ﻿using D2NG.BNCS;
 using D2NG.BNCS.Packet;
 using D2NG.D2GS;
+using D2NG.D2GS.Packet;
 using D2NG.MCP;
 using D2NG.MCP.Packet;
 using Serilog;
@@ -27,10 +28,13 @@ namespace D2NG
         }
 
         public void OnReceivedPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnReceivedPacketEvent(sid, action);
-        public void OnReceivedPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnReceivedPacketEvent(mcp, action);
-
         public void OnSentPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnSentPacketEvent(sid, action);
+
+        public void OnReceivedPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnReceivedPacketEvent(mcp, action);
         public void OnSentPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnSentPacketEvent(mcp, action);
+
+        public void OnReceivedPacketEvent(byte type, Action<D2gsPacket> action) => D2gs.OnReceivedPacketEvent(type, action);
+        public void OnSentPacketEvent(byte type, Action<D2gsPacket> action) => D2gs.OnSentPacketEvent(type, action);
 
         /// <summary>
         /// Connect to a Battle.net Realm
@@ -52,19 +56,6 @@ namespace D2NG
             Log.Information($"Logged in as {username}");
             RealmLogon();
             return Mcp.ListCharacters();
-        }
-
-        private void RealmLogon()
-        {
-            if (_mcpRealm is null)
-            {
-                _mcpRealm = Bncs.ListMcpRealms().First();
-            }
-            var packet = Bncs.RealmLogon(_mcpRealm);
-            Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
-            Mcp.Connect(packet.McpIp, packet.McpPort);
-            Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
-            Log.Information($"Connected to {packet.McpIp}:{packet.McpPort}");
         }
 
         /// <summary>
@@ -118,6 +109,19 @@ namespace D2NG
             Bncs.LeaveGame();
             RealmLogon();
             Mcp.CharLogon(_character);
+        }
+
+        private void RealmLogon()
+        {
+            if (_mcpRealm is null)
+            {
+                _mcpRealm = Bncs.ListMcpRealms().First();
+            }
+            var packet = Bncs.RealmLogon(_mcpRealm);
+            Log.Information($"Connecting to {packet.McpIp}:{packet.McpPort}");
+            Mcp.Connect(packet.McpIp, packet.McpPort);
+            Mcp.Logon(packet.McpCookie, packet.McpStatus, packet.McpChunk, packet.McpUniqueName);
+            Log.Information($"Connected to {packet.McpIp}:{packet.McpPort}");
         }
     }
 }

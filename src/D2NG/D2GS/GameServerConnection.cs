@@ -98,7 +98,7 @@ namespace D2NG.D2GS
                     buffer.AddRange(ReadBytes(PacketSizes[identifier] - 1));
                     break;
             }
-            PacketReceived?.Invoke(this, new D2gsPacket(buffer.ToArray()));
+            PacketReceived?.Invoke(this, new D2gsPacket(buffer));
             return buffer.ToArray();
         }
 

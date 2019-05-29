@@ -12,7 +12,9 @@ namespace D2NG.BNCS
 {
     internal class BattleNetChatServer
     {
-        private readonly string DefaultChannel = "Diablo II";
+        private const string RealmLogonPassword = "password";
+
+        private const string DefaultChannel = "Diablo II";
 
         private BncsConnection Connection { get; } = new BncsConnection();
 
@@ -174,7 +176,11 @@ namespace D2NG.BNCS
             Context.Username = username;
 
             LogonEvent.Reset();
-            Connection.WritePacket(new LogonRequestPacket(Context.ClientToken, Context.ServerToken, Context.Username, password));
+            Connection.WritePacket(new LogonRequestPacket(
+                Context.ClientToken, 
+                Context.ServerToken, 
+                Context.Username, 
+                password));
             var response = LogonEvent.WaitForPacket();
             _ = new LogonResponsePacket(response);
         }
@@ -218,7 +224,11 @@ namespace D2NG.BNCS
         public RealmLogonResponsePacket RealmLogon(string realmName)
         {
             RealmLogonEvent.Reset();
-            Connection.WritePacket(new RealmLogonRequestPacket(Context.ClientToken, Context.ServerToken, realmName, "password"));
+            Connection.WritePacket(new RealmLogonRequestPacket(
+                Context.ClientToken, 
+                Context.ServerToken, 
+                realmName,
+                RealmLogonPassword));
             var packet = RealmLogonEvent.WaitForPacket();
             return new RealmLogonResponsePacket(packet.Raw);
         }

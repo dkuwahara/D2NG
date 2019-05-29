@@ -52,6 +52,7 @@ namespace D2NG
         internal abstract byte[] ReadPacket();
 
         public void WritePacket(Packet packet) => this.WritePacket(packet.Raw);
+
         internal abstract void WritePacket(byte[] packet);
 
         public void Connect(IPAddress ip, int port) => _machine.Fire(_connectTrigger, ip, port);
