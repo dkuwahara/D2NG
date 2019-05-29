@@ -27,14 +27,20 @@ namespace D2NG
             Chat = new Chat(Bncs);
         }
 
-        public void OnReceivedPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnReceivedPacketEvent(sid, action);
-        public void OnSentPacketEvent(Sid sid, Action<BncsPacket> action) => Bncs.OnSentPacketEvent(sid, action);
+        public void OnReceivedPacketEvent(Sid sid, Action<BncsPacket> action)
+            => Bncs.OnReceivedPacketEvent(sid, action);
+        public void OnSentPacketEvent(Sid sid, Action<BncsPacket> action)
+            => Bncs.OnSentPacketEvent(sid, action);
 
-        public void OnReceivedPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnReceivedPacketEvent(mcp, action);
-        public void OnSentPacketEvent(Mcp mcp, Action<McpPacket> action) => Mcp.OnSentPacketEvent(mcp, action);
+        public void OnReceivedPacketEvent(Mcp mcp, Action<McpPacket> action)
+            => Mcp.OnReceivedPacketEvent(mcp, action);
+        public void OnSentPacketEvent(Mcp mcp, Action<McpPacket> action)
+            => Mcp.OnSentPacketEvent(mcp, action);
 
-        public void OnReceivedPacketEvent(byte type, Action<D2gsPacket> action) => D2gs.OnReceivedPacketEvent(type, action);
-        public void OnSentPacketEvent(byte type, Action<D2gsPacket> action) => D2gs.OnSentPacketEvent(type, action);
+        public void OnReceivedPacketEvent(byte type, Action<D2gsPacket> action)
+            => D2gs.OnReceivedPacketEvent(type, action);
+        public void OnSentPacketEvent(byte type, Action<D2gsPacket> action)
+            => D2gs.OnSentPacketEvent(type, action);
 
         /// <summary>
         /// Connect to a Battle.net Realm
