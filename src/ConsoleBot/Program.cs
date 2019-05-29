@@ -7,6 +7,7 @@ using System.Linq;
 using D2NG.MCP;
 using System.Collections.Generic;
 using Serilog.Events;
+using System.Threading;
 
 namespace ConsoleBot
 {
@@ -59,7 +60,13 @@ namespace ConsoleBot
                 Client.Chat.Send("Hello World!");
                 Client.Chat.Emote("is alive");
 
-                Client.CreateGame(Difficulty.Normal, "d2ng", "d2ng");
+                Client.CreateGame(Difficulty.Normal, $"d2ng{new Random().Next(1000)}", "d2ng");
+                Thread.Sleep(30_000);
+                Client.LeaveGame();
+                Thread.Sleep(30_000);
+                Client.CreateGame(Difficulty.Normal, $"ngd2{new Random().Next(1000)}", "d2ng");
+                Thread.Sleep(30_000);
+                Client.LeaveGame();
             }
             catch (Exception e)
             {

@@ -104,7 +104,7 @@ namespace D2NG.BNCS
             Connection.PacketReceived += (obj, packet) => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
             Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
 
-            Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received packet of type: {packet.Type}");
+            Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received BNCS packet of type: {packet.Type}");
 
             OnReceivedPacketEvent(Sid.PING, packet => Connection.WritePacket(packet.Raw));
             OnReceivedPacketEvent(Sid.QUERYREALMS2, ListRealmsEvent.Set);
@@ -115,7 +115,7 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
         }
 
-        internal void LeaveGame() => Connection.WritePacket(new byte[] { 0x1F });
+        internal void LeaveGame() => Connection.WritePacket(new LeaveGamePacket());
 
         public void EnterChat() => _machine.Fire(Trigger.EnterChat);
         private void OnEnterChat()

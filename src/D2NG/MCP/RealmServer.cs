@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading;
 using D2NG.MCP.Packet;
+using Serilog;
 
 namespace D2NG.MCP
 {
@@ -21,6 +23,8 @@ namespace D2NG.MCP
         private readonly McpEvent StartupEvent = new McpEvent();
         private readonly McpEvent JoinGameEvent = new McpEvent();
 
+        private Thread _listener;
+
         internal RealmServer()
         {
             Connection.PacketReceived += (obj, eventArgs) => PacketReceivedEventHandlers.GetValueOrDefault((Mcp)eventArgs.Type, null)?.Invoke(eventArgs);
@@ -36,15 +40,22 @@ namespace D2NG.MCP
         internal void Connect(IPAddress ip, short port)
         {
             Connection.Connect(ip, port);
-            var listener = new Thread(Listen);
-            listener.Start();
+            _listener = new Thread(Listen);
+            _listener.Start();
         }
 
         private void Listen()
         {
             while (Connection.Connected)
             {
-                _ = Connection.ReadPacket();
+                try
+                {
+                    _ = Connection.ReadPacket();
+                }
+                catch(IOException)
+                {
+                    Log.Debug("MCP connection terminated");
+                }
             }
         }
 
@@ -58,6 +69,14 @@ namespace D2NG.MCP
             {
                 throw new CharLogonException($"Failed to log on as {character.Name} - {response.Result}");
             }
+        }
+
+        internal void Disconnect()
+        {
+            Log.Verbose("Disconnecting from MCP");
+            Connection.Terminate();
+            _listener.Join();
+            Log.Verbose("Disconnected from MCP");
         }
 
         internal void Logon(uint mcpCookie, uint mcpStatus, List<byte> mcpChunk, string mcpUniqueName)

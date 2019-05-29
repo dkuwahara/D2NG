@@ -101,7 +101,7 @@ namespace D2NG
         {
             Log.Information($"Joining game: {name}");
             var packet = Mcp.JoinGame(name, password);
-            //Mcp.Disconnect();
+            Mcp.Disconnect();
             Log.Debug($"Connecting to D2GS Server {packet.D2gsIp}");
             D2gs.Connect(packet.D2gsIp);
             D2gs.GameLogon(packet.GameHash, packet.GameToken, _character);
@@ -109,7 +109,7 @@ namespace D2NG
         }
 
         /// <summary>
-        /// Leave a game
+        /// Leave current game
         /// </summary>
         public void LeaveGame()
         {

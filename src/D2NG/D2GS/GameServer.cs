@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading;
 using D2NG.D2GS.Packet;
@@ -27,8 +28,8 @@ namespace D2NG.D2GS
             Connection.PacketReceived += (obj, eventArgs) => PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
             Connection.PacketSent += (obj, eventArgs) => PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
 
-            Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received packet of type: 0x{(byte)packet.Type, 2:X2}");
-            Connection.PacketSent += (obj, packet) => Log.Verbose($"Sent packet of type: 0x{packet.Type,2:X2} {(D2gs)packet.Type}");
+            Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received D2GS packet of type: 0x{(byte)packet.Type, 2:X2}");
+            Connection.PacketSent += (obj, packet) => Log.Verbose($"Sent D2GS packet of type: 0x{packet.Type,2:X2} {(D2gs)packet.Type}");
 
             OnReceivedPacketEvent(0x02, p => LoadSuccessEvent.Set());
         }
@@ -50,13 +51,18 @@ namespace D2NG.D2GS
         {
             while (Connection.Connected)
             {
-                _ = Connection.ReadPacket();
+                try
+                {
+                    _ = Connection.ReadPacket();
+                }
+                catch(IOException)
+                {
+                    Log.Debug("Connection was terminated");
+                }
             }
         }
-
         public void LeaveGame()
         {
-            _listener.Abort();
             Connection.WritePacket(new byte[] { 0x69 });
             Connection.Terminate();
             _listener.Join();
