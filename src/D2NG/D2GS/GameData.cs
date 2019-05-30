@@ -1,4 +1,5 @@
 ﻿using D2NG.D2GS;
+using D2NG.MCP;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,12 @@ namespace D2NG
 {
     class GameData
     {
+        private Character _character;
         private GameFlags _gameFlags;
-        internal GameData(GameFlags gameFlags)
+
+        internal GameData(MCP.Character character, GameFlags gameFlags)
         {
+            _character = character;
             _gameFlags = gameFlags;
         }
 

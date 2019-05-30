@@ -62,11 +62,11 @@ namespace ConsoleBot
 
                 Client.CreateGame(Difficulty.Normal, $"d2ng{new Random().Next(1000)}", "d2ng");
                 Thread.Sleep(30_000);
-                Client.LeaveGame();
+                Client.Game.LeaveGame();
                 Thread.Sleep(30_000);
                 Client.CreateGame(Difficulty.Normal, $"ngd2{new Random().Next(1000)}", "d2ng");
                 Thread.Sleep(30_000);
-                Client.LeaveGame();
+                Client.Game.LeaveGame();
             }
             catch (Exception e)
             {
