@@ -21,6 +21,7 @@ namespace D2NG.D2GS
         public Character Character { get; private set; }
 
         private readonly ManualResetEvent LoadSuccessEvent = new ManualResetEvent(false);
+        private readonly ManualResetEvent GameExitEvent = new ManualResetEvent(false);
 
         private Thread _listener;
 
@@ -32,7 +33,8 @@ namespace D2NG.D2GS
             Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received D2GS packet of type: 0x{(byte)packet.Type, 2:X2}");
             Connection.PacketSent += (obj, packet) => Log.Verbose($"Sent D2GS packet of type: 0x{packet.Type,2:X2} {(D2gs)packet.Type}");
 
-            OnReceivedPacketEvent(0x02, p => LoadSuccessEvent.Set());
+            OnReceivedPacketEvent(0x02, _ => LoadSuccessEvent.Set());
+            OnReceivedPacketEvent(0x06, _ => GameExitEvent.Set());
         }
 
         internal void OnReceivedPacketEvent(byte type, Action<D2gsPacket> handler)
@@ -64,7 +66,9 @@ namespace D2NG.D2GS
         }
         public void LeaveGame()
         {
+            GameExitEvent.Reset();
             Connection.WritePacket(new byte[] { 0x69 });
+            GameExitEvent.WaitOne();
             Connection.Terminate();
             _listener.Join();
         }
