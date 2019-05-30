@@ -10,7 +10,6 @@ namespace D2NG
     class GameData
     {
         private Character _character;
-        public GameFlags Flags { get; } 
 
         internal GameData(MCP.Character character, GameFlags gameFlags)
         {
@@ -18,9 +17,9 @@ namespace D2NG
             Flags = gameFlags;
         }
 
-        public List<Player> Players { get; internal set; } = new List<Player>();
-
+        public GameFlags Flags { get; }
         public Player Me { get; private set; }
+        public List<Player> Players { get; internal set; } = new List<Player>();
 
         internal void AssignPlayer(AssignPlayer assignPlayer)
         {
