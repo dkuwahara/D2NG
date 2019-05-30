@@ -10,23 +10,30 @@ namespace D2NG
     class GameData
     {
         private Character _character;
-        private GameFlags _gameFlags;
+        public GameFlags Flags { get; } 
 
         internal GameData(MCP.Character character, GameFlags gameFlags)
         {
             _character = character;
-            _gameFlags = gameFlags;
+            Flags = gameFlags;
         }
 
-        public Difficulty Difficulty { get => _gameFlags.Difficulty; }
-        public bool Hardcore { get => _gameFlags.Hardcore;  }
-        public bool Ladder { get => _gameFlags.Ladder; }
-        public bool Expansion { get => _gameFlags.Expansion; }
         public List<Player> Players { get; internal set; } = new List<Player>();
+
+        public Player Me { get; private set; }
 
         internal void AssignPlayer(AssignPlayer assignPlayer)
         {
-            Players.Add(new Player(assignPlayer));
+            if (assignPlayer.Name == _character.Name)
+            {
+                Log.Verbose("Assigning self");
+                Me = new Player(assignPlayer);
+            }
+            else
+            {
+                Log.Verbose("Assigning other player");
+                Players.Add(new Player(assignPlayer));
+            }
         }
 
         internal void SetSkill(SetSkill setSkill)
