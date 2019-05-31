@@ -31,9 +31,9 @@ namespace D2NG
                     throw new D2GSPacketException("Unexpected packet id");
             }
             reader.Close();
-            Log.Verbose($"({id}) Base Attribute:\n" +
-                $"\tAttribute: {Attribute}\n" +
-                $"\tValue: {Value}");
+            Log.Verbose($"(0x{id,2:X2}) Base Attribute:\n" +
+                $"\tAttribute: {Attribute}:" +
+                $"\t{Value}");
         }
     }
 }

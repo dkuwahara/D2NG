@@ -9,7 +9,6 @@ namespace D2NG
 {
     class GameData
     {
-
         internal GameData(GameFlagsPacket gameFlags)
         {
             Flags = gameFlags;
@@ -40,6 +39,10 @@ namespace D2NG
             {
                 Me.Skills[packet.Hand] = packet.Skill;
             }
+        }
+        internal void AddExperience(AddExpPacket addExpPacket)
+        {
+            Me.Experience += addExpPacket.Experience;
         }
     }
 }

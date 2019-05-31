@@ -21,7 +21,7 @@ namespace D2NG
             Name = Packet.ReadString(reader);
             Location = new Point(reader.ReadUInt16(), reader.ReadUInt16());
 
-            Log.Verbose($"({packet.Raw[0]}) Assigning Player:\n" +
+            Log.Verbose($"(0x{packet.Raw[0], 2:X2}) Assigning Player:\n" +
                         $"\tName: {Name}\n" +
                         $"\tClass: {Class}\n" +
                         $"\tId: {Id}\n" +
