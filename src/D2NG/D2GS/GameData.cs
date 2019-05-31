@@ -31,13 +31,14 @@ namespace D2NG
             }
         }
 
-        internal void SetAttribute(BaseAttribute baseAttribute) => Me.SetAttributeValue(baseAttribute.Attribute, baseAttribute.Value);
+        internal void SetAttribute(BaseAttribute baseAttribute)
+            => Me.Attributes[baseAttribute.Attribute] = baseAttribute.Value;
 
         internal void SetSkill(SetSkillPacket packet)
         {
             if(packet.UnitGid == Me.Id)
             {
-                Me.SetSkill(packet.Hand, packet.Skill);
+                Me.Skills[packet.Hand] = packet.Skill;
             }
         }
     }
