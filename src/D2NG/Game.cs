@@ -21,9 +21,9 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetSkill(new SetSkillPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x0B, p => new GameHandshake(p));
-            _gameServer.OnReceivedPacketEvent(0x1D, p => new BaseAttribute(p));
-            _gameServer.OnReceivedPacketEvent(0x1E, p => new BaseAttribute(p));
-            _gameServer.OnReceivedPacketEvent(0x1F, p => new BaseAttribute(p));
+            _gameServer.OnReceivedPacketEvent(0x1D, p => Data.SetAttribute(new BaseAttribute(p)));
+            _gameServer.OnReceivedPacketEvent(0x1E, p => Data.SetAttribute(new BaseAttribute(p)));
+            _gameServer.OnReceivedPacketEvent(0x1F, p => Data.SetAttribute(new BaseAttribute(p)));
         }
 
         public void LeaveGame()

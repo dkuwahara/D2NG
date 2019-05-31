@@ -27,7 +27,7 @@ namespace D2NG
             Skill = (Skill)reader.ReadUInt16();
             ItemGid = reader.ReadUInt32();
 
-            Log.Verbose($"Set Skill:\n" +
+            Log.Verbose($"({packet.Raw[0]}) Set Skill:\n" +
                 $"\tUnit Type: {UnitType}\n" +
                 $"\tUnit GID: {UnitGid}\n" +
                 $"\tHand: {Hand}\n" +

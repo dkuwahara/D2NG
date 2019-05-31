@@ -23,15 +23,15 @@ namespace D2NG
         {
             if (packet.Location.X == 0x00 && packet.Location.Y == 0x00)
             {
-                Log.Verbose("Found self");
                 Me = new Self(packet);
             }
             else
             {
-                Log.Verbose("Found another player");
                 Players.Add(new Player(packet));
             }
         }
+
+        internal void SetAttribute(BaseAttribute baseAttribute) => Me.SetAttributeValue(baseAttribute.Attribute, baseAttribute.Value);
 
         internal void SetSkill(SetSkillPacket packet)
         {

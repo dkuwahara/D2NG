@@ -26,7 +26,7 @@ namespace D2NG.D2GS
             Ladder = reader.ReadByte() != 0;
             reader.Close();
 
-            Log.Verbose($"Game flags:\n" +
+            Log.Verbose($"({packet.Raw[0]}) Game flags:\n" +
                         $"\tDifficulty: {Difficulty}\n" +
                         $"\tType: {(Hardcore ? "Hardcore" : "Softcore")}" +
                         $" {(Expansion ? "Expansion" : "")}" +
