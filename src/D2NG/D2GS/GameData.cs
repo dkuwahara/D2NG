@@ -23,12 +23,12 @@ namespace D2NG
         {
             if (packet.Location.X == 0x00 && packet.Location.Y == 0x00)
             {
-                Log.Verbose("Assigning self");
+                Log.Verbose("Found self");
                 Me = new Self(packet);
             }
             else
             {
-                Log.Verbose("Assigning other player");
+                Log.Verbose("Found another player");
                 Players.Add(new Player(packet));
             }
         }
