@@ -9,34 +9,36 @@ namespace D2NG
 {
     class GameData
     {
-        private readonly Character _character;
 
-        internal GameData(Character character, GameFlags gameFlags)
+        internal GameData(GameFlags gameFlags)
         {
-            _character = character;
             Flags = gameFlags;
         }
 
         public GameFlags Flags { get; }
-        public Player Me { get; private set; }
+        public Self Me { get; private set; }
         public List<Player> Players { get; internal set; } = new List<Player>();
 
-        internal void AssignPlayer(AssignPlayerPacket assignPlayer)
+        internal void AssignPlayer(AssignPlayerPacket packet)
         {
-            if (assignPlayer.Name == _character.Name)
+            if (packet.Location.X == 0x00 && packet.Location.Y == 0x00)
             {
                 Log.Verbose("Assigning self");
-                Me = new Player(assignPlayer);
+                Me = new Self(packet);
             }
             else
             {
                 Log.Verbose("Assigning other player");
-                Players.Add(new Player(assignPlayer));
+                Players.Add(new Player(packet));
             }
         }
 
-        internal void SetSkill(SetSkillPacket setSkill)
+        internal void SetSkill(SetSkillPacket packet)
         {
+            if(packet.UnitGid == Me.Id)
+            {
+                Me.SetSkill(packet.Hand, packet.Skill);
+            }
         }
     }
 }

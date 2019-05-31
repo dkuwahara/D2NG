@@ -18,7 +18,6 @@ namespace D2NG.D2GS
 
         protected ConcurrentDictionary<byte, Action<D2gsPacket>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<D2gsPacket>>();
         protected ConcurrentDictionary<byte, Action<D2gsPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<D2gsPacket>>();
-        public Character Character { get; private set; }
 
         private readonly ManualResetEvent LoadSuccessEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent GameExitEvent = new ManualResetEvent(false);
@@ -75,7 +74,6 @@ namespace D2NG.D2GS
 
         internal void GameLogon(uint gameHash, ushort gameToken, Character character)
         {
-            Character = character;
             LoadSuccessEvent.Reset();
             Connection.WritePacket(new GameLogonPacket(gameHash, gameToken, character));
             LoadSuccessEvent.WaitOne();

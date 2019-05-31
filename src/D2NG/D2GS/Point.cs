@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace D2NG.D2GS
+﻿namespace D2NG.D2GS
 {
-    class Point
+    public class Point
     {
         public ushort X { get; }
         public ushort Y { get; }
@@ -13,9 +9,6 @@ namespace D2NG.D2GS
 
         public void Deconstruct(out ushort x, out ushort y) => (x, y) = (X, Y);
 
-        public override string ToString()
-        {
-            return $"({X}, {Y})";
-        }
+        public override string ToString() => $"({X}, {Y})";
     }
 }

@@ -17,7 +17,7 @@ namespace D2NG
         {
             _gameServer = gameServer;
 
-            _gameServer.OnReceivedPacketEvent((byte)D2gs.GAMEFLAGS, p => Data = new GameData(_gameServer.Character, new GameFlags(p)));
+            _gameServer.OnReceivedPacketEvent((byte)D2gs.GAMEFLAGS, p => Data = new GameData(new GameFlags(p)));
             _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetSkill(new SetSkillPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x0B, p => new GameHandshake(p));

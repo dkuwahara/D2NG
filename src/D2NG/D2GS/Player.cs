@@ -2,14 +2,14 @@
 
 namespace D2NG
 {
-    internal class Player
+    public class Player
     {
         public Point Location { get; }
         public string Name { get; }
         public uint Id { get; }
         public CharacterClass Class { get; }
 
-        public Player(AssignPlayerPacket assignPlayer)
+        internal Player(AssignPlayerPacket assignPlayer)
         {
             Location = assignPlayer.Location;
             Name = assignPlayer.Name;
