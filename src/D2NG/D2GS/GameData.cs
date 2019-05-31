@@ -9,9 +9,9 @@ namespace D2NG
 {
     class GameData
     {
-        private Character _character;
+        private readonly Character _character;
 
-        internal GameData(MCP.Character character, GameFlags gameFlags)
+        internal GameData(Character character, GameFlags gameFlags)
         {
             _character = character;
             Flags = gameFlags;
@@ -21,7 +21,7 @@ namespace D2NG
         public Player Me { get; private set; }
         public List<Player> Players { get; internal set; } = new List<Player>();
 
-        internal void AssignPlayer(AssignPlayer assignPlayer)
+        internal void AssignPlayer(AssignPlayerPacket assignPlayer)
         {
             if (assignPlayer.Name == _character.Name)
             {
@@ -35,7 +35,7 @@ namespace D2NG
             }
         }
 
-        internal void SetSkill(SetSkill setSkill)
+        internal void SetSkill(SetSkillPacket setSkill)
         {
         }
     }

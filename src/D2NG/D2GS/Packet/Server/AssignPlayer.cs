@@ -6,10 +6,10 @@ using System.Text;
 
 namespace D2NG
 {
-    internal class AssignPlayer
+    internal class AssignPlayerPacket
     {
 
-        public AssignPlayer(D2gsPacket packet)
+        public AssignPlayerPacket(D2gsPacket packet)
         {
             var reader = new BinaryReader(new MemoryStream(packet.Raw), Encoding.ASCII);
             if (0x59 != reader.ReadByte())

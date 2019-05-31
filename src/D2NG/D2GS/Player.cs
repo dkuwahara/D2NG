@@ -9,7 +9,7 @@ namespace D2NG
         public uint Id { get; }
         public CharacterClass Class { get; }
 
-        public Player(AssignPlayer assignPlayer)
+        public Player(AssignPlayerPacket assignPlayer)
         {
             Location = assignPlayer.Location;
             Name = assignPlayer.Name;

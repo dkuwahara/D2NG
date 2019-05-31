@@ -2,13 +2,10 @@
 
 namespace D2NG
 {
-    internal class SetSkill
+    internal class SetSkillPacket
     {
-        private D2gsPacket p;
-
-        public SetSkill(D2gsPacket p)
+        public SetSkillPacket(D2gsPacket p)
         {
-            this.p = p;
         }
     }
 }
