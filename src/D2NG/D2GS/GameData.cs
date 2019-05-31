@@ -37,7 +37,7 @@ namespace D2NG
         {
             if(packet.UnitGid == Me.Id)
             {
-                Me.Skills[packet.Hand] = packet.Skill;
+                Me.ActiveSkills[packet.Hand] = packet.Skill;
             }
         }
         internal void AddExperience(AddExpPacket addExpPacket)

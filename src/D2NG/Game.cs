@@ -1,5 +1,6 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Packet;
+using D2NG.D2GS.Packet.Server;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x1D, p => Data.SetAttribute(new BaseAttributePacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1E, p => Data.SetAttribute(new BaseAttributePacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1F, p => Data.SetAttribute(new BaseAttributePacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x94, p => new BaseSkillLevelsPacket(p));
         }
 
         public void LeaveGame()
