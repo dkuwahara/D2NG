@@ -27,10 +27,10 @@ namespace D2NG.D2GS
 
         public GameServer()
         {
-            Connection.PacketReceived += (obj, eventArgs) => PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
+            Connection.PacketReceived += (obj, eventArgs) 
+                => PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, p => Log.Verbose($"Received unhandled D2GS packet of type: 0x{(byte)p.Type,2:X2}"))?.Invoke(eventArgs);
             Connection.PacketSent += (obj, eventArgs) => PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
 
-            Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received D2GS packet of type: 0x{(byte)packet.Type, 2:X2}");
             Connection.PacketSent += (obj, packet) => Log.Verbose($"Sent D2GS packet of type: 0x{packet.Type,2:X2} {(D2gs)packet.Type}");
 
             OnReceivedPacketEvent(0x02, _ => LoadSuccessEvent.Set());
