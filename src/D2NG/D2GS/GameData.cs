@@ -10,12 +10,12 @@ namespace D2NG
     class GameData
     {
 
-        internal GameData(GameFlags gameFlags)
+        internal GameData(GameFlagsPacket gameFlags)
         {
             Flags = gameFlags;
         }
 
-        public GameFlags Flags { get; }
+        public GameFlagsPacket Flags { get; }
         public Self Me { get; private set; }
         public List<Player> Players { get; internal set; } = new List<Player>();
 
@@ -31,7 +31,7 @@ namespace D2NG
             }
         }
 
-        internal void SetAttribute(BaseAttribute baseAttribute)
+        internal void SetAttribute(BaseAttributePacket baseAttribute)
             => Me.Attributes[baseAttribute.Attribute] = baseAttribute.Value;
 
         internal void SetSkill(SetSkillPacket packet)

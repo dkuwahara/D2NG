@@ -17,13 +17,13 @@ namespace D2NG
         {
             _gameServer = gameServer;
 
-            _gameServer.OnReceivedPacketEvent((byte)D2gs.GAMEFLAGS, p => Data = new GameData(new GameFlags(p)));
+            _gameServer.OnReceivedPacketEvent((byte)D2gs.GAMEFLAGS, p => Data = new GameData(new GameFlagsPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetSkill(new SetSkillPacket(p)));
-            _gameServer.OnReceivedPacketEvent(0x0B, p => new GameHandshake(p));
-            _gameServer.OnReceivedPacketEvent(0x1D, p => Data.SetAttribute(new BaseAttribute(p)));
-            _gameServer.OnReceivedPacketEvent(0x1E, p => Data.SetAttribute(new BaseAttribute(p)));
-            _gameServer.OnReceivedPacketEvent(0x1F, p => Data.SetAttribute(new BaseAttribute(p)));
+            _gameServer.OnReceivedPacketEvent(0x0B, p => new GameHandshakePacket(p));
+            _gameServer.OnReceivedPacketEvent(0x1D, p => Data.SetAttribute(new BaseAttributePacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x1E, p => Data.SetAttribute(new BaseAttributePacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x1F, p => Data.SetAttribute(new BaseAttributePacket(p)));
         }
 
         public void LeaveGame()

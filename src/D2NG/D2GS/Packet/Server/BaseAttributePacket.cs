@@ -6,12 +6,12 @@ using System.Text;
 
 namespace D2NG
 {
-    internal class BaseAttribute
+    internal class BaseAttributePacket
     {
         public Attribute Attribute { get; }
         public int Value { get; }
 
-        public BaseAttribute(D2gsPacket packet)
+        public BaseAttributePacket(D2gsPacket packet)
         {
             var reader = new BinaryReader(new MemoryStream(packet.Raw), Encoding.ASCII);
             var id = reader.ReadByte();

@@ -5,14 +5,14 @@ using System.Text;
 
 namespace D2NG.D2GS
 {
-    class GameFlags
+    class GameFlagsPacket
     {
         public Difficulty Difficulty { get; }
         public bool Hardcore { get; }
         public bool Expansion { get; }
         public bool Ladder { get; }
 
-        public GameFlags(D2gsPacket packet)
+        public GameFlagsPacket(D2gsPacket packet)
         {
             var reader = new BinaryReader(new MemoryStream(packet.Raw), Encoding.ASCII);
             if (D2gs.GAMEFLAGS != (D2gs)reader.ReadByte())
