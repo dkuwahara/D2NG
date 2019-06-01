@@ -1,5 +1,6 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Packet;
+using Serilog;
 using System.IO;
 using System.Text;
 
@@ -26,6 +27,11 @@ namespace D2NG
                     throw new D2GSPacketException("Invalid packet id");
             }
             reader.Close();
+
+            Log.Verbose($"(0x{packet.Raw[0],2:X2}) Set Skill:\n" +
+                        $"\tUnit ID: {UnitId}\n" +
+                        $"\tSkill: {Skill}\n" +
+                        $"\tAmount: {Amount}");
         }
 
         public uint UnitId { get; }
