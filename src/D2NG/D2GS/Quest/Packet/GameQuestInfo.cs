@@ -24,7 +24,7 @@ namespace D2NG.D2GS.Quest.Packet
             }
 
             Log.Verbose($"(0x{id,2:X2}) Game Quest Info:\n" +
-                $"\tQuests: {Quests.Aggregate("", (s, i) => s + i)}");
+                $"\tQuests: {Quests.Aggregate("", (s, i) => s + "," + $"{i,2:X2}")}");
         }
 
         public byte[] Quests { get; } = new byte[96];

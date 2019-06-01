@@ -30,7 +30,7 @@ namespace D2NG.D2GS.Quest.Packet
                 $"\tUpdate Type: {UpdateType}\n" +
                 $"\tUnit Gid: {UnitGid}\n" +
                 $"\tTimer: {Timer}\n" +
-                $"\tQuests: {Quests.Aggregate("", (s, i) => s + "," + i)}");
+                $"\tQuests: {Quests.Aggregate("", (s, i) => s + "," + $"{i,2:X2}")}");
         }
 
         public byte UpdateType { get; }
