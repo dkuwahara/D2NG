@@ -1,7 +1,6 @@
-﻿using D2NG.D2GS;
-using D2NG.D2GS.Packet.Server;
+﻿using D2NG.D2GS.Packet.Server;
 
-namespace D2NG
+namespace D2NG.D2GS
 {
     public class Player
     {

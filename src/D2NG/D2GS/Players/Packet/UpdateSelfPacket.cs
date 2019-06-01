@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using D2NG.D2GS.Packet;
-using Serilog;
+﻿using Serilog;
 
 namespace D2NG.D2GS.Packet.Server
 {

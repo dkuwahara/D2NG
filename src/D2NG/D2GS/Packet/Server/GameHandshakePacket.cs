@@ -1,6 +1,4 @@
-﻿using D2NG.D2GS.Packet;
-
-namespace D2NG.D2GS.Packet.Server
+﻿namespace D2NG.D2GS.Packet.Server
 {
     internal class GameHandshakePacket
     {

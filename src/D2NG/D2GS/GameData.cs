@@ -1,12 +1,7 @@
 ﻿using D2NG.D2GS;
-using D2NG.D2GS.Packet;
 using D2NG.D2GS.Packet.Server;
-using D2NG.MCP;
-using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace D2NG
 {

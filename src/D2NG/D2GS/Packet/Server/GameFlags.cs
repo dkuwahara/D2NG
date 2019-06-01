@@ -1,5 +1,4 @@
-﻿using D2NG.D2GS.Packet;
-using Serilog;
+﻿using Serilog;
 using System.IO;
 using System.Text;
 
