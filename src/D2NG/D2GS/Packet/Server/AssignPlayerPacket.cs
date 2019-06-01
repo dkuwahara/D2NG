@@ -8,11 +8,10 @@ namespace D2NG
 {
     internal class AssignPlayerPacket
     {
-
         public AssignPlayerPacket(D2gsPacket packet)
         {
             var reader = new BinaryReader(new MemoryStream(packet.Raw), Encoding.ASCII);
-            if (0x59 != reader.ReadByte())
+            if (reader.ReadByte() != 0x59)
             {
                 throw new D2GSPacketException("Expected Packet Type Not Found");
             }

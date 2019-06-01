@@ -1,4 +1,5 @@
 ﻿using D2NG.D2GS;
+using D2NG.D2GS.Packet;
 using D2NG.MCP;
 using Serilog;
 using System;
@@ -33,6 +34,14 @@ namespace D2NG
         internal void SetAttribute(BaseAttributePacket baseAttribute)
             => Me.Attributes[baseAttribute.Attribute] = baseAttribute.Value;
 
+        internal void SetItemSkill(SetItemSkillPacket packet)
+        {
+            if (packet.UnitId == Me.Id)
+            {
+                Me.ItemSkills[packet.Skill] = packet.Amount;
+            }
+        }
+
         internal void SetSkill(SetSkillPacket packet)
         {
             if(packet.UnitGid == Me.Id)
@@ -40,6 +49,7 @@ namespace D2NG
                 Me.ActiveSkills[packet.Hand] = packet.Skill;
             }
         }
+
         internal void AddExperience(AddExpPacket addExpPacket)
         {
             Me.Experience += addExpPacket.Experience;

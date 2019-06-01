@@ -10,7 +10,6 @@ namespace D2NG.D2GS.Packet.Server
 {
     public class BaseSkillLevelsPacket
     {
-
         internal BaseSkillLevelsPacket(D2gsPacket packet)
         {
             var reader = new BinaryReader(new MemoryStream(packet.Raw), Encoding.ASCII);
@@ -37,4 +36,3 @@ namespace D2NG.D2GS.Packet.Server
         public uint PlayerId { get; }
     }
 }
- 
