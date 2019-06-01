@@ -1,5 +1,6 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Packet.Server;
+using D2NG.D2GS.Quest.Packet;
 using Serilog;
 
 namespace D2NG
@@ -26,6 +27,8 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x21, p => Data.SetItemSkill(new SetItemSkillPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x22, p => Data.SetItemSkill(new SetItemSkillPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetActiveSkill(new SetActiveSkillPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x28, p => new QuestInfoPacket(p));
+            _gameServer.OnReceivedPacketEvent(0x29, p => new GameQuestInfoPacket(p));
             _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x94, p => Data.SetSkills(new BaseSkillLevelsPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x18, p => Data.UpdateSelf(new UpdateSelfPacket(p)));

@@ -12,8 +12,4 @@
     <PackageReference Include="YamlDotNet" Version="6.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="D2GS\Quest\" />
-  </ItemGroup>
-
 </Project>
