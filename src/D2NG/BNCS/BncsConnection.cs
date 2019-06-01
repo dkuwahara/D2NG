@@ -49,8 +49,12 @@ namespace D2NG.BNCS
         {
             while (bncsBuffer.Count < count)
             {
-                byte temp = (byte)_stream.ReadByte();
-                bncsBuffer.Add(temp);
+                var temp = _stream.ReadByte();
+                if(temp == -1)
+                {
+                    throw new BncsPacketException("End of Stream");
+                }
+                bncsBuffer.Add((byte)temp);
             }
         }
 
