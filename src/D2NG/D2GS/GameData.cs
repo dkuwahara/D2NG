@@ -1,4 +1,5 @@
 ﻿using D2NG.D2GS;
+using D2NG.D2GS.Act;
 using D2NG.D2GS.Packet.Server;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,11 @@ namespace D2NG
         internal GameData(GameFlags gameFlags)
         {
             Flags = gameFlags;
+            Act = new ActData();
         }
 
         public GameFlags Flags { get; }
+        public ActData Act { get; }
         public Self Me { get; private set; }
         public List<Player> Players { get; internal set; } = new List<Player>();
 
