@@ -62,5 +62,13 @@ namespace D2NG
                 Me.ActiveSkills[packet.Hand] = packet.Skill;
             }
         }
+
+        internal void UpdateSelf(UpdateSelfPacket packet)
+        {
+            Me.Location = packet.Location;
+            Me.Life = packet.Life;
+            Me.Mana = packet.Mana;
+            Me.Stamina = packet.Stamina;
+        }
     }
 }

@@ -32,6 +32,7 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetActiveSkill(new SetActiveSkillPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x94, p => Data.SetSkills(new BaseSkillLevelsPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x18, p => Data.UpdateSelf(new UpdateSelfPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x95, p => Data.UpdateSelf(new UpdateSelfPacket(p)));
         }
 

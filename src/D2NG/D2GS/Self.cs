@@ -13,6 +13,9 @@ namespace D2NG.D2GS
         public ConcurrentDictionary<Skill, int> ItemSkills { get; internal set; } = new ConcurrentDictionary<Skill, int>();
         public ConcurrentDictionary<Attribute, int> Attributes { get; } = new ConcurrentDictionary<Attribute, int>();
         public uint Experience { get; internal set; }
+        public int Life { get; internal set; }
+        public int Mana { get; internal set; }
+        public int Stamina { get; internal set; }
 
         internal Self(AssignPlayerPacket assignPlayer) : base(assignPlayer)
         {

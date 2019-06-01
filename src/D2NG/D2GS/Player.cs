@@ -5,7 +5,7 @@ namespace D2NG
 {
     public class Player
     {
-        public Point Location { get; }
+        public Point Location { get; set; }
         public string Name { get; }
         public uint Id { get; }
         public CharacterClass Class { get; }
