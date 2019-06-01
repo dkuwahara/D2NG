@@ -4,9 +4,9 @@ using Serilog;
 using System.IO;
 using System.Text;
 
-namespace D2NG
+namespace D2NG.D2GS.Packet.Server
 {
-    internal class SetSkillPacket
+    internal class SetActiveSkillPacket
     {
         public byte UnitType { get; }
         public uint UnitGid { get; }
@@ -14,7 +14,7 @@ namespace D2NG
         public Skill Skill { get; }
         public uint ItemGid { get; }
 
-        public SetSkillPacket(D2gsPacket packet)
+        public SetActiveSkillPacket(D2gsPacket packet)
         {
             var reader = new BinaryReader(new MemoryStream(packet.Raw), Encoding.ASCII);
             if (reader.ReadByte() != 0x23)

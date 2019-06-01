@@ -4,7 +4,7 @@ using Serilog;
 using System.IO;
 using System.Text;
 
-namespace D2NG
+namespace D2NG.D2GS.Packet.Server
 {
     internal class AddExpPacket
     {

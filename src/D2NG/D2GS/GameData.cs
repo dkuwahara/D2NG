@@ -1,23 +1,28 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Packet;
+using D2NG.D2GS.Packet.Server;
 using D2NG.MCP;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace D2NG
 {
-    class GameData
+    internal class GameData
     {
-        internal GameData(GameFlagsPacket gameFlags)
+        internal GameData(GameFlags gameFlags)
         {
             Flags = gameFlags;
         }
 
-        public GameFlagsPacket Flags { get; }
+        public GameFlags Flags { get; }
         public Self Me { get; private set; }
         public List<Player> Players { get; internal set; } = new List<Player>();
+
+        internal void AddExperience(AddExpPacket addExpPacket)
+            => Me.Experience += addExpPacket.Experience;
 
         internal void AssignPlayer(AssignPlayerPacket packet)
         {
@@ -42,17 +47,20 @@ namespace D2NG
             }
         }
 
-        internal void SetSkill(SetSkillPacket packet)
+        internal void SetSkills(BaseSkillLevelsPacket packet)
+        {
+            if(packet.PlayerId == Me.Id)
+            {
+                packet.Skills.Select(s => Me.Skills[s.Key] = s.Value);
+            }
+        }
+
+        internal void SetActiveSkill(SetActiveSkillPacket packet)
         {
             if(packet.UnitGid == Me.Id)
             {
                 Me.ActiveSkills[packet.Hand] = packet.Skill;
             }
-        }
-
-        internal void AddExperience(AddExpPacket addExpPacket)
-        {
-            Me.Experience += addExpPacket.Experience;
         }
     }
 }

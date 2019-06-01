@@ -2,9 +2,9 @@
 
 namespace D2NG.D2GS.Packet.Server
 {
-    internal class GameHandshakePacket
+    internal class UpdateSelfPacket
     {
-        public GameHandshakePacket(D2gsPacket p)
+        public UpdateSelfPacket(D2gsPacket p)
         {
         }
     }

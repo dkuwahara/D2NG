@@ -1,4 +1,5 @@
 ﻿using D2NG.D2GS;
+using D2NG.D2GS.Packet.Server;
 
 namespace D2NG
 {

@@ -18,10 +18,8 @@ namespace D2NG
         {
             _gameServer = gameServer;
 
-            _gameServer.OnReceivedPacketEvent((byte)D2gs.GAMEFLAGS, p => Data = new GameData(new GameFlagsPacket(p)));
-            _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
-            _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetItemSkill(new SetItemSkillPacket(p)));
-            _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetSkill(new SetSkillPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x01, p => Initialize(new GameFlags(p)));
+            _gameServer.OnReceivedPacketEvent(0x01, p => _gameServer.Ping());
             _gameServer.OnReceivedPacketEvent(0x0B, p => new GameHandshakePacket(p));
             _gameServer.OnReceivedPacketEvent(0x1A, p => Data.AddExperience(new AddExpPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1B, p => Data.AddExperience(new AddExpPacket(p)));
@@ -29,8 +27,16 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x1D, p => Data.SetAttribute(new BaseAttributePacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1E, p => Data.SetAttribute(new BaseAttributePacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1F, p => Data.SetAttribute(new BaseAttributePacket(p)));
-            _gameServer.OnReceivedPacketEvent(0x94, p => new BaseSkillLevelsPacket(p));
+            _gameServer.OnReceivedPacketEvent(0x21, p => Data.SetItemSkill(new SetItemSkillPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x22, p => Data.SetItemSkill(new SetItemSkillPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x23, p => Data.SetActiveSkill(new SetActiveSkillPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x94, p => Data.SetSkills(new BaseSkillLevelsPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x95, p => Data.UpdateSelf(new UpdateSelfPacket(p)));
         }
+
+        private void Initialize(GameFlags packet) 
+            => Data = new GameData(packet);
 
         public void LeaveGame()
         {

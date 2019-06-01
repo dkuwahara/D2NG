@@ -17,6 +17,7 @@ namespace D2NG.D2GS
         private GameServerConnection Connection { get; } = new GameServerConnection();
 
         protected ConcurrentDictionary<byte, Action<D2gsPacket>> PacketReceivedEventHandlers { get; } = new ConcurrentDictionary<byte, Action<D2gsPacket>>();
+
         protected ConcurrentDictionary<byte, Action<D2gsPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<D2gsPacket>>();
 
         private readonly ManualResetEvent LoadSuccessEvent = new ManualResetEvent(false);
@@ -78,6 +79,11 @@ namespace D2NG.D2GS
             Connection.WritePacket(new GameLogonPacket(gameHash, gameToken, character));
             LoadSuccessEvent.WaitOne();
             Connection.WritePacket(new byte[] { 0x6B });
+        }
+
+        internal void Ping()
+        {
+            Connection.WritePacket(new PingPacket());
         }
 
         public void Dispose()

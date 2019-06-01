@@ -4,7 +4,7 @@ using Serilog;
 using System.IO;
 using System.Text;
 
-namespace D2NG
+namespace D2NG.D2GS.Packet.Server
 {
     internal class SetItemSkillPacket : D2gsPacket
     {
@@ -28,7 +28,7 @@ namespace D2NG
             }
             reader.Close();
 
-            Log.Verbose($"(0x{packet.Raw[0],2:X2}) Set Skill:\n" +
+            Log.Verbose($"(0x{packet.Raw[0],2:X2}) Set Item Skill:\n" +
                         $"\tUnit ID: {UnitId}\n" +
                         $"\tSkill: {Skill}\n" +
                         $"\tAmount: {Amount}");

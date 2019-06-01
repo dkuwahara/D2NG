@@ -3,16 +3,16 @@ using Serilog;
 using System.IO;
 using System.Text;
 
-namespace D2NG.D2GS
+namespace D2NG.D2GS.Packet.Server
 {
-    class GameFlagsPacket
+    class GameFlags
     {
         public Difficulty Difficulty { get; }
         public bool Hardcore { get; }
         public bool Expansion { get; }
         public bool Ladder { get; }
 
-        public GameFlagsPacket(D2gsPacket packet)
+        public GameFlags(D2gsPacket packet)
         {
             var reader = new BinaryReader(new MemoryStream(packet.Raw), Encoding.ASCII);
             if (D2gs.GAMEFLAGS != (D2gs)reader.ReadByte())

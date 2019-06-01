@@ -1,4 +1,5 @@
-﻿using System;
+﻿using D2NG.D2GS.Packet.Server;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,6 @@ namespace D2NG.D2GS
         public ConcurrentDictionary<Skill, int> ItemSkills { get; internal set; } = new ConcurrentDictionary<Skill, int>();
         public ConcurrentDictionary<Attribute, int> Attributes { get; } = new ConcurrentDictionary<Attribute, int>();
         public uint Experience { get; internal set; }
-        
 
         internal Self(AssignPlayerPacket assignPlayer) : base(assignPlayer)
         {

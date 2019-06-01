@@ -4,7 +4,7 @@ using Serilog;
 using System.IO;
 using System.Text;
 
-namespace D2NG
+namespace D2NG.D2GS.Packet.Server
 {
     internal class AssignPlayerPacket
     {
@@ -17,9 +17,8 @@ namespace D2NG
             }
             Id = reader.ReadUInt32();
             Class = (CharacterClass)reader.ReadByte();
-            Name = Packet.ReadString(reader);
+            Name = D2NG.Packet.ReadString(reader);
             Location = new Point(reader.ReadUInt16(), reader.ReadUInt16());
-
             Log.Verbose($"(0x{packet.Raw[0], 2:X2}) Assigning Player:\n" +
                         $"\tName: {Name}\n" +
                         $"\tClass: {Class}\n" +
