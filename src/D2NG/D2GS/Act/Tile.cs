@@ -42,12 +42,16 @@ namespace D2NG.D2GS.Act
             set => Adjacent[CardinalDirection.West] = value;
         }
 
-        public Tile(UInt16 x, UInt16 y, Area area)
+        public Tile(ushort x, ushort y, Area area)
         {
             X = x;
             Y = y;
             Area = area;
             Size = GetTileSizeByArea((byte)Area);
+            North = null;
+            East = null;
+            South = null;
+            West = null;
         }
 
         public bool IsNorthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y + t.Size.Y);
@@ -65,11 +69,9 @@ namespace D2NG.D2GS.Act
             return this.X == tile.X && this.Y == tile.Y && this.Area == tile.Area;
         }
 
-        public bool Contains(Point p)
-        {
-            return (p.X >= X * Scale) && (p.X < (X + Size.X) * Scale) &&
-                   (p.Y >= Y * Scale) && (p.Y < (Y + Size.Y) * Scale);
-        }
+        public bool Contains(Point p) => 
+            (p.X >= X * Scale) && (p.X < (X + Size.X) * Scale) &&
+            (p.Y >= Y * Scale) && (p.Y < (Y + Size.Y) * Scale);
 
         private static (int X, int Y) GetTileSizeByArea(byte area)
         {
@@ -90,14 +92,12 @@ namespace D2NG.D2GS.Act
             }
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(this.X, this.Y, this.Area, this.Size);
-        }
+        public override int GetHashCode() => HashCode.Combine(this.X, this.Y, this.Area, this.Size);
 
         private const int MAX_TILE_SIZE = 14;
 
-        private static readonly Level[] Levels = {
+        private static readonly Level[] Levels = 
+        {
             new Level(0, 0, 0, 0, "Null", 0),
             new Level(56, 40, -1, -1, "Rogue Encampment", 2),
             new Level(80, 80, -1, -1, "Blood Moor", 3),
