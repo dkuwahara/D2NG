@@ -3,13 +3,18 @@ using System.Collections.Concurrent;
 
 namespace D2NG.D2GS.Act
 {
-    class Tile
+    public class Tile
     {
+        public const int Scale = 5;
+
         public ushort X { get; }
         public ushort Y { get; }
-        
+
+        public ushort WorldX { get => (ushort) (X * Scale); }
+        public ushort WorldY { get => (ushort) (Y * Scale); }
+
         public Area Area { get; }
-        public int Size { get; }
+        public (int X, int Y) Size { get; }
 
         public ConcurrentDictionary<CardinalDirection, Tile> Adjacent { get; } = new ConcurrentDictionary<CardinalDirection, Tile>();
 
@@ -45,13 +50,13 @@ namespace D2NG.D2GS.Act
             Size = GetTileSizeByArea((byte)Area);
         }
 
-        public bool NorthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y + t.Size);
+        public bool NorthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y + t.Size.Y);
 
-        public bool EastOf(Tile t) => (this.X == t.X + t.Size) && (this.Y == t.Y);
+        public bool EastOf(Tile t) => (this.X == t.X + t.Size.X) && (this.Y == t.Y);
 
-        public bool SouthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y - t.Size);
+        public bool SouthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y - t.Size.Y);
 
-        public bool WestOf(Tile t) => (this.X == t.X - t.Size) && (this.Y == t.Y);
+        public bool WestOf(Tile t) => (this.X == t.X - t.Size.X) && (this.Y == t.Y);
 
 
         public override bool Equals(object obj)
@@ -60,22 +65,28 @@ namespace D2NG.D2GS.Act
             return this.X == tile.X && this.Y == tile.Y && this.Area == tile.Area;
         }
 
-        private static int GetTileSizeByArea(byte area)
+        public bool Contains(Point p)
+        {
+            return (p.X >= X * Scale) && (p.X < (X + Size.X) * Scale) &&
+                   (p.Y >= Y * Scale) && (p.Y < (Y + Size.Y) * Scale);
+        }
+
+        private static (int X, int Y) GetTileSizeByArea(byte area)
         {
             if (Levels[area].Type == 1)
             { // maze
                 if (Mazes[area, 0] < MAX_TILE_SIZE && Mazes[area, 1] < MAX_TILE_SIZE)
                 {
-                    return Mazes[area, 1]; // fuck, area 28 isn't symmetric (10/14)
+                    return (Mazes[area,0], Mazes[area, 1]); // fuck, area 28 isn't symmetric (10/14)
                 }
                 else
                 {
-                    return 8; // we assume every room larger than MAX_TILE_SIZE consists of 8x8 tiles
+                    return (8,8); // we assume every room larger than MAX_TILE_SIZE consists of 8x8 tiles
                 }
             }
             else
             {
-                return 8; // we assume tile size is 8 if the level is preset / wilderness
+                return (8,8); // we assume tile size is 8 if the level is preset / wilderness
             }
         }
 

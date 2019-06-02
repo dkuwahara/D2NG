@@ -1,6 +1,9 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Act;
 using D2NG.D2GS.Packet.Server;
+using D2NG.D2GS.Players.Packet;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,6 +35,17 @@ namespace D2NG
             {
                 Players.Add(new Player(packet));
             }
+        }
+
+        internal void ReassignPlayer(ReassignPlayerPacket packet)
+        {
+            if (packet.UnitId == Me.Id)
+            {
+                Me.Location = packet.Location;
+            }
+            var tile = Act.Tiles.First(t => t.Contains(Me.Location));
+            Log.Verbose($"Player Tile:\n" +
+                $"\t{String.Join(", ", tile.Adjacent.Keys)}");
         }
 
         internal void SetAttribute(BaseAttributePacket baseAttribute)

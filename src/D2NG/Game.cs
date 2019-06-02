@@ -1,6 +1,7 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Act.Packet;
 using D2NG.D2GS.Packet.Server;
+using D2NG.D2GS.Players.Packet;
 using D2NG.D2GS.Quest.Packet;
 using Serilog;
 
@@ -21,6 +22,7 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x03, p => Data.Act.LoadActData(new ActDataPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x07, p => Data.Act.AddTile(new MapRevealPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x0B, p => new GameHandshakePacket(p));
+            _gameServer.OnReceivedPacketEvent(0x15, p => Data.ReassignPlayer(new ReassignPlayerPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1A, p => Data.AddExperience(new AddExpPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1B, p => Data.AddExperience(new AddExpPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x1C, p => Data.AddExperience(new AddExpPacket(p)));
