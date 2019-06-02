@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using System;
 using System.IO;
 using System.Text;
 
@@ -19,12 +20,13 @@ namespace D2NG.D2GS.Packet.Server
                 throw new D2GSPacketException("Expected Packet Type Not Found");
             }
             Difficulty = (Difficulty)(reader.ReadByte() << 3);
+            _ = reader.ReadByte();
+            Hardcore = (reader.ReadByte() & 0x08) != 0;
             _ = reader.ReadUInt16();
-            Hardcore = reader.ReadUInt16() != 0;
             Expansion = reader.ReadByte() != 0;
             Ladder = reader.ReadByte() != 0;
             reader.Close();
-
+            Log.Verbose(BitConverter.ToString(packet.Raw));
             Log.Verbose($"(0x{packet.Raw[0], 2:X2}) Game flags:\n" +
                         $"\tDifficulty: {Difficulty}\n" +
                         $"\tType: {(Hardcore ? "Hardcore" : "Softcore")}" +
