@@ -35,10 +35,26 @@ namespace D2NG.D2GS.Act
                     Tiles.Add(tile);
                     foreach(var t in Tiles)
                     {
-                        t.North = Tiles.DefaultIfEmpty(null).FirstOrDefault(w => w.NorthOf(t));
-                        t.East = Tiles.DefaultIfEmpty(null).FirstOrDefault(w => w.EastOf(t));
-                        t.South = Tiles.DefaultIfEmpty(null).FirstOrDefault(w => w.SouthOf(t));
-                        t.West = Tiles.DefaultIfEmpty(null).FirstOrDefault(w => w.WestOf(t));
+                        if(t.IsNorthOf(tile))
+                        {
+                            tile.North = t;
+                            t.South = tile;
+                        }
+                        if(t.IsEastOf(tile))
+                        {
+                            tile.East = t;
+                            t.West = tile;
+                        }
+                        if (t.IsSouthOf(tile))
+                        {
+                            tile.South = t;
+                            t.North = tile;
+                        }
+                        if (t.IsWestOf(tile))
+                        {
+                            tile.West = t;
+                            t.East = tile;
+                        }
                     }
                 }
             }

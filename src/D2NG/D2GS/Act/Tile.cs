@@ -50,13 +50,13 @@ namespace D2NG.D2GS.Act
             Size = GetTileSizeByArea((byte)Area);
         }
 
-        public bool NorthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y + t.Size.Y);
+        public bool IsNorthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y + t.Size.Y);
 
-        public bool EastOf(Tile t) => (this.X == t.X + t.Size.X) && (this.Y == t.Y);
+        public bool IsEastOf(Tile t) => (this.X == t.X + t.Size.X) && (this.Y == t.Y);
 
-        public bool SouthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y - t.Size.Y);
+        public bool IsSouthOf(Tile t) => (this.X == t.X) && (this.Y == t.Y - t.Size.Y);
 
-        public bool WestOf(Tile t) => (this.X == t.X - t.Size.X) && (this.Y == t.Y);
+        public bool IsWestOf(Tile t) => (this.X == t.X - t.Size.X) && (this.Y == t.Y);
 
 
         public override bool Equals(object obj)

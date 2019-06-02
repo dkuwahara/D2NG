@@ -23,7 +23,7 @@ namespace D2NG.D2GS.Act.Packet
             reader.Close();
 
             Log.Verbose($"(0x{ id,2:X2}) Act Data:\n" +
-                $"\tAct: {Act + 1} : {Area}\n" +
+                $"\tAct {Act + 1}: {Area}\n" +
                 $"\tMapId: {MapId}");
         }
 
