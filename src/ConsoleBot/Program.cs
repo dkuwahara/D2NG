@@ -41,7 +41,7 @@ namespace ConsoleBot
                 Config = Config.FromFile(this.ConfigFile);
             }
 
-            //Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
+            Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
                 Client.Connect(
@@ -135,7 +135,10 @@ namespace ConsoleBot
         private static void HandleChatEvent(BncsPacket obj)
         {
             var packet = new ChatEventPacket(obj.Raw);
-            Log.Information(packet.RenderText());
+            if (packet.Eid != Eid.SHOWUSER)
+            {
+                Log.Information(packet.RenderText());
+            }
         }
     }
 }

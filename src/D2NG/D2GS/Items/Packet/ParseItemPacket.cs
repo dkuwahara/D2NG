@@ -18,12 +18,12 @@ namespace D2NG.Items
             Item = Parse(Raw.ToList());
             Log.Verbose($"{BitConverter.ToString(Raw)}");
             Log.Verbose($"(0x{packet.Type,2:X2}) Parse Item Packet:\n" +
+                $"\tLevel {Item.level}, {Item.Quality}" + $" { (Item.Ethereal ? "Ethereal" : "")}" +
+                $"\t{ (Item.has_sockets ? $"Sockets: {Item.Sockets}" : "")}\n" + 
                 $"\t[{Item.Type}] " + $"{ (Item.identified ? "" : "Unidentified")} " + $"{Item.Name}\n" +
                 $"\tItem ID: {Item.id}\n" +
                 $"\tAction: {Item.action}\n" +
-                $"\tContainer: {Item.container}\n" +
-                $"\tLevel {Item.level}, {Item.Quality}" + $" { (Item.Ethereal ? "Ethereal" : "")}" +
-                $"\t{ (Item.has_sockets ? $"Sockets: {Item.Sockets}" : "" )}");
+                $"\tContainer: {Item.container}");
         }
 
         private static void GenericInfo(BitReader reader, ref Item item) // get basic info such as item

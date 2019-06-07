@@ -24,6 +24,7 @@ namespace D2NG
         {
             _gameServer = gameServer;
 
+            _gameServer.OnReceivedPacketEvent(0x00, _ => Log.Information("Game loading..."));
             _gameServer.OnReceivedPacketEvent(0x01, p => Initialize(new GameFlags(p)));
             _gameServer.OnReceivedPacketEvent(0x01, p => _gameServer.Ping());
             _gameServer.OnReceivedPacketEvent(0x03, p => Data.Act.LoadActData(new ActDataPacket(p)));
@@ -44,6 +45,7 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x59, p => Data.AssignPlayer(new AssignPlayerPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x94, p => Data.SetSkills(new BaseSkillLevelsPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x18, p => Data.UpdateSelf(new UpdateSelfPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x8F, _ => { });
             _gameServer.OnReceivedPacketEvent(0x95, p => Data.UpdateSelf(new UpdateSelfPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x9c, p => Data.ItemUpdate(new ParseItemPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x9d, p => Data.ItemUpdate(new ParseItemPacket(p)));
