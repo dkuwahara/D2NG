@@ -35,7 +35,7 @@ namespace D2NG
             return _bits[Offset++];
         }
 
-        public int ReadByte() => Read(8);
+        public byte ReadByte() => (byte)Read(8);
         public short ReadInt16() => (short)Read(16);
         public int ReadInt32() => Read(32);
         public ushort ReadUInt16() => (ushort)Read(16);

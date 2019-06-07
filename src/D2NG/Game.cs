@@ -1,9 +1,14 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Act.Packet;
+using D2NG.D2GS.Items;
+using D2NG.D2GS.Items.Containers;
 using D2NG.D2GS.Packet.Server;
 using D2NG.D2GS.Players.Packet;
 using D2NG.D2GS.Quest.Packet;
+using D2NG.Items;
 using Serilog;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace D2NG
 {
@@ -38,15 +43,23 @@ namespace D2NG
             _gameServer.OnReceivedPacketEvent(0x94, p => Data.SetSkills(new BaseSkillLevelsPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x18, p => Data.UpdateSelf(new UpdateSelfPacket(p)));
             _gameServer.OnReceivedPacketEvent(0x95, p => Data.UpdateSelf(new UpdateSelfPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x9c, p => Data.ItemUpdate(new ParseItemPacket(p)));
+            _gameServer.OnReceivedPacketEvent(0x9d, p => Data.ItemUpdate(new ParseItemPacket(p)));
         }
 
-        private void Initialize(GameFlags packet) 
-            => Data = new GameData(packet);
+        private void Initialize(GameFlags packet)
+        {
+            Data = new GameData(packet);
+        }
 
         public void LeaveGame()
         {
             Log.Information("Leaving game");
             _gameServer.LeaveGame();
         }
+
+        public Self Me { get => Data.Me; }
+
+        public List<Item> Items { get => Data.Items.Values.ToList(); }
     }
 }

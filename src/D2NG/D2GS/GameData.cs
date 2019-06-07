@@ -1,9 +1,13 @@
 ﻿using D2NG.D2GS;
 using D2NG.D2GS.Act;
+using D2NG.D2GS.Items;
+using D2NG.D2GS.Items.Containers;
 using D2NG.D2GS.Packet.Server;
 using D2NG.D2GS.Players.Packet;
+using D2NG.Items;
 using Serilog;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,7 +24,12 @@ namespace D2NG
         public GameFlags Flags { get; }
         public ActData Act { get; }
         public Self Me { get; private set; }
+
+        public Container Stash { get; } = new Stash();
+
         public List<Player> Players { get; internal set; } = new List<Player>();
+
+        public ConcurrentDictionary<uint, Item> Items { get; private set; } = new ConcurrentDictionary<uint, Item>();
 
         internal void AddExperience(AddExpPacket addExpPacket)
             => Me.Experience += addExpPacket.Experience;
@@ -82,5 +91,8 @@ namespace D2NG
             Me.Mana = packet.Mana;
             Me.Stamina = packet.Stamina;
         }
+
+        internal void ItemUpdate(ParseItemPacket packet) 
+            => Items[packet.Item.id] = packet.Item;
     }
 }
