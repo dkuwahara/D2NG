@@ -2,11 +2,13 @@
 using D2NG.D2GS.Act.Packet;
 using D2NG.D2GS.Items;
 using D2NG.D2GS.Items.Containers;
+using D2NG.D2GS.Packet;
 using D2NG.D2GS.Packet.Server;
 using D2NG.D2GS.Players.Packet;
 using D2NG.D2GS.Quest.Packet;
 using D2NG.Items;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -61,5 +63,35 @@ namespace D2NG
         public Self Me { get => Data.Me; }
 
         public List<Item> Items { get => Data.Items.Values.ToList(); }
+
+        public Container Stash { get => Data.Stash; }
+
+        public void RemoveItemFromBuffer(Item item)
+        {
+            var packet = D2gsPacket.BuildPacket(0x19,
+                    BitConverter.GetBytes(item.id)
+                );
+            _gameServer.SendPacket(packet);
+        }
+
+        public void SwitchSkill(Skill skill)
+        {
+            var packet = D2gsPacket.BuildPacket(0x3c,
+                BitConverter.GetBytes((uint)skill),
+                BitConverter.GetBytes(-1)
+                );
+            _gameServer.SendPacket(packet);
+        }
+
+        public void InsertItemToBuffer(Item item, Point location, Item.ItemContainer container)
+        {
+            var packet = D2gsPacket.BuildPacket(0x18,
+                        BitConverter.GetBytes(item.id),
+                        BitConverter.GetBytes((uint)location.X),
+                        BitConverter.GetBytes((uint)location.Y),
+                        BitConverter.GetBytes((uint)container)
+                    );
+            _gameServer.SendPacket(packet);
+        }
     }
 }

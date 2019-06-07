@@ -2,7 +2,7 @@
 {
     public partial class Item
     {
-        public enum ItemContainer
+        public enum ItemContainer : uint
         {
             Inventory = 0,
             Trade = 2,

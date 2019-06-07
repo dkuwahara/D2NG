@@ -65,8 +65,7 @@ namespace D2NG.D2GS.Act
 
         public override bool Equals(object obj)
         {
-            var tile = obj as Tile;
-            return this.X == tile.X && this.Y == tile.Y && this.Area == tile.Area;
+            return !(obj is Tile tile) ? false : this.X == tile.X && this.Y == tile.Y && this.Area == tile.Area;
         }
 
         public bool Contains(Point p) => 

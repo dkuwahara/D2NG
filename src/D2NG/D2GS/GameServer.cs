@@ -20,6 +20,7 @@ namespace D2NG.D2GS
 
         protected ConcurrentDictionary<byte, Action<D2gsPacket>> PacketSentEventHandlers { get; } = new ConcurrentDictionary<byte, Action<D2gsPacket>>();
 
+        private readonly ManualResetEvent LoadCompleteEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent LoadSuccessEvent = new ManualResetEvent(false);
         private readonly ManualResetEvent GameExitEvent = new ManualResetEvent(false);
 
@@ -31,9 +32,10 @@ namespace D2NG.D2GS
                 => PacketReceivedEventHandlers.GetValueOrDefault(eventArgs.Type, p => Log.Verbose($"Received unhandled D2GS packet of type: 0x{(byte)p.Type,2:X2}"))?.Invoke(eventArgs);
             Connection.PacketSent += (obj, eventArgs) => PacketSentEventHandlers.GetValueOrDefault(eventArgs.Type, null)?.Invoke(eventArgs);
 
-            Connection.PacketSent += (obj, packet) => Log.Verbose($"Sent D2GS packet of type: 0x{packet.Type,2:X2} {(D2gs)packet.Type}");
+            Connection.PacketSent += (obj, packet) => Log.Verbose($"Sent D2GS packet of type: 0x{packet.Type,2:X2} {BitConverter.ToString(packet.Raw)}");
 
             OnReceivedPacketEvent(0x02, _ => LoadSuccessEvent.Set());
+            OnReceivedPacketEvent(0x04, _ => LoadCompleteEvent.Set());
             OnReceivedPacketEvent(0x06, _ => GameExitEvent.Set());
         }
 
@@ -78,17 +80,21 @@ namespace D2NG.D2GS
             LoadSuccessEvent.Reset();
             Connection.WritePacket(new GameLogonPacket(gameHash, gameToken, character));
             LoadSuccessEvent.WaitOne();
+            LoadCompleteEvent.Reset();
             Connection.WritePacket(new byte[] { 0x6B });
+            LoadCompleteEvent.WaitOne();
+            Log.Verbose("Game load complete");
         }
 
-        internal void Ping()
-        {
-            Connection.WritePacket(new PingPacket());
-        }
+        internal void Ping() => Connection.WritePacket(new PingPacket());
 
-        public void Dispose()
+        public void Dispose() 
         {
+            LoadCompleteEvent.Dispose();
             LoadSuccessEvent.Dispose();
+            GameExitEvent.Dispose();
         }
+
+        internal void SendPacket(byte[] packet) => Connection.WritePacket(packet);
     }
 }

@@ -15,7 +15,7 @@ namespace D2NG.D2GS.Packet
 
         public byte Type { get => Raw[0]; }
 
-        protected static byte[] BuildPacket(D2gs command, params IEnumerable<byte>[] args)
+        public static byte[] BuildPacket(byte command, params IEnumerable<byte>[] args)
         {
             var packet = new List<byte>
             {

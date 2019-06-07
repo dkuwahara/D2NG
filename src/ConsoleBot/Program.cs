@@ -8,6 +8,8 @@ using D2NG.MCP;
 using System.Collections.Generic;
 using Serilog.Events;
 using System.Threading;
+using System.Diagnostics;
+using D2NG.D2GS.Items;
 
 namespace ConsoleBot
 {
@@ -57,16 +59,35 @@ namespace ConsoleBot
 
                 Client.Chat.JoinChannel("D2NG");
 
-                Client.Chat.Send("Hello World!");
-                Client.Chat.Emote("is alive");
+                Thread.Sleep(5_000);
+                while(true)
+                {
+                    var time = Stopwatch.StartNew();
+                    Client.CreateGame(Difficulty.Normal, $"d2ng{new Random().Next(1000)}", "d2ng");
+                    Log.Information("In game");
 
-                Client.CreateGame(Difficulty.Normal, $"d2ng{new Random().Next(1000)}", "d2ng");
-                Thread.Sleep(30_000);
-                Client.Game.LeaveGame();
-                Thread.Sleep(30_000);
-                Client.CreateGame(Difficulty.Normal, $"ngd2{new Random().Next(1000)}", "d2ng");
-                Thread.Sleep(30_000);
-                Client.Game.LeaveGame();
+                    // Wait for game load
+
+                    // Stash Items
+                    StashItems();
+
+                    // Move to Act 5
+                    
+                    // Malah
+                    
+                    // Revive Merc
+                    
+                    // Kill Pindle
+
+                    // Pickup Items
+
+                    Thread.Sleep(30_000);
+
+                    Client.Game.LeaveGame();
+                    time.Stop();
+                    Log.Information($"Game took: {time.Elapsed.TotalSeconds} seconds");
+                    Thread.Sleep(30_000);
+                }
             }
             catch (Exception e)
             {
@@ -74,7 +95,35 @@ namespace ConsoleBot
             }
         }
 
-        private Character SelectCharacter(List<Character> characters)
+        private void StashItems()
+        {
+            Log.Verbose($"Current Stash:\n\n{Client.Game.Stash}\n");
+            var stashable = from item in Client.Game.Items
+                            where item.container == Item.ContainerType.inventory
+                            where item.Type != "tbk" && item.Type != "cm1" && item.Type != "cm2"
+                            select item;
+
+            Client.Game.SwitchSkill(D2NG.D2GS.Skill.telekinesis);
+            Thread.Sleep(200);
+
+            foreach (Item item in stashable)
+            {
+                Log.Verbose($"Stashable [{item.Type}] {item.Name}");
+                var location = Client.Game.Stash.FindFreeSpace(item);
+                if (location != null)
+                {
+                    Log.Verbose($"Attempting to place {item.Name}, {item.id,8:X} => {location}");
+                    Client.Game.RemoveItemFromBuffer(item);
+                    Thread.Sleep(500);
+                    Client.Game.InsertItemToBuffer(item, location, Item.ItemContainer.Stash);
+                    Thread.Sleep(600);
+                    
+                }
+            }
+            Log.Verbose($"New Stash:\n\n{Client.Game.Stash}\n");
+        }
+
+        private static Character SelectCharacter(List<Character> characters)
         {
             var charsPrompt = characters
                 .Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {c.Class}")

@@ -113,6 +113,7 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.AUTH_INFO, AuthInfoEvent.Set);
             OnReceivedPacketEvent(Sid.ENTERCHAT, EnterChatEvent.Set);
             OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
+            OnReceivedPacketEvent(Sid.REQUIREDWORK, _ => { } );
         }
 
         internal void LeaveGame() => Connection.WritePacket(new LeaveGamePacket());

@@ -10,10 +10,6 @@ namespace D2NG.D2GS.Items
         public UInt16 Width, Height;
         public Boolean Stackable, Usable, Throwable;
 
-        public ItemEntry()
-        {
-
-        }
         public ItemEntry(String name, String type, Item.ClassificationType classification, UInt16 width, UInt16 height, Boolean stackable, Boolean usable, Boolean throwable)
         {
             Name = name;

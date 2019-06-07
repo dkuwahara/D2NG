@@ -92,7 +92,47 @@ namespace D2NG
             Me.Stamina = packet.Stamina;
         }
 
-        internal void ItemUpdate(ParseItemPacket packet) 
-            => Items[packet.Item.id] = packet.Item;
+        internal void ItemUpdate(ParseItemPacket packet)
+        {
+            var item = packet.Item;
+            Items[item.id] = packet.Item;
+            switch (item.action)
+            {
+                case Item.Action.put_in_container:
+                    PutInContainer(item);
+                    break;
+                case Item.Action.remove_from_container:
+                    RemoveFromContainer(item);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void RemoveFromContainer(Item item)
+        {
+            switch (item.container)
+            {
+                case Item.ContainerType.stash:
+                    Log.Verbose("Removing item from stash");
+                    Stash.Remove(item);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void PutInContainer(Item item)
+        {
+            switch (item.container)
+            {
+                case Item.ContainerType.stash:
+                   Log.Verbose("Adding item to stash");
+                    Stash.Add(item);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace D2NG.D2GS
         public GameLogonPacket(uint gameHash, ushort gameToken, Character character) :
             base(
                 BuildPacket(
-                    D2gs.GAMELOGON,
+                    (byte)D2gs.GAMELOGON,
                     BitConverter.GetBytes(gameHash),
                     BitConverter.GetBytes(gameToken),
                     new [] { (byte)character.Class },
