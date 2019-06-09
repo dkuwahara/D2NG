@@ -1,4 +1,4 @@
-﻿namespace D2NG.D2GS.Objects.Packet
+﻿namespace D2NG.D2GS
 {
     public abstract class Entity
     {
