@@ -1,4 +1,5 @@
 ﻿using D2NG.D2GS.Packet;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +24,13 @@ namespace D2NG.D2GS.Objects.Packet
             State = reader.ReadByte();
             InteractionType = reader.ReadByte();
             reader.Close();
+            Log.Verbose($"(0x{packet.Type,2:X2}) Assign Object Packet:\n" +
+                $"\tType: {ObjectType,2:X2}\n" +
+                $"\tId: {ObjectId,8:X8}\n" +
+                $"\tCode: {ObjectCode}\n" +
+                $"\tLocation: {Location}\n" +
+                $"\tState: {State,2:X2}\n" +
+                $"\tInteraction: {InteractionType,2:x2}\n");
         }
 
         public WorldObject AsWorldObject() 
