@@ -40,7 +40,7 @@ namespace D2NG
         {
             String[] fileNames =
             {
-                  "experience.txt",
+                "experience.txt",
                 "magical_prefixes.txt",
                 "magical_suffixes.txt",
                 "rare_prefixes.txt",
