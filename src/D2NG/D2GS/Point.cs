@@ -13,7 +13,6 @@ namespace D2NG.D2GS
 
         public double Distance(Point other) 
             => Math.Sqrt(Math.Pow(X - other.X, 2.0) + Math.Pow(Y - other.Y, 2.0));
-
         public override string ToString() => $"({X}, {Y})";
     }
 }

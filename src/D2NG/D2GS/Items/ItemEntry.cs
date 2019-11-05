@@ -38,8 +38,9 @@ namespace D2NG.D2GS.Items
                 case ClassificationType.necromancer_shrunken_head:
                 case ClassificationType.circlet:
                     return true;
+                default:
+                    return false;
             }
-            return false;
         }
         public Boolean IsWeapon()
         {
@@ -68,8 +69,9 @@ namespace D2NG.D2GS.Items
                 case ClassificationType.throwing_potion:
                 case ClassificationType.wand:
                     return true;
+                default:
+                    return false;
             }
-            return false;
         }
     }
 }

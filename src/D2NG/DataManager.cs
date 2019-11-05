@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using D2NG.D2GS.Items;
+using Serilog;
 
 namespace D2NG
 {
@@ -66,10 +66,7 @@ namespace D2NG
             m_superUniques = new PlainTextDataType(Path.Combine(dataDirectory, fileNames[8]));
             m_itemProperties = new PlainTextDataType(Path.Combine(dataDirectory, fileNames[9]));
             m_skills = new PlainTextDataType(Path.Combine(dataDirectory, fileNames[10]));
-
-            return;
         }
-
     }
 
     class ItemDataType
@@ -167,7 +164,7 @@ namespace D2NG
 
                     if (tokens.Length != 8)
                     {
-                        Console.WriteLine("Invalid Token Count: {0}", tokens.Length);
+                        Log.Error("Invalid Token Count: {0}", tokens.Length);
                         throw new Exception("Unable to parse item data");
                     }
                     String name = tokens[0];
@@ -189,7 +186,7 @@ namespace D2NG
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error parsing ItemDataType: {0}", e.ToString());
+                    Log.Error("Error parsing ItemDataType: {0}", e.ToString());
                 }
             }
         }

@@ -105,8 +105,6 @@ namespace D2NG
                 case Action.remove_from_container:
                     RemoveFromContainer(item);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -117,8 +115,6 @@ namespace D2NG
                 case ContainerType.stash:
                     Log.Verbose("Removing item from stash");
                     Stash.Remove(item);
-                    break;
-                default:
                     break;
             }
         }

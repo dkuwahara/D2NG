@@ -163,7 +163,7 @@ namespace D2NG.Items
 
             if (!DataManager.Instance.m_itemData.Get(item.Type, out ItemEntry entry))
             {
-                Console.WriteLine("Failed to look up item in item data table");
+                Log.Error("Failed to look up item in item data table");
                 return true;
             }
 
@@ -258,8 +258,6 @@ namespace D2NG.Items
                             item.unique_code = (uint)reader.Read(12);
                         }
                         break;
-                    default:
-                        break;
                 }
             }
 
@@ -267,11 +265,11 @@ namespace D2NG.Items
             {
                 for (ulong i = 0; i < 3; i++)
                 {
-                    if (reader.ReadBit())
+                    if (_ = reader.ReadBit())
                     {
                         item.prefixes.Add((uint)reader.Read(11));
                     }
-                    if (reader.ReadBit())
+                    if (_ = reader.ReadBit())
                     {
                         item.suffixes.Add((uint)reader.Read(11));
                     }

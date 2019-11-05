@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace D2NG.D2GS.Items
 {
-    public partial class Item
+    public class Item
     {
         public Item()
         {
