@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Action = D2NG.D2GS.Items.Action;
 
 namespace D2NG.Items
 {
@@ -29,7 +30,7 @@ namespace D2NG.Items
         private static void GenericInfo(BitReader reader, ref Item item) // get basic info such as item
         {
             byte packet = reader.ReadByte();
-            item.action = (Item.Action)reader.ReadByte();
+            item.action = (Action)reader.ReadByte();
             item.category = reader.ReadByte();
             _ = reader.ReadByte();
             item.id = reader.ReadUInt32();
@@ -70,7 +71,7 @@ namespace D2NG.Items
             item.gambling = reader.ReadBit();
             item.rune_word = reader.ReadBit();
             reader.Read(5);
-            item.version = (Item.VersionType)reader.ReadByte();
+            item.version = (VersionType)reader.ReadByte();
         }
 
         private static void ReadLocation(BitReader reader, ref Item item)
@@ -88,11 +89,11 @@ namespace D2NG.Items
                 item.directory = (byte)reader.Read(4);
                 item.x = (byte)reader.Read(4);
                 item.y = (byte)reader.Read(3);
-                item.container = (Item.ContainerType)(reader.Read(4));
+                item.container = (ContainerType)(reader.Read(4));
             }
             item.unspecified_directory = false;
 
-            if (item.action == Item.Action.add_to_shop || item.action == Item.Action.remove_from_shop)
+            if (item.action == Action.add_to_shop || item.action == Action.remove_from_shop)
             {
                 long container = (long)(item.container);
                 container |= 0x80;
@@ -101,20 +102,20 @@ namespace D2NG.Items
                     container--; //remove first bit
                     item.y += 8;
                 }
-                item.container = (Item.ContainerType)container;
+                item.container = (ContainerType)container;
             }
-            else if (item.container == Item.ContainerType.unspecified)
+            else if (item.container == ContainerType.unspecified)
             {
-                if (item.directory == (uint)Item.DirectoryType.not_applicable)
+                if (item.directory == (uint)DirectoryType.not_applicable)
                 {
                     if (item.in_socket)
                     {
                         //y is ignored for this container type, x tells you the index
-                        item.container = Item.ContainerType.item;
+                        item.container = ContainerType.item;
                     }
-                    else if (item.action == Item.Action.put_in_belt || item.action == Item.Action.remove_from_belt)
+                    else if (item.action == Action.put_in_belt || item.action == Action.remove_from_belt)
                     {
-                        item.container = Item.ContainerType.belt;
+                        item.container = ContainerType.belt;
                         item.y = item.x / 4;
                         item.x %= 4;
                     }
@@ -200,13 +201,13 @@ namespace D2NG.Items
 
         public static bool ReadLevelQuality(BitReader reader, ref Item item)
         {
-            item.Quality = Item.QualityType.Normal;
+            item.Quality = QualityType.Normal;
             if (item.simple_item || item.gambling)
             {
                 return false;
             }
             item.level = (byte)reader.Read(7);
-            item.Quality = (Item.QualityType)(reader.Read(4));
+            item.Quality = (QualityType)(reader.Read(4));
             return true;
         }
 
@@ -231,27 +232,27 @@ namespace D2NG.Items
             {
                 switch (item.Quality)
                 {
-                    case Item.QualityType.Inferior:
+                    case QualityType.Inferior:
                         item.prefix = (byte)reader.Read(3);
                         break;
-                    case Item.QualityType.Superior:
-                        item.superiority = (Item.SuperiorItemClassType)(reader.Read(3));
+                    case QualityType.Superior:
+                        item.superiority = (SuperiorItemClassType)(reader.Read(3));
                         break;
-                    case Item.QualityType.Magical:
+                    case QualityType.Magical:
                         item.prefix = (uint)reader.Read(11);
                         item.suffix = (uint)reader.Read(11);
                         break;
 
-                    case Item.QualityType.Crafted:
-                    case Item.QualityType.Rare:
+                    case QualityType.Crafted:
+                    case QualityType.Rare:
                         item.prefix = (uint)reader.Read(8) - 156;
                         item.suffix = (uint)reader.Read(8) - 1;
                         break;
 
-                    case Item.QualityType.Set:
+                    case QualityType.Set:
                         item.set_code = (uint)reader.Read(12);
                         break;
-                    case Item.QualityType.Unique:
+                    case QualityType.Unique:
                         if (item.Type != "std") //standard of heroes exception?
                         {
                             item.unique_code = (uint)reader.Read(12);
@@ -262,7 +263,7 @@ namespace D2NG.Items
                 }
             }
 
-            if (item.Quality == Item.QualityType.Rare || item.Quality == Item.QualityType.Crafted)
+            if (item.Quality == QualityType.Rare || item.Quality == QualityType.Crafted)
             {
                 for (ulong i = 0; i < 3; i++)
                 {

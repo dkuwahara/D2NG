@@ -6,11 +6,11 @@ namespace D2NG.D2GS.Items
     {
         public String Name;
         public String Type;
-        public Item.ClassificationType Classification;
+        public ClassificationType Classification;
         public UInt16 Width, Height;
         public Boolean Stackable, Usable, Throwable;
 
-        public ItemEntry(String name, String type, Item.ClassificationType classification, UInt16 width, UInt16 height, Boolean stackable, Boolean usable, Boolean throwable)
+        public ItemEntry(String name, String type, ClassificationType classification, UInt16 width, UInt16 height, Boolean stackable, Boolean usable, Boolean throwable)
         {
             Name = name;
             Type = type;
@@ -26,17 +26,17 @@ namespace D2NG.D2GS.Items
         {
             switch (Classification)
             {
-                case Item.ClassificationType.helm:
-                case Item.ClassificationType.armor:
-                case Item.ClassificationType.shield:
-                case Item.ClassificationType.gloves:
-                case Item.ClassificationType.boots:
-                case Item.ClassificationType.belt:
-                case Item.ClassificationType.druid_pelt:
-                case Item.ClassificationType.barbarian_helm:
-                case Item.ClassificationType.paladin_shield:
-                case Item.ClassificationType.necromancer_shrunken_head:
-                case Item.ClassificationType.circlet:
+                case ClassificationType.helm:
+                case ClassificationType.armor:
+                case ClassificationType.shield:
+                case ClassificationType.gloves:
+                case ClassificationType.boots:
+                case ClassificationType.belt:
+                case ClassificationType.druid_pelt:
+                case ClassificationType.barbarian_helm:
+                case ClassificationType.paladin_shield:
+                case ClassificationType.necromancer_shrunken_head:
+                case ClassificationType.circlet:
                     return true;
             }
             return false;
@@ -45,28 +45,28 @@ namespace D2NG.D2GS.Items
         {
             switch (Classification)
             {
-                case Item.ClassificationType.amazon_bow:
-                case Item.ClassificationType.amazon_javelin:
-                case Item.ClassificationType.amazon_spear:
-                case Item.ClassificationType.assassin_katar:
-                case Item.ClassificationType.axe:
-                case Item.ClassificationType.bow:
-                case Item.ClassificationType.club:
-                case Item.ClassificationType.crossbow:
-                case Item.ClassificationType.dagger:
-                case Item.ClassificationType.hammer:
-                case Item.ClassificationType.javelin:
-                case Item.ClassificationType.mace:
-                case Item.ClassificationType.polearm:
-                case Item.ClassificationType.scepter:
-                case Item.ClassificationType.sorceress_orb:
-                case Item.ClassificationType.spear:
-                case Item.ClassificationType.sword:
-                case Item.ClassificationType.staff:
-                case Item.ClassificationType.throwing_axe:
-                case Item.ClassificationType.throwing_knife:
-                case Item.ClassificationType.throwing_potion:
-                case Item.ClassificationType.wand:
+                case ClassificationType.amazon_bow:
+                case ClassificationType.amazon_javelin:
+                case ClassificationType.amazon_spear:
+                case ClassificationType.assassin_katar:
+                case ClassificationType.axe:
+                case ClassificationType.bow:
+                case ClassificationType.club:
+                case ClassificationType.crossbow:
+                case ClassificationType.dagger:
+                case ClassificationType.hammer:
+                case ClassificationType.javelin:
+                case ClassificationType.mace:
+                case ClassificationType.polearm:
+                case ClassificationType.scepter:
+                case ClassificationType.sorceress_orb:
+                case ClassificationType.spear:
+                case ClassificationType.sword:
+                case ClassificationType.staff:
+                case ClassificationType.throwing_axe:
+                case ClassificationType.throwing_knife:
+                case ClassificationType.throwing_potion:
+                case ClassificationType.wand:
                     return true;
             }
             return false;

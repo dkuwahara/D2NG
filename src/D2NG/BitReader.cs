@@ -76,7 +76,7 @@ namespace D2NG
             while (length > 0)
             {
                 bool bit = ReadBit();
-                bits |= (Int32)((bit ? 1 : 0) << initialLen - length);
+                bits |= (bit ? 1 : 0) << (initialLen - length);
 
                 length -= 1;
             }

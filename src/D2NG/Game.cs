@@ -103,7 +103,7 @@ namespace D2NG
             _gameServer.SendPacket(packet);
         }
 
-        public void InsertItemToBuffer(Item item, Point location, Item.ItemContainer container)
+        public void InsertItemToBuffer(Item item, Point location, ItemContainer container)
         {
             var packet = D2gsPacket.BuildPacket(0x18,
                         BitConverter.GetBytes(item.id),

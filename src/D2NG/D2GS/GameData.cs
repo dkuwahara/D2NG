@@ -10,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Action = D2NG.D2GS.Items.Action;
 
 namespace D2NG
 {
@@ -98,10 +99,10 @@ namespace D2NG
             Items[item.id] = packet.Item;
             switch (item.action)
             {
-                case Item.Action.put_in_container:
+                case Action.put_in_container:
                     PutInContainer(item);
                     break;
-                case Item.Action.remove_from_container:
+                case Action.remove_from_container:
                     RemoveFromContainer(item);
                     break;
                 default:
@@ -113,7 +114,7 @@ namespace D2NG
         {
             switch (item.container)
             {
-                case Item.ContainerType.stash:
+                case ContainerType.stash:
                     Log.Verbose("Removing item from stash");
                     Stash.Remove(item);
                     break;
@@ -126,11 +127,9 @@ namespace D2NG
         {
             switch (item.container)
             {
-                case Item.ContainerType.stash:
-                   Log.Verbose("Adding item to stash");
+                case ContainerType.stash:
+                    Log.Verbose("Adding item to stash");
                     Stash.Add(item);
-                    break;
-                default:
                     break;
             }
         }

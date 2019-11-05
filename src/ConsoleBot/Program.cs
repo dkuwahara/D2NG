@@ -101,7 +101,7 @@ namespace ConsoleBot
             var game = Client.Game;
             Log.Verbose($"Current Stash:\n\n{game.Stash}\n");
             var stashable = from item in game.Items
-                            where item.container == Item.ContainerType.inventory
+                            where item.container == ContainerType.inventory
                             where item.Type != "tbk" && item.Type != "cm1" && item.Type != "cm2"
                             select item;
 
@@ -118,7 +118,7 @@ namespace ConsoleBot
 
             Log.Verbose($"Attempting to move from {game.Me.Location} to {stash.Location}");
 
-            var points = new Point[]
+            var points = new []
             {
                 new Point(5096, 5018),
                 new Point(5100, 5025),
@@ -150,7 +150,7 @@ namespace ConsoleBot
                     Log.Verbose($"Attempting to place {item.Name}, {item.id,8:X} => {location}");
                     game.RemoveItemFromBuffer(item);
                     Thread.Sleep(500);
-                    game.InsertItemToBuffer(item, location, Item.ItemContainer.Stash);
+                    game.InsertItemToBuffer(item, location, ItemContainer.Stash);
                     Thread.Sleep(600);
                 }
             }

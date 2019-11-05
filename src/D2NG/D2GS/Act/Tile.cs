@@ -5,7 +5,7 @@ namespace D2NG.D2GS.Act
 {
     public class Tile
     {
-        public const int Scale = 5;
+        public static int Scale => 5;
 
         public ushort X { get; }
         public ushort Y { get; }
