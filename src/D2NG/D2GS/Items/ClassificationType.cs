@@ -63,6 +63,6 @@
             tome,
             torch,
             wand
-        };
+        }
     }
 }

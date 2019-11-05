@@ -13,6 +13,6 @@
             attack_rating_durability = 5,
             damage_durability = 6,
             defense_durability = 7
-        };
+        }
     }
 }

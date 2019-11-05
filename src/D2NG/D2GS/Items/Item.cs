@@ -69,7 +69,6 @@ namespace D2NG.D2GS.Items
         public uint ear_level;
         public string ear_name;
 
-
         public bool is_gold;
         public uint amount;
 

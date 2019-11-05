@@ -17,6 +17,6 @@
             gloves = 10,
             right_hand_switch = 11,
             left_hand_switch = 12
-        };
+        }
     }
 }

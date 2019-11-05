@@ -363,6 +363,6 @@
             quest_item_difficulty,
             passive_magical_damage_mastery,
             passive_magical_resistance_reduction
-        };
+        }
     }
 }

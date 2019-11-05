@@ -212,7 +212,7 @@ namespace D2NG.Items
 
         public static void ReadGraphicInfo(BitReader reader, ref Item item)
         {
-            item.has_graphic = reader.ReadBit(); ;
+            item.has_graphic = reader.ReadBit();
             if (item.has_graphic)
             {
                 item.graphic = (byte)reader.Read(3);
@@ -281,7 +281,6 @@ namespace D2NG.Items
             {
                 item.runeword_id = (uint)reader.Read(12);
                 item.runeword_parameter = (byte)reader.Read(4);
-                //std::cout << "runeword_id: " << item.runeword_id << ", parameter: " << item.runeword_parameter << std::endl;
             }
 
             if (item.personalised)

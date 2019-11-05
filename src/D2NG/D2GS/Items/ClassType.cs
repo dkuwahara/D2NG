@@ -8,6 +8,6 @@
             normal,
             exceptional,
             elite
-        };
+        }
     }
 }

@@ -7,7 +7,7 @@
             Inventory = 0,
             Trade = 2,
             Cube = 3,
-            Stash = 4,
-        };
+            Stash = 4
+        }
     }
 }

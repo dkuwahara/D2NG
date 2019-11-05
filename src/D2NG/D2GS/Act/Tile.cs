@@ -62,7 +62,6 @@ namespace D2NG.D2GS.Act
 
         public bool IsWestOf(Tile t) => (this.X == t.X - t.Size.X) && (this.Y == t.Y);
 
-
         public override bool Equals(object obj)
         {
             return !(obj is Tile tile) ? false : this.X == tile.X && this.Y == tile.Y && this.Area == tile.Area;

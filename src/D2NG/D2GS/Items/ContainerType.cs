@@ -16,6 +16,6 @@
             weapon_tab_1 = 0x84,
             weapon_tab_2 = 0x86,
             misc_tab = 0x88,
-        };
+        }
     }
 }

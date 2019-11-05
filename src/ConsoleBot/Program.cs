@@ -10,6 +10,7 @@ using Serilog.Events;
 using System.Threading;
 using System.Diagnostics;
 using D2NG.D2GS.Items;
+using D2NG.D2GS;
 
 namespace ConsoleBot
 {
@@ -97,30 +98,63 @@ namespace ConsoleBot
 
         private void StashItems()
         {
-            Log.Verbose($"Current Stash:\n\n{Client.Game.Stash}\n");
-            var stashable = from item in Client.Game.Items
+            var game = Client.Game;
+            Log.Verbose($"Current Stash:\n\n{game.Stash}\n");
+            var stashable = from item in game.Items
                             where item.container == Item.ContainerType.inventory
                             where item.Type != "tbk" && item.Type != "cm1" && item.Type != "cm2"
                             select item;
 
-            Client.Game.SwitchSkill(D2NG.D2GS.Skill.telekinesis);
-            Thread.Sleep(200);
+            if(game.Me.ActiveSkills[Hand.Right] != Skill.Telekinesis)
+            {
+                Log.Verbose("Changing skill to Telekinesis");
+                game.SwitchSkill(Hand.Right, Skill.Telekinesis);
+                Thread.Sleep(200);
+            }
+
+            Log.Verbose("Finding stash");
+            var stash = game.WorldObjects.Values.First(wo => wo.Code == 267);
+            Log.Verbose($"Stash found at {stash.Location}");
+
+            Log.Verbose($"Attempting to move from {game.Me.Location} to {stash.Location}");
+
+            var points = new Point[]
+            {
+                new Point(5096, 5018),
+                new Point(5100, 5025),
+                new Point(5105, 5050),
+                new Point(5114, 5069)
+            };
+            foreach (var point in points)
+            {
+                Log.Verbose($"Moving to {point}");
+                game.MoveTo(point);
+                Thread.Sleep(500);
+            }
+            game.RequestUpdate(game.Me.Id);
+            Thread.Sleep(1000);
+            Log.Verbose($"Moving to {stash.Location}");
+            game.MoveTo(stash);
+            Thread.Sleep(2000);
+            game.RequestUpdate(game.Me.Id);
+            Log.Verbose("Interacting with stash");
+            game.Interact(stash);
+            Thread.Sleep(500);
 
             foreach (Item item in stashable)
             {
                 Log.Verbose($"Stashable [{item.Type}] {item.Name}");
-                var location = Client.Game.Stash.FindFreeSpace(item);
+                var location = game.Stash.FindFreeSpace(item);
                 if (location != null)
                 {
                     Log.Verbose($"Attempting to place {item.Name}, {item.id,8:X} => {location}");
-                    Client.Game.RemoveItemFromBuffer(item);
+                    game.RemoveItemFromBuffer(item);
                     Thread.Sleep(500);
-                    Client.Game.InsertItemToBuffer(item, location, Item.ItemContainer.Stash);
+                    game.InsertItemToBuffer(item, location, Item.ItemContainer.Stash);
                     Thread.Sleep(600);
-                    
                 }
             }
-            Log.Verbose($"New Stash:\n\n{Client.Game.Stash}\n");
+            Log.Verbose($"New Stash:\n\n{game.Stash}\n");
         }
 
         private static Character SelectCharacter(List<Character> characters)

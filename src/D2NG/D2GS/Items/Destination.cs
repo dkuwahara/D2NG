@@ -10,6 +10,6 @@
             ground = 3,
             cursor = 4,
             item = 6,
-        };
+        }
     }
 }

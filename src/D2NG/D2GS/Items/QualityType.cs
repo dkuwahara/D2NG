@@ -13,6 +13,6 @@
             Rare,
             Unique,
             Crafted
-        };
+        }
     }
 }
