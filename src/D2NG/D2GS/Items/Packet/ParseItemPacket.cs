@@ -222,7 +222,7 @@ namespace D2NG.Items
             item.HasColour = reader.ReadBit();
             if (item.HasColour)
             {
-                item.Colour = (UInt16)reader.Read(11);
+                item.Colour = (ushort)reader.Read(11);
             }
         }
 
@@ -242,13 +242,11 @@ namespace D2NG.Items
                         item.Prefix = (uint)reader.Read(11);
                         item.Suffix = (uint)reader.Read(11);
                         break;
-
                     case QualityType.Crafted:
                     case QualityType.Rare:
                         item.Prefix = (uint)reader.Read(8) - 156;
                         item.Suffix = (uint)reader.Read(8) - 1;
                         break;
-
                     case QualityType.Set:
                         item.SetCode = (uint)reader.Read(12);
                         break;
@@ -258,18 +256,23 @@ namespace D2NG.Items
                             item.UniqueCode = (uint)reader.Read(12);
                         }
                         break;
+                    default:
+                        // No additional bits to read for {item.Quality}
+                        break;
                 }
             }
 
             if (item.Quality == QualityType.Rare || item.Quality == QualityType.Crafted)
             {
-                for (ulong i = 0; i < 3; i++)
+                for (var i = 0; i < 3; i++)
                 {
-                    if (_ = reader.ReadBit())
+                    var hasPrefix = reader.ReadBit();
+                    if (hasPrefix)
                     {
                         item.Prefixes.Add((uint)reader.Read(11));
                     }
-                    if (_ = reader.ReadBit())
+                    var hasSuffix = reader.ReadBit();
+                    if (hasSuffix)
                     {
                         item.Suffixes.Add((uint)reader.Read(11));
                     }
@@ -284,13 +287,13 @@ namespace D2NG.Items
 
             if (item.IsPersonalised)
             {
-                var personalised_name = new List<byte>();
-                reader.Read(8);
-                while (personalised_name.Last() != 0x00)
+                var personalisedName = new List<byte>();
+                personalisedName.Add(reader.ReadByte());
+                while (personalisedName.Last() != 0x00)
                 {
-                    reader.Read(8); // 16 characters of 7 bits each for the name of the ear to process later
+                    personalisedName.Add(reader.ReadByte()); // 16 characters of 7 bits each for the name of the ear to process later
                 }
-                item.PersonalisedName = Convert.ToBase64String(personalised_name.ToArray()); //this is also a problem part i'm not sure about
+                item.PersonalisedName = Encoding.ASCII.GetString(personalisedName.ToArray()); 
             }
 
             if (item.IsArmor)

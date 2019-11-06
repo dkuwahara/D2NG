@@ -165,7 +165,6 @@ namespace D2NG
                     if (tokens.Length != 8)
                     {
                         Log.Error("Invalid Token Count: {0}", tokens.Length);
-                        throw new Exception("Unable to parse item data");
                     }
                     String name = tokens[0];
                     String code = tokens[1];
@@ -175,13 +174,8 @@ namespace D2NG
                     bool stackable = UInt32.Parse(tokens[5]) != 0;
                     bool usable = UInt32.Parse(tokens[6]) != 0;
                     bool throwable = UInt32.Parse(tokens[7]) != 0;
-                    ClassificationType classification;
-                    if (!classificationMap.TryGetValue(classification_string, out classification))
-                    {
-                        throw new Exception("Unable to parse item classification");
-                    }
-
-                    ItemEntry i = new ItemEntry(name, code, classification, width, height, stackable, usable, throwable);
+                    var classification = classificationMap[classification_string];
+                    var i = new ItemEntry(name, code, classification, width, height, stackable, usable, throwable);
                     Items.Add(i);
                 }
                 catch (Exception e)
@@ -207,12 +201,12 @@ namespace D2NG
     }
     class PlainTextDataType
     {
-        private List<String[]> m_lines;
+        private readonly List<String[]> m_lines;
 
         public PlainTextDataType(String file)
         {
             m_lines = new List<string[]>();
-            List<string> lines = new List<string>();
+            var lines = new List<string>();
 
             using (StreamReader r = new StreamReader(file))
             {
@@ -256,7 +250,7 @@ namespace D2NG
 
     class BinaryDataType
     {
-        private List<byte> m_data;
+        private readonly List<byte> m_data;
         public BinaryDataType(String file)
         {
             m_data = new List<byte>(File.ReadAllBytes(file));
