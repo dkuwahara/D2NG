@@ -18,8 +18,6 @@ namespace D2NG.D2GS.Items
         [YamlMember(Alias = "ethereal")]
         public bool Ethereal { get; set; }
 
-        public bool has_sockets;
-
         [YamlMember(Alias = "sockets")]
         public uint Sockets { get; set; }
 
@@ -82,5 +80,6 @@ namespace D2NG.D2GS.Items
         public bool IsIndestructible { get; set; }
         public uint Durability { get; set; }
         public uint MaximumDurability { get; set; }
+        public bool HasSockets { get; set; }
     }
 }

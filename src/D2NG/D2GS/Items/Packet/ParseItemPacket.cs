@@ -20,7 +20,7 @@ namespace D2NG.Items
             Log.Verbose($"{BitConverter.ToString(Raw)}");
             Log.Verbose($"(0x{packet.Type,2:X2}) Parse Item Packet:\n" +
                 $"\tLevel {Item.Level}, {Item.Quality}" + $" { (Item.Ethereal ? "Ethereal" : "")}" +
-                $"\t{ (Item.has_sockets ? $"Sockets: {Item.Sockets}" : "")}\n" + 
+                $"\t{ (Item.HasSockets ? $"Sockets: {Item.Sockets}" : "")}\n" + 
                 $"\t[{Item.Type}] " + $"{ (Item.IsIdentified ? "" : "Unidentified")} " + $"{Item.Name}\n" +
                 $"\tItem ID: {Item.Id}\n" +
                 $"\tAction: {Item.Action}\n" +
@@ -54,7 +54,7 @@ namespace D2NG.Items
             item.IsBroken = reader.ReadBit();
             reader.ReadBit();
             item.IsPotion = reader.ReadBit();
-            item.has_sockets = reader.ReadBit();
+            item.HasSockets = reader.ReadBit();
             reader.ReadBit();
             item.IsInStore = reader.ReadBit();
             item.IsNotInASocket = reader.ReadBit();
@@ -310,7 +310,7 @@ namespace D2NG.Items
                 item.Durability = (byte)reader.Read(8);
                 reader.ReadBit();
             }
-            if (item.has_sockets)
+            if (item.HasSockets)
             {
                 item.Sockets = (byte)reader.Read(4);
             }
