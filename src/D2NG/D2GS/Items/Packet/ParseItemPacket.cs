@@ -257,7 +257,7 @@ namespace D2NG.Items
                         }
                         break;
                     default:
-                        // No additional bits to read for {item.Quality}
+                        // No additional bits to read for item.Quality
                         break;
                 }
             }

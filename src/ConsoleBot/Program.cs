@@ -99,7 +99,7 @@ namespace ConsoleBot
         private void StashItems()
         {
             var game = Client.Game;
-            Log.Verbose($"Current Stash:\n\n{game.Stash}\n");
+            Log.Verbose($"Stash:\n\n{game.Stash}\n");
             var stashable = from item in game.Items
                             where item.Container == ContainerType.inventory
                             where item.Type != "tbk" && item.Type != "cm1" && item.Type != "cm2"
@@ -154,7 +154,7 @@ namespace ConsoleBot
                     Thread.Sleep(600);
                 }
             }
-            Log.Verbose($"New Stash:\n\n{game.Stash}\n");
+            Log.Verbose($"Stash:\n\n{game.Stash}\n");
         }
 
         private static Character SelectCharacter(List<Character> characters)
