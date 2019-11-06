@@ -5,7 +5,6 @@ using Stateless;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace D2NG.BNCS
@@ -103,10 +102,9 @@ namespace D2NG.BNCS
                 .Permit(Trigger.LeaveChat, State.UserAuthenticated)
                 .Permit(Trigger.Disconnect, State.NotConnected);
 
-            Connection.PacketReceived += (obj, packet) => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
+            Connection.PacketReceived += (obj, packet) 
+                => PacketReceivedEventHandlers.GetValueOrDefault(packet.Type, p => Log.Verbose($"Received unhandled BNCS packet of type: {p.Type}"))?.Invoke(packet);
             Connection.PacketSent += (obj, packet) => PacketSentEventHandlers.GetValueOrDefault(packet.Type, null)?.Invoke(packet);
-
-            Connection.PacketReceived += (obj, packet) => Log.Verbose($"Received BNCS packet of type: {packet.Type}");
 
             OnReceivedPacketEvent(Sid.PING, packet => Connection.WritePacket(packet.Raw));
             OnReceivedPacketEvent(Sid.QUERYREALMS2, ListRealmsEvent.Set);
@@ -115,6 +113,7 @@ namespace D2NG.BNCS
             OnReceivedPacketEvent(Sid.AUTH_INFO, AuthInfoEvent.Set);
             OnReceivedPacketEvent(Sid.ENTERCHAT, EnterChatEvent.Set);
             OnReceivedPacketEvent(Sid.LOGONRESPONSE2, LogonEvent.Set);
+            OnReceivedPacketEvent(Sid.REQUIREDWORK, _ => { } );
         }
 
         internal void LeaveGame() => Connection.WritePacket(new LeaveGamePacket());

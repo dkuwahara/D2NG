@@ -17,9 +17,8 @@ namespace D2NG.MCP.Packet
             )
         {
             Log.Verbose($"JoinGameRequestPacket\n" +
-                $"\tRequest Id {id}\n" +
-                $"\tGame Name {name}\n" +
-                $"\tPassword {password}");
+                $"\tRequest Id: {id}\n" +
+                $"\tGame: {name} /" + $" {password}");
         }
     }
 }

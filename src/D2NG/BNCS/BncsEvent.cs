@@ -13,7 +13,6 @@ namespace D2NG.BNCS
         public void Reset()
         {
             _event.Reset();
-            _packet = null;
         }
 
         public BncsPacket WaitForPacket()

@@ -1,0 +1,302 @@
+- name: Unique Ring
+  type: rin
+  quality: Unique
+
+- name: Unique Amulet
+  type: amu
+  quality: Unique
+
+- name: Griffon's Eye
+  type: ci3
+  quality: Unique
+  ethereal: false
+
+- name: Harlequins Crest
+  type: uap
+  quality: Unique
+  ethereal: false
+
+- name: Nightwings Veil
+  type: uhm
+  quality: Unique
+  ethereal: false
+
+- name: Andariel's Visage
+  type: usk
+  quality: Unique
+  ethereal: false
+
+- name: Crown of Ages
+  type: urn
+  quality: Unique
+  ethereal: false
+
+- name: Giant Skull
+  type: uh9
+  quality: Unique
+  ethereal: false
+
+- name: Zod Rune
+  type: r33
+  quality: normal
+
+- name: Cham Rune
+  type: r32
+  quality: normal
+
+- name: Jah Rune
+  type: r31
+  quality: normal
+
+- name: BerRune
+  type: r30
+  quality: normal
+
+- name: Sur Rune
+  type: r29
+  quality: normal
+
+- name: Lo Rune
+  type: r28
+  quality: normal
+
+- name: Ohm Rune
+  type: r27
+  quality: normal
+
+- name: Vex Rune
+  type: r26
+  quality: normal
+
+- name: GulRune
+  type: r25
+  quality: normal
+
+- name: Ist Rune
+  type: r24
+  quality: normal
+
+- name: Mal Rune
+  type: r23
+  quality: normal
+
+- name: Um Rune
+  type: r22
+  quality: normal
+
+- name: Pul Rune
+  type: r21
+  quality: normal
+
+- name: Rainbow Facet
+  type: jew
+  quality: unique
+
+- name: Arkaine's Valor
+  type: up1
+  quality: unique
+
+- name: Tyraels/Templars
+  type: uar
+  quality: unique
+
+- name: Ormus
+  type: uui
+  quality: unique
+
+- name: Vipermagi
+  type: xea
+  quality: unique
+
+- name: Stormshield
+  type: uit
+  quality: unique
+
+- name: Steelrend
+  type: uhq
+  quality: unique
+
+- name: Dracs
+  type: uvg
+  quality: unique
+
+- name: Sandstorm Treks
+  type: uvb
+  quality: unique
+
+- name: Marrowwalk
+  type: umb
+  quality: unique
+
+- name: Shadow Dancer
+  type: uhb
+  quality: unique
+
+- name: War Travs
+  type: xtb
+  quality: unique
+
+- name: Arachnid's Mesh
+  type: ulc
+  quality: unique
+
+- name: Dungos
+  type: umc
+  quality: unique
+
+- name: Thunder Gods Vigor
+  type: zhb
+  quality: unique
+
+- name: Deaths Web
+  type: 7gw
+  quality: unique
+
+- name: Wizard Spike
+  type: 7dg
+  quality: unique
+
+- name: Rune Master
+  type: 72a
+  quality: unique
+
+- name: Death Cleaver
+  type: 7wa
+  quality: unique
+
+- name: Tomb Reaver
+  type: 7pa
+  quality: unique
+
+- name: Lightsabre
+  type: 7cr
+  quality: unique
+
+- name: Ondals
+  type: 6cs
+  quality: unique
+
+- name: Alma Negra
+  type: pac
+  quality: unique
+
+- name: Herald
+  type: pa9
+  quality: unique
+
+- name: Titan's Revenge
+  type: ama
+  quality: unique
+
+- name: Thunderstrokes
+  type: amf
+  quality: unique
+
+- name: Arreats Face
+  type: baa
+  quality: unique
+
+- name: Wolfhowl
+  type: bac
+  quality: unique
+
+- name: Halaberds
+  type: bae
+  quality: unique
+
+- name: Death's Fathom
+  type: obf
+  quality: unique
+
+- name: Eschutas
+  type: obc
+  quality: unique
+
+- name: Tal Rasha's Armor
+  type: uth
+  quality: set
+
+- name: Tal Rasha's Amulet
+  type: amu
+  quality: set
+
+- name: Tal Rasha's Orb
+  type: oba
+  quality: set
+
+- name: Tal Rasha's Belt
+  type: zmb
+  quality: set
+
+- name: Chance Guards
+  type: mg1
+  quality: unique
+
+- name: Skullders
+  type: xpl
+  quality: unique
+
+- name: Vamp Gaze
+  type: xh9
+  quality: unique
+
+- name: Glad Bane
+  type: utu
+  quality: unique
+
+- name: Oculus
+  type: oba
+  quality: unique
+
+- name: Moser's
+  type: xml
+  quality: unique
+
+- name: Duriel's
+  type: xrs
+  quality: unique
+
+- name: Shaftstop
+  type: xhn
+  quality: unique
+
+- name: Waterwalk
+  type: xvb
+  quality: unique
+
+- name: Cryptic Axe
+  type: 7pa
+  quality: superior
+  sockets: 4
+  ethereal: true
+
+- name: Colossus Voulge
+  type: 7vc
+  quality: superior
+  sockets: 4
+  ethereal: true
+
+- name: Great Poleaxe
+  type: 7h7
+  quality: superior
+  sockets: 4
+  ethereal: true
+
+- name: Giant Thresh
+  type: 7wc
+  quality: superior
+  sockets: 4
+  ethereal: true
+
+- name: Thresher
+  type: 7s8
+  quality: superior
+  sockets: 4
+  ethereal: true
+
+- name: Gold
+  type: gld
+
+- name: Rejuv
+  type: rvl
+  quality: normal

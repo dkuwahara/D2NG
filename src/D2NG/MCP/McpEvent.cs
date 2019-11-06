@@ -19,7 +19,7 @@ namespace D2NG.MCP
         public McpPacket WaitForPacket()
         {
             _event.WaitOne();
-            return _packet;
+            return _packet!;
         }
 
         public void Set(McpPacket packet)

@@ -8,6 +8,9 @@ using D2NG.MCP;
 using System.Collections.Generic;
 using Serilog.Events;
 using System.Threading;
+using System.Diagnostics;
+using D2NG.D2GS.Items;
+using D2NG.D2GS;
 
 namespace ConsoleBot
 {
@@ -39,7 +42,7 @@ namespace ConsoleBot
                 Config = Config.FromFile(this.ConfigFile);
             }
 
-            //Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
+            Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
 
             try {
                 Client.Connect(
@@ -57,16 +60,35 @@ namespace ConsoleBot
 
                 Client.Chat.JoinChannel("D2NG");
 
-                Client.Chat.Send("Hello World!");
-                Client.Chat.Emote("is alive");
+                Thread.Sleep(5_000);
+                while(true)
+                {
+                    var time = Stopwatch.StartNew();
+                    Client.CreateGame(Difficulty.Normal, $"d2ng{new Random().Next(1000)}", "d2ng");
+                    Log.Information("In game");
 
-                Client.CreateGame(Difficulty.Normal, $"d2ng{new Random().Next(1000)}", "d2ng");
-                Thread.Sleep(30_000);
-                Client.LeaveGame();
-                Thread.Sleep(30_000);
-                Client.CreateGame(Difficulty.Normal, $"ngd2{new Random().Next(1000)}", "d2ng");
-                Thread.Sleep(30_000);
-                Client.LeaveGame();
+                    // Wait for game load
+
+                    // Stash Items
+                    StashItems();
+
+                    // Move to Act 5
+                    
+                    // Malah
+                    
+                    // Revive Merc
+                    
+                    // Kill Pindle
+
+                    // Pickup Items
+
+                    Thread.Sleep(30_000);
+
+                    Client.Game.LeaveGame();
+                    time.Stop();
+                    Log.Information($"Game took: {time.Elapsed.TotalSeconds} seconds");
+                    Thread.Sleep(30_000);
+                }
             }
             catch (Exception e)
             {
@@ -74,7 +96,68 @@ namespace ConsoleBot
             }
         }
 
-        private Character SelectCharacter(List<Character> characters)
+        private void StashItems()
+        {
+            var game = Client.Game;
+            Log.Verbose($"Stash:\n\n{game.Stash}\n");
+            var stashable = from item in game.Items
+                            where item.Container == ContainerType.inventory
+                            where item.Type != "tbk" && item.Type != "cm1" && item.Type != "cm2"
+                            select item;
+
+            if(game.Me.ActiveSkills[Hand.Right] != Skill.Telekinesis)
+            {
+                Log.Verbose("Changing skill to Telekinesis");
+                game.SwitchSkill(Hand.Right, Skill.Telekinesis);
+                Thread.Sleep(200);
+            }
+
+            Log.Verbose("Finding stash");
+            var stash = game.WorldObjects.Values.First(wo => wo.Code == 267);
+            Log.Verbose($"Stash found at {stash.Location}");
+
+            Log.Verbose($"Attempting to move from {game.Me.Location} to {stash.Location}");
+
+            var points = new []
+            {
+                new Point(5096, 5018),
+                new Point(5100, 5025),
+                new Point(5105, 5050),
+                new Point(5114, 5069)
+            };
+            foreach (var point in points)
+            {
+                Log.Verbose($"Moving to {point}");
+                game.MoveTo(point);
+                Thread.Sleep(500);
+            }
+            game.RequestUpdate(game.Me.Id);
+            Thread.Sleep(1000);
+            Log.Verbose($"Moving to {stash.Location}");
+            game.MoveTo(stash);
+            Thread.Sleep(2000);
+            game.RequestUpdate(game.Me.Id);
+            Log.Verbose("Interacting with stash");
+            game.Interact(stash);
+            Thread.Sleep(500);
+
+            foreach (Item item in stashable)
+            {
+                Log.Verbose($"Stashable [{item.Type}] {item.Name}");
+                var location = game.Stash.FindFreeSpace(item);
+                if (location != null)
+                {
+                    Log.Verbose($"Attempting to place {item.Name}, {item.Id,8:X} => {location}");
+                    game.RemoveItemFromBuffer(item);
+                    Thread.Sleep(500);
+                    game.InsertItemToBuffer(item, location, ItemContainer.Stash);
+                    Thread.Sleep(600);
+                }
+            }
+            Log.Verbose($"Stash:\n\n{game.Stash}\n");
+        }
+
+        private static Character SelectCharacter(List<Character> characters)
         {
             var charsPrompt = characters
                 .Select((c, index) => $"{index + 1}. {c.Name} - Level {c.Level} {c.Class}")
@@ -86,7 +169,10 @@ namespace ConsoleBot
         private static void HandleChatEvent(BncsPacket obj)
         {
             var packet = new ChatEventPacket(obj.Raw);
-            Log.Information(packet.RenderText());
+            if (packet.Eid != Eid.SHOWUSER)
+            {
+                Log.Information(packet.RenderText());
+            }
         }
     }
 }

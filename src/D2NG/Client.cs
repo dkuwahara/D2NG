@@ -18,6 +18,7 @@ namespace D2NG
         internal GameServer D2gs { get; } = new GameServer();
 
         public Chat Chat { get; }
+        public Game Game { get; }
 
         private Character _character;
         private string _mcpRealm;
@@ -25,6 +26,9 @@ namespace D2NG
         public Client()
         {
             Chat = new Chat(Bncs);
+            Game = new Game(D2gs);
+
+            OnSentPacketEvent(0x69, _ => LeaveGame());
         }
 
         public void OnReceivedPacketEvent(Sid sid, Action<BncsPacket> action)
@@ -105,13 +109,8 @@ namespace D2NG
             Bncs.NotifyJoin(name, password);
         }
 
-        /// <summary>
-        /// Leave current game
-        /// </summary>
-        public void LeaveGame()
+        private void LeaveGame()
         {
-            Log.Information("Leaving game");
-            D2gs.LeaveGame();
             Bncs.LeaveGame();
             RealmLogon();
             Mcp.CharLogon(_character);

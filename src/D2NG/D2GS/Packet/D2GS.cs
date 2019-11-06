@@ -64,6 +64,7 @@
         TRADEACTION = 0x77,
         LOGONRESPONSE = 0x7A,
         UNIQUEEVENTS = 0x89,
-        NEGOTIATECOMPRESSION = 0xAF
+        NEGOTIATECOMPRESSION = 0xAF,
+        GAMEFLAGS = 0x01
     }
 }

@@ -19,11 +19,10 @@ namespace D2NG.MCP.Packet
                 )
             )
         {
-            Log.Verbose($"CreateGameRequestPacket\n" +
+            Log.Verbose($"(0x{Type}) CreateGameRequestPacket:\n" +
                 $"\tRequest Id {id}\n" +
                 $"\tDifficulty {difficulty}\n" +
-                $"\tGame Name {name}\n" +
-                $"\tPassword {password}\n");
+                $"\tGame: {name} /" + $" {password}");
         }
     }
 }
