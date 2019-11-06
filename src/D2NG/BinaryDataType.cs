@@ -23,5 +23,4 @@ namespace D2NG
             return true;
         }
     }
-
 }

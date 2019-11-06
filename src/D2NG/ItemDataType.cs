@@ -132,5 +132,4 @@ namespace D2NG
             return false;
         }
     }
-
 }
