@@ -79,7 +79,7 @@ namespace D2NG
         public void RemoveItemFromBuffer(Item item)
         {
             var packet = D2gsPacket.BuildPacket(0x19,
-                    BitConverter.GetBytes(item.id)
+                    BitConverter.GetBytes(item.Id)
                 );
             _gameServer.SendPacket(packet);
         }
@@ -106,7 +106,7 @@ namespace D2NG
         public void InsertItemToBuffer(Item item, Point location, ItemContainer container)
         {
             var packet = D2gsPacket.BuildPacket(0x18,
-                        BitConverter.GetBytes(item.id),
+                        BitConverter.GetBytes(item.Id),
                         BitConverter.GetBytes((uint)location.X),
                         BitConverter.GetBytes((uint)location.Y),
                         BitConverter.GetBytes((uint)container)

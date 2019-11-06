@@ -101,7 +101,7 @@ namespace ConsoleBot
             var game = Client.Game;
             Log.Verbose($"Current Stash:\n\n{game.Stash}\n");
             var stashable = from item in game.Items
-                            where item.container == ContainerType.inventory
+                            where item.Container == ContainerType.inventory
                             where item.Type != "tbk" && item.Type != "cm1" && item.Type != "cm2"
                             select item;
 
@@ -147,7 +147,7 @@ namespace ConsoleBot
                 var location = game.Stash.FindFreeSpace(item);
                 if (location != null)
                 {
-                    Log.Verbose($"Attempting to place {item.Name}, {item.id,8:X} => {location}");
+                    Log.Verbose($"Attempting to place {item.Name}, {item.Id,8:X} => {location}");
                     game.RemoveItemFromBuffer(item);
                     Thread.Sleep(500);
                     game.InsertItemToBuffer(item, location, ItemContainer.Stash);

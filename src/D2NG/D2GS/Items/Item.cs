@@ -7,12 +7,10 @@ namespace D2NG.D2GS.Items
     {
         public Item()
         {
-            prefixes = new List<uint>();
-            suffixes = new List<uint>();
+            Prefixes = new List<uint>();
+            Suffixes = new List<uint>();
             Sockets = uint.MaxValue;
         }
-
-        public Action action;
 
         [YamlMember(Alias = "name")]
         public string Name { get; set; }
@@ -31,86 +29,58 @@ namespace D2NG.D2GS.Items
         [YamlMember(Alias = "type")]
         public string Type { get; set; }
 
-        public ushort width;
-        public ushort height;
-
-        public uint category;
-        public uint id;
-        public bool equipped;
-        public bool in_socket;
-        public bool identified;
-        public bool switched_in;
-        public bool switched_out;
-        public bool broken;
-        public bool potion;
-
-        public bool in_store;
-        public bool not_in_a_socket;
-        public bool ear;
-        public bool start_item;
-        public bool simple_item;
-
-        public bool personalised;
-        public bool gambling;
-        public bool rune_word;
-
-        public bool ground;
-
-        public VersionType version;
-
-        public bool unspecified_directory;
-        public uint x;
-        public uint y;
-        public uint directory;
-        public ContainerType container;
-
-        public uint ear_level;
-        public string ear_name;
-
-        public bool is_gold;
-        public uint amount;
-
-        public uint used_sockets;
-        public uint level;
-
-        public bool has_graphic;
-        public uint graphic;
-
-        public bool has_colour;
-        public uint colour;
-
-        public uint prefix;
-        public uint suffix;
-
-        public List<uint> prefixes;
-        public List<uint> suffixes;
-
-        public SuperiorItemClassType superiority;
-
-        public uint set_code;
-        public uint unique_code;
-
-        public uint runeword_id;
-        public uint runeword_parameter;
-
-        public string personalised_name;
-
-        public bool is_armor;
-        public bool is_weapon;
-        public uint defense;
-
-        public uint indestructible;
-        public uint durability;
-        public uint maximum_durability;
-
-        public static bool operator <(Item first, Item other)
-        {
-            return false;
-        }
-
-        public static bool operator >(Item first, Item other)
-        {
-            return false;
-        }
+        public Action Action { get; set; }
+        public ushort Width { get; set; }
+        public ushort Height { get; set; }
+        public uint Category { get; set; }
+        public uint Id { get; set; }
+        public bool IsEquipped { get; set; }
+        public bool IsInSocket { get; set; }
+        public bool IsIdentified { get; set; }
+        public bool IsSwitchedIn { get; set; }
+        public bool IsSwitchedOut { get; set; }
+        public bool IsBroken { get; set; }
+        public bool IsPotion { get; set; }
+        public bool IsInStore { get; set; }
+        public bool IsNotInASocket { get; set; }
+        public bool IsEar { get; set; }
+        public bool IsStartItem { get; set; }
+        public bool IsSimpleItem { get; set; }
+        public bool IsPersonalised { get; set; }
+        public bool Gambling { get; set; }
+        public bool IsRuneword { get; set; }
+        public bool Ground { get; set; }
+        public VersionType Version { get; set; }
+        public bool UnspecifiedDirectory { get; set; }
+        public uint X { get; set; }
+        public uint Y { get; set; }
+        public uint Directory { get; set; }
+        public ContainerType Container { get; set; }
+        public uint EarLevel { get; set; }
+        public string EarName { get; set; }
+        public bool IsGold { get; set; }
+        public uint Amount { get; set; }
+        public uint UsedSockets { get; set; }
+        public uint Level { get; set; }
+        public bool HasGraphic { get; set; }
+        public uint Graphic { get; set; }
+        public bool HasColour { get; set; }
+        public uint Colour { get; set; }
+        public uint Prefix { get; set; }
+        public uint Suffix { get; set; }
+        public uint SetCode { get; set; }
+        public uint UniqueCode { get; set; }
+        public List<uint> Prefixes { get; set; }
+        public List<uint> Suffixes { get; set; }
+        public uint RunewordId { get; set; }
+        public uint RunewordParameter { get; set; }
+        public SuperiorItemClassType Superiority { get; set; }
+        public string PersonalisedName { get; set; }
+        public bool IsArmor { get; set; }
+        public bool IsWeapon { get; set; }
+        public uint Defense { get; set; }
+        public bool IsIndestructible { get; set; }
+        public uint Durability { get; set; }
+        public uint MaximumDurability { get; set; }
     }
 }

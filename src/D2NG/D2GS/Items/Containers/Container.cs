@@ -30,22 +30,22 @@ namespace D2NG.D2GS.Items.Containers
         
         private void SetBuffer(Item item, bool value)
         {
-            for(int y = 0; y < item.height; y++)
+            for(int y = 0; y < item.Height; y++)
             {
-                for (int x = 0; x < item.width; x++)
+                for (int x = 0; x < item.Width; x++)
                 {
-                    Buffer[item.y + y, item.x + x] = value;
+                    Buffer[item.Y + y, item.X + x] = value;
                 }
             }
         }
 
         public void Add(Item item)
         {
-            Items[item.id] = item;
+            Items[item.Id] = item;
             SetBuffer(item, true);
         }
 
-        public void Remove(Item item) => Remove(item.id);
+        public void Remove(Item item) => Remove(item.Id);
 
         public void Remove(uint id)
         {
@@ -62,7 +62,7 @@ namespace D2NG.D2GS.Items.Containers
                 for (ushort x = 0; x < Width; x++)
                 {
                     var point = new Point(x, y);
-                    if (SpaceIsFree(point, item.width, item.height))
+                    if (SpaceIsFree(point, item.Width, item.Height))
                     {
                         return point;
                     }

@@ -96,8 +96,8 @@ namespace D2NG
         internal void ItemUpdate(ParseItemPacket packet)
         {
             var item = packet.Item;
-            Items[item.id] = packet.Item;
-            switch (item.action)
+            Items[item.Id] = packet.Item;
+            switch (item.Action)
             {
                 case Action.put_in_container:
                     PutInContainer(item);
@@ -115,7 +115,7 @@ namespace D2NG
 
         private void RemoveFromContainer(Item item)
         {
-            switch (item.container)
+            switch (item.Container)
             {
                 case ContainerType.stash:
                     Log.Verbose("Removing item from stash");
@@ -135,7 +135,7 @@ namespace D2NG
 
         private void PutInContainer(Item item)
         {
-            switch (item.container)
+            switch (item.Container)
             {
                 case ContainerType.stash:
                     Log.Verbose("Adding item to stash");

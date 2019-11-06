@@ -19,21 +19,21 @@ namespace D2NG.Items
             Item = Parse(Raw.ToList());
             Log.Verbose($"{BitConverter.ToString(Raw)}");
             Log.Verbose($"(0x{packet.Type,2:X2}) Parse Item Packet:\n" +
-                $"\tLevel {Item.level}, {Item.Quality}" + $" { (Item.Ethereal ? "Ethereal" : "")}" +
+                $"\tLevel {Item.Level}, {Item.Quality}" + $" { (Item.Ethereal ? "Ethereal" : "")}" +
                 $"\t{ (Item.has_sockets ? $"Sockets: {Item.Sockets}" : "")}\n" + 
-                $"\t[{Item.Type}] " + $"{ (Item.identified ? "" : "Unidentified")} " + $"{Item.Name}\n" +
-                $"\tItem ID: {Item.id}\n" +
-                $"\tAction: {Item.action}\n" +
-                $"\tContainer: {Item.container}");
+                $"\t[{Item.Type}] " + $"{ (Item.IsIdentified ? "" : "Unidentified")} " + $"{Item.Name}\n" +
+                $"\tItem ID: {Item.Id}\n" +
+                $"\tAction: {Item.Action}\n" +
+                $"\tContainer: {Item.Container}");
         }
 
         private static void GenericInfo(BitReader reader, ref Item item) // get basic info such as item
         {
             byte packet = reader.ReadByte();
-            item.action = (Action)reader.ReadByte();
-            item.category = reader.ReadByte();
+            item.Action = (Action)reader.ReadByte();
+            item.Category = reader.ReadByte();
             _ = reader.ReadByte();
-            item.id = reader.ReadUInt32();
+            item.Id = reader.ReadUInt32();
             if (packet == 0x9d)
             {
                 _ = reader.ReadUInt32();
@@ -43,96 +43,96 @@ namespace D2NG.Items
 
         private static void StatusInfo(BitReader reader, ref Item item) // get info for basic status info
         {
-            item.equipped = reader.ReadBit();
+            item.IsEquipped = reader.ReadBit();
             reader.ReadBit();
             reader.ReadBit();
-            item.in_socket = reader.ReadBit();
-            item.identified = reader.ReadBit();
+            item.IsInSocket = reader.ReadBit();
+            item.IsIdentified = reader.ReadBit();
             reader.ReadBit();
-            item.switched_in = reader.ReadBit();
-            item.switched_out = reader.ReadBit();
-            item.broken = reader.ReadBit();
+            item.IsSwitchedIn = reader.ReadBit();
+            item.IsSwitchedOut = reader.ReadBit();
+            item.IsBroken = reader.ReadBit();
             reader.ReadBit();
-            item.potion = reader.ReadBit();
+            item.IsPotion = reader.ReadBit();
             item.has_sockets = reader.ReadBit();
             reader.ReadBit();
-            item.in_store = reader.ReadBit();
-            item.not_in_a_socket = reader.ReadBit();
+            item.IsInStore = reader.ReadBit();
+            item.IsNotInASocket = reader.ReadBit();
             reader.ReadBit();
-            item.ear = reader.ReadBit();
-            item.start_item = reader.ReadBit();
+            item.IsEar = reader.ReadBit();
+            item.IsStartItem = reader.ReadBit();
             reader.ReadBit();
             reader.ReadBit();
             reader.ReadBit();
-            item.simple_item = reader.ReadBit();
+            item.IsSimpleItem = reader.ReadBit();
             item.Ethereal = reader.ReadBit();
             reader.ReadBit();
-            item.personalised = reader.ReadBit();
-            item.gambling = reader.ReadBit();
-            item.rune_word = reader.ReadBit();
+            item.IsPersonalised = reader.ReadBit();
+            item.Gambling = reader.ReadBit();
+            item.IsRuneword = reader.ReadBit();
             reader.Read(5);
-            item.version = (VersionType)reader.ReadByte();
+            item.Version = (VersionType)reader.ReadByte();
         }
 
         private static void ReadLocation(BitReader reader, ref Item item)
         {
             _ = reader.Read(2);
-            item.ground = reader.Read(3) == 0x03;
+            item.Ground = reader.Read(3) == 0x03;
 
-            if (item.ground)
+            if (item.Ground)
             {
-                item.x = reader.ReadUInt16();
-                item.y = reader.ReadUInt16();
+                item.X = reader.ReadUInt16();
+                item.Y = reader.ReadUInt16();
             }
             else
             {
-                item.directory = (byte)reader.Read(4);
-                item.x = (byte)reader.Read(4);
-                item.y = (byte)reader.Read(3);
-                item.container = (ContainerType)(reader.Read(4));
+                item.Directory = (byte)reader.Read(4);
+                item.X = (byte)reader.Read(4);
+                item.Y = (byte)reader.Read(3);
+                item.Container = (ContainerType)(reader.Read(4));
             }
-            item.unspecified_directory = false;
+            item.UnspecifiedDirectory = false;
 
-            if (item.action == Action.add_to_shop || item.action == Action.remove_from_shop)
+            if (item.Action == Action.add_to_shop || item.Action == Action.remove_from_shop)
             {
-                long container = (long)(item.container);
+                long container = (long)(item.Container);
                 container |= 0x80;
                 if ((container & 1) != 0)
                 {
                     container--; //remove first bit
-                    item.y += 8;
+                    item.Y += 8;
                 }
-                item.container = (ContainerType)container;
+                item.Container = (ContainerType)container;
             }
-            else if (item.container == ContainerType.unspecified)
+            else if (item.Container == ContainerType.unspecified)
             {
-                if (item.directory == (uint)DirectoryType.not_applicable)
+                if (item.Directory == (uint)DirectoryType.not_applicable)
                 {
-                    if (item.in_socket)
+                    if (item.IsInSocket)
                     {
                         //y is ignored for this container type, x tells you the index
-                        item.container = ContainerType.item;
+                        item.Container = ContainerType.item;
                     }
-                    else if (item.action == Action.put_in_belt || item.action == Action.remove_from_belt)
+                    else if (item.Action == Action.put_in_belt || item.Action == Action.remove_from_belt)
                     {
-                        item.container = ContainerType.belt;
-                        item.y = item.x / 4;
-                        item.x %= 4;
+                        item.Container = ContainerType.belt;
+                        item.Y = item.X / 4;
+                        item.X %= 4;
                     }
                 }
                 else
                 {
-                    item.unspecified_directory = true;
+                    item.UnspecifiedDirectory = true;
                 }
             }
         }
 
         public static bool EarInfo(BitReader reader, ref Item item)
         {
-            if (item.ear)
+            if (item.IsEar)
             {
                 reader.Read(3);
-                item.ear_level = (byte)reader.Read(7);
+                item.EarLevel = (byte)reader.Read(7);
                 //item.ear_name = "Fix Me"; //fix me later
                 List<Byte> ear_name = new List<byte>();
                 reader.Read(8);
@@ -141,7 +141,7 @@ namespace D2NG.Items
                     reader.Read(8); // 16 characters of 7 bits each for the name of the ear to process later
                 }
 
-                item.ear_name = Convert.ToBase64String(ear_name.ToArray());
+                item.EarName = Convert.ToBase64String(ear_name.ToArray());
                 return true;
             }
             else
@@ -168,23 +168,23 @@ namespace D2NG.Items
             }
 
             item.Name = entry.Name;
-            item.width = entry.Width;
-            item.height = entry.Height;
+            item.Width = entry.Width;
+            item.Height = entry.Height;
 
-            item.is_armor = entry.IsArmor();
-            item.is_weapon = entry.IsWeapon();
+            item.IsArmor = entry.IsArmor();
+            item.IsWeapon = entry.IsWeapon();
 
             if (item.Type == "gld")
             {
-                item.is_gold = true;
+                item.IsGold = true;
                 bool big_pile = reader.ReadBit();
                 if (big_pile)
                 {
-                    item.amount = (uint)reader.Read(32);
+                    item.Amount = (uint)reader.Read(32);
                 }
                 else
                 {
-                    item.amount = (uint)reader.Read(12);
+                    item.Amount = (uint)reader.Read(12);
                 }
                 return true;
             }
@@ -196,66 +196,66 @@ namespace D2NG.Items
 
         public static void ReadSocketInfo(BitReader reader, ref Item item)
         {
-            item.used_sockets = (byte)reader.Read(3);
+            item.UsedSockets = (byte)reader.Read(3);
         }
 
         public static bool ReadLevelQuality(BitReader reader, ref Item item)
         {
             item.Quality = QualityType.Normal;
-            if (item.simple_item || item.gambling)
+            if (item.IsSimpleItem || item.Gambling)
             {
                 return false;
             }
-            item.level = (byte)reader.Read(7);
+            item.Level = (byte)reader.Read(7);
             item.Quality = (QualityType)(reader.Read(4));
             return true;
         }
 
         public static void ReadGraphicInfo(BitReader reader, ref Item item)
         {
-            item.has_graphic = reader.ReadBit();
-            if (item.has_graphic)
+            item.HasGraphic = reader.ReadBit();
+            if (item.HasGraphic)
             {
-                item.graphic = (byte)reader.Read(3);
+                item.Graphic = (byte)reader.Read(3);
             }
 
-            item.has_colour = reader.ReadBit();
-            if (item.has_colour)
+            item.HasColour = reader.ReadBit();
+            if (item.HasColour)
             {
-                item.colour = (UInt16)reader.Read(11);
+                item.Colour = (UInt16)reader.Read(11);
             }
         }
 
         public static void ReadIdentifiedInfo(BitReader reader, ref Item item)
         {
-            if (item.identified)
+            if (item.IsIdentified)
             {
                 switch (item.Quality)
                 {
                     case QualityType.Inferior:
-                        item.prefix = (byte)reader.Read(3);
+                        item.Prefix = (byte)reader.Read(3);
                         break;
                     case QualityType.Superior:
-                        item.superiority = (SuperiorItemClassType)(reader.Read(3));
+                        item.Superiority = (SuperiorItemClassType)(reader.Read(3));
                         break;
                     case QualityType.Magical:
-                        item.prefix = (uint)reader.Read(11);
-                        item.suffix = (uint)reader.Read(11);
+                        item.Prefix = (uint)reader.Read(11);
+                        item.Suffix = (uint)reader.Read(11);
                         break;
 
                     case QualityType.Crafted:
                     case QualityType.Rare:
-                        item.prefix = (uint)reader.Read(8) - 156;
-                        item.suffix = (uint)reader.Read(8) - 1;
+                        item.Prefix = (uint)reader.Read(8) - 156;
+                        item.Suffix = (uint)reader.Read(8) - 1;
                         break;
 
                     case QualityType.Set:
-                        item.set_code = (uint)reader.Read(12);
+                        item.SetCode = (uint)reader.Read(12);
                         break;
                     case QualityType.Unique:
                         if (item.Type != "std") //standard of heroes exception?
                         {
-                            item.unique_code = (uint)reader.Read(12);
+                            item.UniqueCode = (uint)reader.Read(12);
                         }
                         break;
                 }
@@ -267,22 +267,22 @@ namespace D2NG.Items
                 {
                     if (_ = reader.ReadBit())
                     {
-                        item.prefixes.Add((uint)reader.Read(11));
+                        item.Prefixes.Add((uint)reader.Read(11));
                     }
                     if (_ = reader.ReadBit())
                     {
-                        item.suffixes.Add((uint)reader.Read(11));
+                        item.Suffixes.Add((uint)reader.Read(11));
                     }
                 }
             }
 
-            if (item.rune_word)
+            if (item.IsRuneword)
             {
-                item.runeword_id = (uint)reader.Read(12);
-                item.runeword_parameter = (byte)reader.Read(4);
+                item.RunewordId = (uint)reader.Read(12);
+                item.RunewordParameter = (byte)reader.Read(4);
             }
 
-            if (item.personalised)
+            if (item.IsPersonalised)
             {
                 var personalised_name = new List<byte>();
                 reader.Read(8);
@@ -290,24 +290,24 @@ namespace D2NG.Items
                 {
                     reader.Read(8); // 16 characters of 7 bits each for the name of the ear to process later
                 }
-                item.personalised_name = Convert.ToBase64String(personalised_name.ToArray()); //this is also a problem part i'm not sure about
+                item.PersonalisedName = Convert.ToBase64String(personalised_name.ToArray()); //this is also a problem part i'm not sure about
             }
 
-            if (item.is_armor)
+            if (item.IsArmor)
             {
-                item.defense = (uint)reader.Read(11) - 10;
+                item.Defense = (uint)reader.Read(11) - 10;
             }
 
             if (item.Type == "7cr")
             {
                 reader.Read(8);
             }
-            else if (item.is_armor || item.is_weapon)
+            else if (item.IsArmor || item.IsWeapon)
             {
-                item.maximum_durability = (byte)reader.Read(8);
-                item.indestructible = (uint)((item.maximum_durability == 0) ? 1 : 0);
+                item.MaximumDurability = (byte)reader.Read(8);
+                item.IsIndestructible = item.MaximumDurability == 0 ? true : false;
 
-                item.durability = (byte)reader.Read(8);
+                item.Durability = (byte)reader.Read(8);
                 reader.ReadBit();
             }
             if (item.has_sockets)
