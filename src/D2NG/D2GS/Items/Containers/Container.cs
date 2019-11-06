@@ -95,7 +95,7 @@ namespace D2NG.D2GS.Items.Containers
             return string.Join("\n", Buffer.OfType<bool>()
                          .Select((value, index) => new { value, index })
                          .GroupBy(x => x.index / Buffer.GetLength(1))
-                         .Select(x => $"{string.Join("", x.Select(y => y.value ? 1 : 0))}"));
+                         .Select(x => string.Join("", x.Select(y => y.value ? "██" : "░░"))));
         }
     }
 }
