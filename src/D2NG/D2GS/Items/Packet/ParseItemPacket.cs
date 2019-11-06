@@ -161,7 +161,7 @@ namespace D2NG.Items
 
             item.Type = Encoding.ASCII.GetString(code_bytes).Substring(0, 3);
 
-            if (!DataManager.Instance.m_itemData.Get(item.Type, out ItemEntry entry))
+            if (!DataManager.Instance.ItemData.Get(item.Type, out ItemEntry entry))
             {
                 Log.Error("Failed to look up item in item data table");
                 return true;

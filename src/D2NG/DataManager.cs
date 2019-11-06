@@ -23,7 +23,7 @@ namespace D2NG
             }
 
         }
-        public ItemDataType m_itemData;
+        public ItemDataType ItemData;
         public PlainTextDataType m_experiences,
                             m_magicalPrefixes,
                             m_magicalSuffixes,
@@ -54,7 +54,7 @@ namespace D2NG
             };
 
             String itemDataFile = Path.Combine(dataDirectory, "item_data.txt");
-            m_itemData = new ItemDataType(itemDataFile);
+            ItemData = new ItemDataType(itemDataFile);
             m_experiences = new PlainTextDataType(Path.Combine(dataDirectory, fileNames[0]));
             m_magicalPrefixes = new PlainTextDataType(Path.Combine(dataDirectory, fileNames[1]));
             m_magicalSuffixes = new PlainTextDataType(Path.Combine(dataDirectory, fileNames[2]));

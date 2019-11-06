@@ -105,6 +105,11 @@ namespace D2NG
                 case Action.remove_from_container:
                     RemoveFromContainer(item);
                     break;
+                case Action.add_quantity:
+                    break;
+                default:
+                    // Do nothing because we don't know
+                    break;
             }
         }
 
@@ -116,6 +121,15 @@ namespace D2NG
                     Log.Verbose("Removing item from stash");
                     Stash.Remove(item);
                     break;
+                case ContainerType.belt:
+                    Log.Verbose("Removing item from belt");
+                    break;
+                case ContainerType.cube:
+                    Log.Verbose("Removing item from cube");
+                    break;
+                default:
+                    // Do nothing we don't know how to handle this
+                    break;
             }
         }
 
@@ -126,6 +140,15 @@ namespace D2NG
                 case ContainerType.stash:
                     Log.Verbose("Adding item to stash");
                     Stash.Add(item);
+                    break;
+                case ContainerType.belt:
+                    Log.Verbose("Adding item from belt");
+                    break;
+                case ContainerType.cube:
+                    Log.Verbose("Adding item from cube");
+                    break;
+                default:
+                    // Do nothing we don't know how to handle this
                     break;
             }
         }
