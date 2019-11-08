@@ -28,7 +28,7 @@ namespace D2NG
             Chat = new Chat(Bncs);
             Game = new Game(D2gs);
 
-            OnSentPacketEvent(0x69, _ => LeaveGame());
+            OnReceivedPacketEvent(0xB0, _ => LeaveGame());
         }
 
         public void OnReceivedPacketEvent(Sid sid, Action<BncsPacket> action)

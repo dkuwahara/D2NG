@@ -36,7 +36,7 @@ namespace D2NG.D2GS
 
             OnReceivedPacketEvent(0x02, _ => LoadSuccessEvent.Set());
             OnReceivedPacketEvent(0x04, _ => LoadCompleteEvent.Set());
-            OnReceivedPacketEvent(0x06, _ => GameExitEvent.Set());
+            OnReceivedPacketEvent(0xB0, _ => GameExitEvent.Set());
         }
 
         internal void OnReceivedPacketEvent(byte type, Action<D2gsPacket> handler)
@@ -70,9 +70,9 @@ namespace D2NG.D2GS
         }
         public void LeaveGame()
         {
-            //GameExitEvent.Reset();
+            GameExitEvent.Reset();
             Connection.WritePacket(new byte[] { 0x69 });
-            //GameExitEvent.WaitOne();
+            GameExitEvent.WaitOne();
             Connection.Terminate();
             _listener.Join();
         }
