@@ -58,7 +58,6 @@ namespace D2NG.D2GS
             {
                 while (Connection.Connected)
                 {
-
                     _ = Connection.ReadPacket();
                 }
             }
