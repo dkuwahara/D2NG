@@ -54,23 +54,25 @@ namespace D2NG.D2GS
 
         private void Listen()
         {
-            while (Connection.Connected)
+            try
             {
-                try
+                while (Connection.Connected)
                 {
+
                     _ = Connection.ReadPacket();
                 }
-                catch(IOException)
-                {
-                    Log.Debug("Connection was terminated");
-                }
+            }
+            catch(IOException)
+            {
+                Log.Debug("Connection was terminated");
+                Thread.Sleep(300);
             }
         }
         public void LeaveGame()
         {
-            GameExitEvent.Reset();
+            //GameExitEvent.Reset();
             Connection.WritePacket(new byte[] { 0x69 });
-            GameExitEvent.WaitOne();
+            //GameExitEvent.WaitOne();
             Connection.Terminate();
             _listener.Join();
         }
