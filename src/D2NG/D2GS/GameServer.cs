@@ -36,7 +36,7 @@ namespace D2NG.D2GS
 
             OnReceivedPacketEvent(0x02, _ => LoadSuccessEvent.Set());
             OnReceivedPacketEvent(0x04, _ => LoadCompleteEvent.Set());
-            OnReceivedPacketEvent(0x06, _ => GameExitEvent.Set());
+            OnReceivedPacketEvent(0xB0, _ => GameExitEvent.Set());
         }
 
         internal void OnReceivedPacketEvent(byte type, Action<D2gsPacket> handler)
@@ -54,16 +54,17 @@ namespace D2NG.D2GS
 
         private void Listen()
         {
-            while (Connection.Connected)
+            try
             {
-                try
+                while (Connection.Connected)
                 {
                     _ = Connection.ReadPacket();
                 }
-                catch(IOException)
-                {
-                    Log.Debug("Connection was terminated");
-                }
+            }
+            catch(IOException)
+            {
+                Log.Debug("Connection was terminated");
+                Thread.Sleep(300);
             }
         }
         public void LeaveGame()
