@@ -17,12 +17,3 @@ jobs:
       run: dotnet build --configuration Release
     - name: Run Tests
       run: dotnet test
-    - name: Add source
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: nuget source Add -Name "GitHub" -Source "https://nuget.pkg.github.com/dkuwahara/index.json" -UserName dkuwahara -Password GH_TOKEN 
-    - name: Pack
-      run: nuget pack
-    - name: Push Artifact
-      run: nuget push "D2NG.nupkg" -Source "GitHub"
-      
