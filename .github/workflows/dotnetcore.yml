@@ -13,8 +13,10 @@ jobs:
       uses: actions/setup-dotnet@v1.7.2
       with:
         dotnet-version: 5.0.x
-    - name: Build with dotnet
+    - name: Build Solution
       run: dotnet build --configuration Release
+    - name: Run Tests
+      run: dotnet test
     - name: Add source
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
