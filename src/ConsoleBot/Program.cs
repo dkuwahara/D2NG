@@ -40,6 +40,10 @@ namespace ConsoleBot
             if (ConfigFile != null)
             {
                 Config = Config.FromFile(this.ConfigFile);
+            } 
+            else
+            {
+                Config = new Config();
             }
 
             Client.OnReceivedPacketEvent(Sid.CHATEVENT, HandleChatEvent);
