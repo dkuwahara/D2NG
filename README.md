@@ -7,7 +7,7 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/dkuwahara/D2NG.svg)
 
 ## Building the project
-This project builds with .NET Core 2.2 and can be built by running `dotnet build` on the command line from the root of the Solution.
+This project builds with .NET 5 and can be built by running `dotnet build` on the command line from the root of the Solution.
 
 ### Building Docker
 You can build the `ConsoleBot` in to a docker image by executing `docker build -t "dkuwahara/d2ng:$TAG ."` from the root of the project.
