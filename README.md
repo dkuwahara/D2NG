@@ -1,4 +1,5 @@
 # D2NG
+![Github Actions](https://img.shields.io/github/workflow/status/dkuwahara/D2NG/.NET%20Core)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/99d55aeccf894ac0aecc41d06bcb3277)](https://www.codacy.com/gh/dkuwahara/D2NG/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dkuwahara/D2NG&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/dkuwahara/d2ng/badge)](https://www.codefactor.io/repository/github/dkuwahara/d2ng)
 ![GitHub](https://img.shields.io/github/license/dkuwahara/D2NG.svg)
